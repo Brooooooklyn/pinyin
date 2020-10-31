@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin-win32",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "os": ["win32"],
   "main": "pinyin.win32.node",
   "files": ["pinyin.win32.node"],

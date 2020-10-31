@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin-linux",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "os": ["linux"],
   "main": "pinyin.linux.node",
   "files": ["pinyin.linux.node"],
