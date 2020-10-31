@@ -1,0 +1,89 @@
+{
+  "name": "@napi-rs/pinyin",
+  "version": "0.0.0",
+  "description": "Template project for writing node package with napi-rs",
+  "main": "index.js",
+  "repository": "git@github.com:Brooooooklyn/pinyin.git",
+  "license": "MIT",
+  "keywords": ["napi-rs", "NAPI", "N-API", "Rust", "node-addon", "node-addon-api", "pinyin", "jieba"],
+  "files": ["index.d.ts", "index.js"],
+  "os": ["darwin", "linux", "win32"],
+  "cpu": ["x64"],
+  "napi": {
+    "name": "pinyin",
+    "musl": ["linux"]
+  },
+  "engines": {
+    "node": ">= 8.9"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "scripts": {
+    "artifacts": "napi artifacts",
+    "bench": "node -r @swc-node/register benchmark/bench.ts",
+    "build": "cargo build --release && napi build --platform --release",
+    "build:debug": "cargo build && napi build --platform",
+    "format": "run-p format:md format:json format:yaml format:source format:rs",
+    "format:md": "prettier --parser markdown --write './**/*.md'",
+    "format:json": "prettier --parser json --write './**/*.json'",
+    "format:rs": "cargo fmt",
+    "format:source": "prettier --config ./package.json --write './**/*.{js,ts}'",
+    "format:yaml": "prettier --parser yaml --write './**/*.{yml,yaml}'",
+    "lint": "eslint . -c ./.eslintrc.yml './**/*.{ts,tsx,js}'",
+    "prepublishOnly": "napi prepublish -t npm",
+    "test": "ava",
+    "version": "napi version"
+  },
+  "devDependencies": {
+    "@swc-node/register": "^1.0.0",
+    "@types/pinyin": "^2.8.2",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
+    "ava": "^3.13.0",
+    "benny": "^3.6.14",
+    "chalk": "^4.1.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-sonarjs": "^0.5.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.0",
+    "napi-rs": "^0.3.9",
+    "npm-run-all": "^4.1.5",
+    "pinyin": "^2.9.1",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "@node-rs/helper": "^0.4.0"
+  },
+  "lint-staged": {
+    "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
+    "*.@(yml|yaml)": ["prettier --parser yaml --write"],
+    "*.md": ["prettier --parser markdown --write"],
+    "*.json": ["prettier --parser json --write"]
+  },
+  "ava": {
+    "require": ["@swc-node/register"],
+    "extensions": ["ts"],
+    "environmentVariables": {
+      "SWC_NODE_PROJECT": "./tsconfig.json"
+    }
+  },
+  "prettier": {
+    "printWidth": 120,
+    "semi": false,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "arrowParens": "always",
+    "parser": "typescript"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}
