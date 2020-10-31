@@ -20,16 +20,17 @@ yarn add @napi-rs/pinyin
 
 ### NodeJS
 
-| Node10 | Node 12 | Node14 |
-| ------ | ------- | ------ |
-| ✓      | ✓       | ✓      |
+| Node10 | Node 12 | Node14 | Node15 |
+| ------ | ------- | ------ | ------ |
+| ✓      | ✓       | ✓      | ✓      |
 
 ## Performance
 
 Benchmark over `pinyin` package:
 
 ```bash
-unning "Short pinyin" suite...
+running "Short pinyin" suite...
+
 Progress: 100%
 
   @napi-rs/pinyin:
@@ -41,6 +42,7 @@ Progress: 100%
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
   Slowest: node-pinyin
+
 Running "Long pinyin" suite...
 Progress: 100%
 
@@ -53,5 +55,6 @@ Progress: 100%
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
   Slowest: node-pinyin
+
 ✨  Done in 27.72s.
 ```
