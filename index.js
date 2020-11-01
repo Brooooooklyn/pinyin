@@ -8,4 +8,29 @@ const { loadBinding } = require('@node-rs/helper')
  * loadBinding helper will load `pinyin.[PLATFORM].node` from `__dirname` first
  * If failed to load addon, it will fallback to load from `@napi-rs/pinyin-[PLATFORM]`
  */
-module.exports = loadBinding(__dirname, 'pinyin', '@napi-rs/pinyin')
+const bindings = loadBinding(__dirname, 'pinyin', '@napi-rs/pinyin')
+
+function pinyin(input, options = {}) {
+  return bindings.pinyin(
+    input,
+    typeof options.heteronym === 'undefined' ? false : options.heteronym,
+    typeof options.style === 'undefined' ? bindings.PINYIN_STYLE.WithTone : options.style,
+    typeof options.heteronym === 'undefined' ? false : options.heteronym,
+  )
+}
+
+function asyncPinyin(input, options = {}) {
+  return bindings.asyncPinyin(
+    input,
+    typeof options.heteronym === 'undefined' ? false : options.heteronym,
+    typeof options.style === 'undefined' ? bindings.PINYIN_STYLE.WithTone : options.style,
+    typeof options.heteronym === 'undefined' ? false : options.heteronym,
+  )
+}
+
+module.exports = {
+  pinyin,
+  asyncPinyin,
+  compare: bindings.compare,
+  PINYIN_STYLE: bindings.PINYIN_STYLE,
+}
