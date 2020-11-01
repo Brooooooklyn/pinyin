@@ -1,6 +1,6 @@
 import test from 'ava'
 
-import { pinyin, asyncPinyin, PINYIN_STYLE } from '../index'
+import { compare, pinyin, asyncPinyin, PINYIN_STYLE } from '../index'
 
 const styles = Object.values(PINYIN_STYLE) as PINYIN_STYLE[]
 
@@ -19,24 +19,62 @@ const fixtures = [
   '我是谁',
   // 多音词
   '中国',
+  // 中英混合
+  '拼音(pinyin)',
+  // 中英混合，多音字
+  '中国(china)',
+  'aa',
+  'a a',
 ]
 
 for (const fixture of fixtures) {
   for (const style of styles) {
     test(`(${fixture}) to pinyin without heteronym with [${STYLE_NAMES[style]}] style`, (t) => {
-      t.snapshot(pinyin(fixture, false, style))
+      t.snapshot(
+        pinyin(fixture, {
+          style,
+          heteronym: false,
+        }),
+      )
     })
 
     test(`(${fixture}) to pinyin with heteronym with [${STYLE_NAMES[style]}] style`, (t) => {
-      t.snapshot(pinyin(fixture, true, style))
+      t.snapshot(
+        pinyin(fixture, {
+          style,
+          heteronym: true,
+        }),
+      )
     })
 
     test(`(${fixture}) to pinyin async without heteronym with [${STYLE_NAMES[style]}] style`, async (t) => {
-      t.snapshot(await asyncPinyin(fixture, false, style))
+      t.snapshot(
+        await asyncPinyin(fixture, {
+          style,
+          heteronym: false,
+        }),
+      )
     })
 
     test(`(${fixture}) to pinyin async with heteronym with [${STYLE_NAMES[style]}] style`, async (t) => {
-      t.snapshot(await asyncPinyin(fixture, true, style))
+      t.snapshot(
+        await asyncPinyin(fixture, {
+          heteronym: true,
+          style,
+        }),
+      )
     })
   }
 }
+
+test('我,要,排,序 => 序,我,排,要', (t) => {
+  const data = '我要排序'.split('')
+  const sortedData = data.sort(compare)
+  t.deepEqual(sortedData, '排我序要'.split(''))
+})
+
+test('b啊 => 啊b', (t) => {
+  const data = 'b啊'.split('')
+  const sortedData = data.sort(compare)
+  t.deepEqual(sortedData, '啊b'.split(''))
+})

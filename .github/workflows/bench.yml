@@ -1,0 +1,79 @@
+name: Benchmark
+
+env:
+  DEBUG: 'napi:*'
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  bench:
+    name: Bench
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: default
+          override: true
+
+      - name: Generate Cargo.lock
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: bench-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: bench-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: 'Install dependencies'
+        run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
+
+      - name: 'Build'
+        run: yarn build
+
+      - name: 'Run benchmark'
+        run: yarn bench
+
+      - name: Store benchmark result
+        uses: rhysd/github-action-benchmark@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          tool: 'benchmarkjs'
+          output-file-path: bench.txt
+          github-token: ${{ secrets.GH_TOKEN }}
+          auto-push: true
+
+      - name: Store benchmark result
+        uses: rhysd/github-action-benchmark@v1
+        if: github.ref != 'refs/heads/main'
+        with:
+          tool: 'benchmarkjs'
+          output-file-path: bench.txt
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-always: true
+
+      - name: Clear the cargo caches
+        run: |
+          cargo install cargo-cache --no-default-features --features ci-autoclean
+          cargo-cache

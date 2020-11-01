@@ -3,7 +3,9 @@ extern crate napi_derive;
 
 use std::convert::{TryFrom, TryInto};
 
+use jieba_rs::Jieba;
 use napi::*;
+use once_cell::sync::OnceCell;
 use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
 
 #[cfg(all(unix, not(target_env = "musl")))]
@@ -15,6 +17,8 @@ static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 register_module!(pinyin, init);
+
+static JIEBA: OnceCell<Jieba> = OnceCell::new();
 
 #[derive(Clone, Copy, Debug)]
 enum PinyinStyle {
@@ -49,6 +53,8 @@ impl TryFrom<u32> for PinyinStyle {
 }
 
 fn init(module: &mut Module) -> Result<()> {
+  let _ = JIEBA.get_or_init(|| Jieba::new());
+
   let mut pinyin_style = module.env.create_object()?;
 
   pinyin_style.define_properties(&vec![
@@ -76,6 +82,8 @@ fn init(module: &mut Module) -> Result<()> {
   module.create_named_method("pinyin", to_pinyin)?;
 
   module.create_named_method("asyncPinyin", async_pinyin)?;
+
+  module.create_named_method("compare", compare_pinyin)?;
   Ok(())
 }
 
@@ -83,11 +91,12 @@ struct AsyncPinyinTask {
   style: PinyinStyle,
   input: String,
   should_to_multi: bool,
+  need_segment: bool,
 }
 
 enum PinyinData {
-  Multi(Vec<Vec<&'static str>>),
-  Default(Vec<&'static str>),
+  Multi(Vec<Vec<String>>),
+  Default(Vec<String>),
 }
 
 impl Task for AsyncPinyinTask {
@@ -95,36 +104,56 @@ impl Task for AsyncPinyinTask {
   type JsValue = JsObject;
 
   fn compute(&mut self) -> Result<Self::Output> {
-    let mut index = 0;
-    if self.should_to_multi {
-      let pinyin_iter = (&self.input.as_str()).to_pinyin_multi();
-      let (_, max) = pinyin_iter.size_hint();
-      let mut result_arr: Vec<Vec<&'static str>> =
-        Vec::with_capacity(max.unwrap_or(self.input.len()));
-      for pinyin in pinyin_iter {
-        if let Some(multi) = pinyin {
-          let mut multi_arr = Vec::with_capacity(multi.count());
-          let mut multi_index = 0;
-          for pinyin in multi {
-            multi_arr.insert(multi_index, get_pinyin(pinyin, self.style));
-            multi_index += 1;
-          }
-          result_arr.insert(index, multi_arr);
-          index += 1;
-        }
-      }
-      Ok(PinyinData::Multi(result_arr))
+    let jieba = JIEBA.get_or_init(|| Jieba::new());
+    let words = if self.need_segment {
+      jieba.cut(self.input.as_str(), false)
     } else {
-      let pinyin_iter = (&self.input.as_str()).to_pinyin();
-      let (_, max) = pinyin_iter.size_hint();
-      let mut result_arr = Vec::with_capacity(max.unwrap_or(self.input.len()));
-      for pinyin in pinyin_iter {
-        if let Some(pinyin) = pinyin {
-          result_arr.insert(index, get_pinyin(pinyin, self.style));
-          index += 1;
+      vec![self.input.as_str()]
+    };
+
+    let mut has_pinyin = false;
+
+    if self.should_to_multi {
+      let mut buf: Vec<Vec<String>> = Vec::new();
+      for word in words {
+        let pinyin_iter = word.to_pinyin_multi();
+        let (_, max) = pinyin_iter.size_hint();
+        let mut result_arr: Vec<Vec<String>> = Vec::with_capacity(max.unwrap_or(word.len()));
+        for pinyin in pinyin_iter {
+          if let Some(multi) = pinyin {
+            let mut multi_arr = Vec::with_capacity(multi.count());
+            for pinyin in multi {
+              multi_arr.push(get_pinyin(pinyin, self.style).to_owned());
+            }
+            result_arr.push(multi_arr);
+            has_pinyin = true;
+          }
+        }
+        if has_pinyin {
+          buf.extend_from_slice(result_arr.as_slice());
+        } else {
+          buf.push(vec![self.input.clone()])
         }
       }
-      Ok(PinyinData::Default(result_arr))
+      Ok(PinyinData::Multi(buf))
+    } else {
+      let mut buf = Vec::new();
+      for word in words {
+        let pinyin_iter = word.to_pinyin();
+        let (_, max) = pinyin_iter.size_hint();
+        let mut result_arr = Vec::with_capacity(max.unwrap_or(word.len()));
+        for pinyin in pinyin_iter {
+          if let Some(pinyin) = pinyin {
+            result_arr.push(get_pinyin(pinyin, self.style).to_owned());
+            has_pinyin = true;
+          }
+        }
+        buf.extend_from_slice(result_arr.as_slice());
+      }
+      if !has_pinyin {
+        buf.push(self.input.clone());
+      }
+      Ok(PinyinData::Default(buf))
     }
   }
 
@@ -134,7 +163,7 @@ impl Task for AsyncPinyinTask {
         let mut output_arr = env.create_array_with_length(arr.len())?;
 
         for (index, item) in arr.into_iter().enumerate() {
-          output_arr.set_element(index as u32, env.create_string(item)?)?;
+          output_arr.set_element(index as u32, env.create_string_from_std(item)?)?;
         }
 
         output_arr
@@ -144,7 +173,7 @@ impl Task for AsyncPinyinTask {
         for (index, multi) in arr.into_iter().enumerate() {
           let mut multi_arr = env.create_array_with_length(multi.len())?;
           for (multi_index, item) in multi.into_iter().enumerate() {
-            multi_arr.set_element(multi_index as u32, env.create_string(item)?)?;
+            multi_arr.set_element(multi_index as u32, env.create_string_from_std(item)?)?;
           }
           output_arr.set_element(index as u32, multi_arr)?;
         }
@@ -155,50 +184,70 @@ impl Task for AsyncPinyinTask {
   }
 }
 
-#[js_function(3)]
+#[js_function(4)]
 fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
-  let input_str = ctx.get::<JsString>(0)?.into_utf8()?;
+  let jieba = JIEBA.get_or_init(|| Jieba::new());
+  let input_string = ctx.get::<JsString>(0)?;
+  let input_str = input_string.into_utf8()?;
 
-  let should_to_multi = if ctx.length >= 2 {
-    ctx.get::<JsBoolean>(1)?.get_value()?
-  } else {
-    false
-  };
+  let should_to_multi = ctx.get::<JsBoolean>(1)?.get_value()?;
 
-  let style = if ctx.length >= 3 {
+  let style = {
     let style: u32 = ctx.get::<JsNumber>(2)?.try_into()?;
     style.try_into()?
-  } else {
-    PinyinStyle::Plain
   };
+
+  let need_segment = ctx.get::<JsBoolean>(3)?.get_value()?;
 
   let mut result_arr = ctx.env.create_array()?;
   let mut index = 0;
 
+  let words = if need_segment {
+    jieba.cut(input_str.as_str()?, false)
+  } else {
+    vec![input_str.as_str()?]
+  };
+
+  let mut has_pinyin = false;
+
   if should_to_multi {
-    let pinyin_iter = input_str.as_str()?.to_pinyin_multi();
-    for pinyin in pinyin_iter {
-      if let Some(multi) = pinyin {
-        let mut multi_arr = ctx.env.create_array()?;
-        let mut multi_index = 0;
-        for pinyin in multi {
-          multi_arr.set_element(
-            multi_index,
-            ctx.env.create_string(get_pinyin(pinyin, style))?,
-          )?;
-          multi_index += 1;
+    for word in words {
+      let pinyin_iter = word.to_pinyin_multi();
+      for pinyin in pinyin_iter {
+        if let Some(multi) = pinyin {
+          let mut multi_arr = ctx.env.create_array()?;
+          let mut multi_index = 0;
+          for pinyin in multi {
+            multi_arr.set_element(
+              multi_index,
+              ctx.env.create_string(get_pinyin(pinyin, style))?,
+            )?;
+            multi_index += 1;
+          }
+          result_arr.set_element(index, multi_arr)?;
+          index += 1;
+          has_pinyin = true;
         }
-        result_arr.set_element(index, multi_arr)?;
-        index += 1;
       }
     }
+    if !has_pinyin {
+      let mut multi_arr = ctx.env.create_array_with_length(1)?;
+      multi_arr.set_element(0, input_string)?;
+      result_arr.set_element(index, multi_arr)?;
+    }
   } else {
-    let pinyin_iter = input_str.as_str()?.to_pinyin();
-    for pinyin in pinyin_iter {
-      if let Some(pinyin) = pinyin {
-        result_arr.set_element(index, ctx.env.create_string(get_pinyin(pinyin, style))?)?;
-        index += 1;
+    for word in words {
+      let pinyin_iter = word.to_pinyin();
+      for pinyin in pinyin_iter {
+        if let Some(pinyin) = pinyin {
+          result_arr.set_element(index, ctx.env.create_string(get_pinyin(pinyin, style))?)?;
+          index += 1;
+          has_pinyin = true;
+        }
       }
+    }
+    if !has_pinyin {
+      result_arr.set_element(0, input_string)?;
     }
   };
 
@@ -216,25 +265,43 @@ fn get_pinyin(input: Pinyin, style: PinyinStyle) -> &'static str {
   }
 }
 
-#[js_function(3)]
+#[js_function(4)]
 fn async_pinyin(ctx: CallContext) -> Result<JsObject> {
   let input = ctx.get::<JsString>(0)?.into_utf8()?.as_str()?.to_owned();
-  let should_to_multi = if ctx.length >= 2 {
-    ctx.get::<JsBoolean>(1)?.get_value()?
-  } else {
-    false
-  };
+  let should_to_multi = ctx.get::<JsBoolean>(1)?.get_value()?;
 
-  let style = if ctx.length >= 3 {
+  let style = {
     let style: u32 = ctx.get::<JsNumber>(2)?.try_into()?;
     style.try_into()?
-  } else {
-    PinyinStyle::Plain
   };
+  let need_segment = ctx.get::<JsBoolean>(3)?.get_value()?;
   let task = AsyncPinyinTask {
     input,
     style,
     should_to_multi,
+    need_segment,
   };
   ctx.env.spawn(task).map(|v| v.promise_object())
+}
+
+#[js_function(2)]
+fn compare_pinyin(ctx: CallContext) -> Result<JsNumber> {
+  let input_a = ctx.get::<JsString>(0)?.into_utf8()?;
+  let input_b = ctx.get::<JsString>(1)?.into_utf8()?;
+  let input_a_str = input_a.as_str()?;
+  let input_b_str = input_b.as_str()?;
+  let pinyin_a = input_a_str
+    .to_pinyin()
+    .next()
+    .and_then(|p| p)
+    .map(Pinyin::with_tone)
+    .unwrap_or(input_a_str);
+
+  let pinyin_b = input_b_str
+    .to_pinyin()
+    .next()
+    .and_then(|p| p)
+    .map(Pinyin::with_tone)
+    .unwrap_or(input_a_str);
+  ctx.env.create_int32(pinyin_a.cmp(pinyin_b) as _)
 }
