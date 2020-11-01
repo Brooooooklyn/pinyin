@@ -20,6 +20,8 @@
     "中文"
   ],
   "files": ["index.d.ts", "index.js"],
+  "os": ["darwin", "linux", "win32"],
+  "cpu": ["x64"],
   "napi": {
     "name": "pinyin",
     "musl": ["linux"]
