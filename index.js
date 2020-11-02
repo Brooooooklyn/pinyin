@@ -15,7 +15,7 @@ function pinyin(input, options = {}) {
     input,
     typeof options.heteronym === 'undefined' ? false : options.heteronym,
     typeof options.style === 'undefined' ? bindings.PINYIN_STYLE.WithTone : options.style,
-    typeof options.heteronym === 'undefined' ? false : options.heteronym,
+    typeof options.segment === 'undefined' ? false : options.segment,
   )
 }
 
@@ -24,7 +24,7 @@ function asyncPinyin(input, options = {}) {
     input,
     typeof options.heteronym === 'undefined' ? false : options.heteronym,
     typeof options.style === 'undefined' ? bindings.PINYIN_STYLE.WithTone : options.style,
-    typeof options.heteronym === 'undefined' ? false : options.heteronym,
+    typeof options.segment === 'undefined' ? false : options.segment,
   )
 }
 

@@ -42,16 +42,14 @@ yarn add @napi-rs/pinyin
 Benchmark over `pinyin` package:
 
 ```bash
-yarn run v1.22.10
-$ node -r @swc-node/register benchmark/bench.ts
 Running "Short input without segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    1 037 055 ops/s, ±0.62%   | fastest
+    962 035 ops/s, ±0.68%   | fastest
 
   node-pinyin:
-    461 335 ops/s, ±0.87%     | slowest, 55.51% slower
+    434 241 ops/s, ±0.66%   | slowest, 54.86% slower
 
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
@@ -60,10 +58,10 @@ Running "Long input without segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    325 ops/s, ±0.54%   | fastest
+    59 ops/s, ±0.83%   | fastest
 
   node-pinyin:
-    2 ops/s, ±3.44%     | slowest, 99.38% slower
+    2 ops/s, ±3.30%    | slowest, 96.61% slower
 
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
@@ -72,10 +70,10 @@ Running "Short input with segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    1 010 506 ops/s, ±2.59%   | fastest
+    530 228 ops/s, ±1.94%   | fastest
 
   node-pinyin:
-    315 076 ops/s, ±1.02%     | slowest, 68.82% slower
+    307 788 ops/s, ±0.83%   | slowest, 41.95% slower
 
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
@@ -84,15 +82,15 @@ Running "Long input with segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    330 ops/s, ±1.08%   | fastest
+    152 ops/s, ±1.09%   | fastest
 
   node-pinyin:
-    3 ops/s, ±2.44%     | slowest, 99.09% slower
+    3 ops/s, ±3.08%     | slowest, 98.03% slower
 
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
   Slowest: node-pinyin
-✨  Done in 52.94s.
+✨  Done in 53.36s.
 ```
 
 ## 用法

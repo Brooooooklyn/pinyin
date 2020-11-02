@@ -67,6 +67,19 @@ for (const fixture of fixtures) {
   }
 }
 
+test('mixed with segment', (t) => {
+  t.deepEqual(pinyin('特殊天-1', { style: PINYIN_STYLE.Plain, segment: true }), ['te', 'shu', 'tian', '-1'])
+})
+
+test('mixed with multi segment', (t) => {
+  t.deepEqual(pinyin('特殊天-1', { style: PINYIN_STYLE.Plain, segment: true, heteronym: true }), [
+    ['te'],
+    ['shu'],
+    ['tian'],
+    ['-1'],
+  ])
+})
+
 test('我,要,排,序 => 序,我,排,要', (t) => {
   const data = '我要排序'.split('')
   const sortedData = data.sort(compare)

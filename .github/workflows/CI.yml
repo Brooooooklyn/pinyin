@@ -82,6 +82,9 @@ jobs:
       - name: 'Install dependencies'
         run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
 
+      - name: 'Cargo test'
+        run: cargo test
+
       - name: 'Build'
         if: matrix.os != 'macos-latest'
         run: yarn build
