@@ -7,6 +7,7 @@ use jieba_rs::Jieba;
 use napi::*;
 use once_cell::sync::OnceCell;
 use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
+use rayon::prelude::*;
 
 #[cfg(all(unix, not(target_env = "musl")))]
 #[global_allocator]
@@ -16,6 +17,7 @@ static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 #[global_allocator]
 static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
+#[cfg(not(test))]
 register_module!(pinyin, init);
 
 static JIEBA: OnceCell<Jieba> = OnceCell::new();
@@ -52,6 +54,7 @@ impl TryFrom<u32> for PinyinStyle {
   }
 }
 
+#[cfg(not(test))]
 fn init(module: &mut Module) -> Result<()> {
   let _ = JIEBA.get_or_init(|| Jieba::new());
 
@@ -90,8 +93,7 @@ fn init(module: &mut Module) -> Result<()> {
 struct AsyncPinyinTask {
   style: PinyinStyle,
   input: String,
-  should_to_multi: bool,
-  need_segment: bool,
+  option: PinyinOption,
 }
 
 enum PinyinData {
@@ -99,61 +101,138 @@ enum PinyinData {
   Default(Vec<String>),
 }
 
+#[derive(Debug, PartialEq, Eq)]
+#[repr(u8)]
+enum PinyinOption {
+  Default = 0,        // 00
+  Multi = 1,          // 01
+  SegmentDefault = 2, // 10
+  SegmentMulti = 3,   // 11
+}
+
+impl From<u8> for PinyinOption {
+  fn from(value: u8) -> Self {
+    match value {
+      0 => Self::Default,
+      1 => Self::Multi,
+      2 => Self::SegmentDefault,
+      3 => Self::SegmentMulti,
+      _ => unreachable!(),
+    }
+  }
+}
+
 impl Task for AsyncPinyinTask {
   type Output = PinyinData;
   type JsValue = JsObject;
 
   fn compute(&mut self) -> Result<Self::Output> {
-    let jieba = JIEBA.get_or_init(|| Jieba::new());
-    let words = if self.need_segment {
-      jieba.cut(self.input.as_str(), false)
-    } else {
-      vec![self.input.as_str()]
-    };
-
-    let mut has_pinyin = false;
-
-    if self.should_to_multi {
-      let mut buf: Vec<Vec<String>> = Vec::new();
-      for word in words {
-        let pinyin_iter = word.to_pinyin_multi();
-        let (_, max) = pinyin_iter.size_hint();
-        let mut result_arr: Vec<Vec<String>> = Vec::with_capacity(max.unwrap_or(word.len()));
-        for pinyin in pinyin_iter {
-          if let Some(multi) = pinyin {
-            let mut multi_arr = Vec::with_capacity(multi.count());
-            for pinyin in multi {
-              multi_arr.push(get_pinyin(pinyin, self.style).to_owned());
+    match self.option {
+      PinyinOption::Default => {
+        let input_chars = self.input.chars();
+        let input_len = self.input.len();
+        let mut output_py: Vec<String> = Vec::with_capacity(input_len);
+        let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_len);
+        for c in input_chars {
+          if let Some(py) = c.to_pinyin() {
+            if non_hans_chars.len() > 0 {
+              output_py.push(non_hans_chars.par_iter().collect::<String>());
+              non_hans_chars.clear();
             }
-            result_arr.push(multi_arr);
-            has_pinyin = true;
+            output_py.push(get_pinyin(py, self.style).to_owned());
+          } else {
+            non_hans_chars.push(c);
           }
         }
-        if has_pinyin {
-          buf.extend_from_slice(result_arr.as_slice());
-        } else {
-          buf.push(vec![self.input.clone()])
+        if non_hans_chars.len() > 0 {
+          output_py.push(non_hans_chars.into_par_iter().collect::<String>())
         }
+        Ok(PinyinData::Default(output_py))
       }
-      Ok(PinyinData::Multi(buf))
-    } else {
-      let mut buf = Vec::new();
-      for word in words {
-        let pinyin_iter = word.to_pinyin();
-        let (_, max) = pinyin_iter.size_hint();
-        let mut result_arr = Vec::with_capacity(max.unwrap_or(word.len()));
-        for pinyin in pinyin_iter {
-          if let Some(pinyin) = pinyin {
-            result_arr.push(get_pinyin(pinyin, self.style).to_owned());
-            has_pinyin = true;
+      PinyinOption::SegmentDefault => {
+        let jieba = JIEBA.get_or_init(|| Jieba::new());
+        let input_words = jieba.cut_all(self.input.as_str());
+        let input_len = self.input.len();
+        let mut output_py: Vec<String> = Vec::with_capacity(input_len);
+        let mut has_pinyin = false;
+        let mut non_hans = String::with_capacity(input_len);
+        for word in input_words {
+          for maybe_py in word.to_pinyin() {
+            if let Some(py) = maybe_py {
+              if non_hans.len() > 0 {
+                output_py.push(non_hans.clone());
+                non_hans.clear();
+              }
+              output_py.push(get_pinyin(py, self.style).to_owned());
+              has_pinyin = true;
+            }
+          }
+          if !has_pinyin {
+            non_hans.push_str(word);
           }
         }
-        buf.extend_from_slice(result_arr.as_slice());
+        if non_hans.len() > 0 {
+          output_py.push(non_hans);
+        }
+        Ok(PinyinData::Default(output_py))
       }
-      if !has_pinyin {
-        buf.push(self.input.clone());
+      PinyinOption::Multi => {
+        let input_chars = self.input.chars();
+        let input_len = self.input.len();
+        let mut output_multi_py: Vec<Vec<String>> = Vec::with_capacity(input_len);
+        let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_len);
+        for c in input_chars {
+          if let Some(multi_py) = c.to_pinyin_multi() {
+            if non_hans_chars.len() > 0 {
+              output_multi_py.push(vec![non_hans_chars.par_iter().collect::<String>()]);
+              non_hans_chars.clear();
+            }
+            let mut multi_py_vec = Vec::with_capacity(multi_py.count());
+            for py in multi_py {
+              multi_py_vec.push(get_pinyin(py, self.style).to_owned());
+            }
+            output_multi_py.push(multi_py_vec);
+          } else {
+            non_hans_chars.push(c);
+          }
+        }
+        if non_hans_chars.len() > 0 {
+          output_multi_py.push(vec![non_hans_chars.into_par_iter().collect::<String>()]);
+        }
+        Ok(PinyinData::Multi(output_multi_py))
       }
-      Ok(PinyinData::Default(buf))
+      PinyinOption::SegmentMulti => {
+        let jieba = JIEBA.get_or_init(|| Jieba::new());
+        let input_words = jieba.cut_all(self.input.as_str());
+        let input_len = self.input.len();
+        let mut output_multi_py: Vec<Vec<String>> = Vec::with_capacity(input_len);
+        let mut non_hans = String::with_capacity(self.input.len());
+        for word in input_words {
+          let multi_py = word.to_pinyin_multi();
+          let mut has_pinyin = false;
+          for maybe_py in multi_py {
+            if let Some(py) = maybe_py {
+              if non_hans.len() > 0 {
+                output_multi_py.push(vec![non_hans.clone()]);
+                non_hans.clear();
+              }
+              let mut multi_py_vec = Vec::with_capacity(py.count());
+              for p in py {
+                multi_py_vec.push(get_pinyin(p, self.style).to_owned());
+              }
+              output_multi_py.push(multi_py_vec);
+              has_pinyin = true;
+            }
+          }
+          if !has_pinyin {
+            non_hans.push_str(word);
+          }
+        }
+        if non_hans.len() > 0 {
+          output_multi_py.push(vec![non_hans]);
+        }
+        Ok(PinyinData::Multi(output_multi_py))
+      }
     }
   }
 
@@ -186,13 +265,12 @@ impl Task for AsyncPinyinTask {
 
 #[js_function(4)]
 fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
-  let jieba = JIEBA.get_or_init(|| Jieba::new());
   let input_string = ctx.get::<JsString>(0)?;
   let input_str = input_string.into_utf8()?;
 
   let should_to_multi = ctx.get::<JsBoolean>(1)?.get_value()?;
 
-  let style = {
+  let style: PinyinStyle = {
     let style: u32 = ctx.get::<JsNumber>(2)?.try_into()?;
     style.try_into()?
   };
@@ -202,52 +280,149 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
   let mut result_arr = ctx.env.create_array()?;
   let mut index = 0;
 
-  let words = if need_segment {
-    jieba.cut(input_str.as_str()?, false)
-  } else {
-    vec![input_str.as_str()?]
-  };
+  let option = to_option(need_segment, should_to_multi);
 
-  let mut has_pinyin = false;
-
-  if should_to_multi {
-    for word in words {
-      let pinyin_iter = word.to_pinyin_multi();
-      for pinyin in pinyin_iter {
-        if let Some(multi) = pinyin {
-          let mut multi_arr = ctx.env.create_array()?;
-          let mut multi_index = 0;
-          for pinyin in multi {
-            multi_arr.set_element(
-              multi_index,
-              ctx.env.create_string(get_pinyin(pinyin, style))?,
+  match option {
+    PinyinOption::Default => {
+      let input_str = input_str.as_str()?;
+      let input_chars = input_str.chars();
+      let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_str.len());
+      for c in input_chars {
+        if let Some(py) = c.to_pinyin() {
+          if non_hans_chars.len() > 0 {
+            result_arr.set_element(
+              index,
+              ctx
+                .env
+                .create_string_from_std(non_hans_chars.par_iter().collect::<String>())?,
             )?;
-            multi_index += 1;
+            non_hans_chars.clear();
+            index += 1;
           }
-          result_arr.set_element(index, multi_arr)?;
+          result_arr.set_element(index, ctx.env.create_string(get_pinyin(py, style))?)?;
           index += 1;
-          has_pinyin = true;
+        } else {
+          non_hans_chars.push(c);
         }
       }
-    }
-    if !has_pinyin {
-      let mut multi_arr = ctx.env.create_array_with_length(1)?;
-      multi_arr.set_element(0, input_string)?;
-      result_arr.set_element(index, multi_arr)?;
-    }
-  } else {
-    for word in words {
-      let pinyin_iter = word.to_pinyin();
-      for pinyin in pinyin_iter {
-        if let Some(pinyin) = pinyin {
-          result_arr.set_element(index, ctx.env.create_string(get_pinyin(pinyin, style))?)?;
-          index += 1;
-          has_pinyin = true;
-        }
+      if non_hans_chars.len() > 0 {
+        result_arr.set_element(
+          index,
+          ctx
+            .env
+            .create_string_from_std(non_hans_chars.into_par_iter().collect::<String>())?,
+        )?;
       }
     }
-    if !has_pinyin {
-      result_arr.set_element(0, input_string)?;
+    PinyinOption::SegmentDefault => {
+      let jieba = JIEBA.get_or_init(|| Jieba::new());
+      let input_str = input_str.as_str()?;
+      let input_words = jieba.cut(input_str, false);
+      let mut non_hans = String::with_capacity(input_str.len());
+      for word in input_words {
+        let mut has_pinyin = false;
+        for maybe_py in word.to_pinyin() {
+          if let Some(py) = maybe_py {
+            if non_hans.len() > 0 {
+              result_arr.set_element(index, ctx.env.create_string(non_hans.as_str())?)?;
+              non_hans.clear();
+              index += 1;
+            }
+            result_arr.set_element(index, ctx.env.create_string(get_pinyin(py, style))?)?;
+            has_pinyin = true;
+            index += 1;
+          }
+        }
+        if !has_pinyin {
+          non_hans.push_str(word);
+        }
+      }
+      if non_hans.len() > 0 {
+        result_arr.set_element(index, ctx.env.create_string_from_std(non_hans)?)?;
+      }
+    }
+    PinyinOption::Multi => {
+      let input_str = input_str.as_str()?;
+      let input_chars = input_str.chars();
+      let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_str.len());
+      for c in input_chars {
+        if let Some(multi_py) = c.to_pinyin_multi() {
+          if non_hans_chars.len() > 0 {
+            let mut buf_arr = ctx.env.create_array_with_length(1)?;
+            buf_arr.set_element(
+              0,
+              ctx
+                .env
+                .create_string_from_std(non_hans_chars.par_iter().collect::<String>())?,
+            )?;
+            result_arr.set_element(index, buf_arr)?;
+            non_hans_chars.clear();
+            index += 1;
+          }
+          let mut multi_py_vec = ctx.env.create_array_with_length(multi_py.count())?;
+          let mut multi_py_index = 0;
+          for py in multi_py {
+            multi_py_vec.set_element(
+              multi_py_index,
+              ctx.env.create_string(get_pinyin(py, style))?,
+            )?;
+            multi_py_index += 1;
+          }
+          result_arr.set_element(index, multi_py_vec)?;
+          index += 1;
+        } else {
+          non_hans_chars.push(c);
+        }
+      }
+      if non_hans_chars.len() > 0 {
+        let mut buf_arr = ctx.env.create_array_with_length(1)?;
+        buf_arr.set_element(
+          0,
+          ctx
+            .env
+            .create_string_from_std(non_hans_chars.into_par_iter().collect::<String>())?,
+        )?;
+        result_arr.set_element(index, buf_arr)?;
+      }
+    }
+    PinyinOption::SegmentMulti => {
+      let jieba = JIEBA.get_or_init(|| Jieba::new());
+      let input_str = input_str.as_str()?;
+      let input_words = jieba.cut(input_str, false);
+      let mut non_hans = String::with_capacity(input_str.len());
+      for word in input_words {
+        let multi_py = word.to_pinyin_multi();
+        let mut has_pinyin = false;
+        for maybe_py in multi_py {
+          if let Some(py) = maybe_py {
+            if non_hans.len() > 0 {
+              let mut buf_arr = ctx.env.create_array_with_length(1)?;
+              buf_arr.set_element(0, ctx.env.create_string(non_hans.as_str())?)?;
+              result_arr.set_element(index, buf_arr)?;
+              non_hans.clear();
+              index += 1;
+            }
+            let mut multi_py_vec = ctx.env.create_array_with_length(py.count())?;
+            let mut multi_py_index = 0;
+            for p in py {
+              multi_py_vec
+                .set_element(multi_py_index, ctx.env.create_string(get_pinyin(p, style))?)?;
+              multi_py_index += 1;
+            }
+            result_arr.set_element(index, multi_py_vec)?;
+            index += 1;
+            has_pinyin = true;
+          }
+        }
+        if !has_pinyin {
+          non_hans.push_str(word);
+        }
+      }
+      if non_hans.len() > 0 {
+        let mut buf_arr = ctx.env.create_array_with_length(1)?;
+        buf_arr.set_element(0, ctx.env.create_string_from_std(non_hans)?)?;
+        result_arr.set_element(index, buf_arr)?;
+      }
     }
   };
 
@@ -275,13 +450,19 @@ fn async_pinyin(ctx: CallContext) -> Result<JsObject> {
     style.try_into()?
   };
   let need_segment = ctx.get::<JsBoolean>(3)?.get_value()?;
+  let option = to_option(need_segment, should_to_multi);
+
   let task = AsyncPinyinTask {
     input,
     style,
-    should_to_multi,
-    need_segment,
+    option: option.into(),
   };
   ctx.env.spawn(task).map(|v| v.promise_object())
+}
+
+#[inline(always)]
+fn to_option(need_segment: bool, should_to_multi: bool) -> PinyinOption {
+  (u8::from(need_segment) << 1 | u8::from(should_to_multi)).into()
 }
 
 #[js_function(2)]
@@ -304,4 +485,17 @@ fn compare_pinyin(ctx: CallContext) -> Result<JsNumber> {
     .map(Pinyin::with_tone)
     .unwrap_or(input_a_str);
   ctx.env.create_int32(pinyin_a.cmp(pinyin_b) as _)
+}
+
+#[cfg(test)]
+mod test {
+
+  use super::{to_option, PinyinOption};
+  #[test]
+  fn convert_option() {
+    assert_eq!(to_option(false, false), PinyinOption::Default);
+    assert_eq!(to_option(false, true), PinyinOption::Multi);
+    assert_eq!(to_option(true, false), PinyinOption::SegmentDefault);
+    assert_eq!(to_option(true, true), PinyinOption::SegmentMulti);
+  }
 }
