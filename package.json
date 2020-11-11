@@ -64,7 +64,7 @@
     "eslint-plugin-sonarjs": "^0.5.0",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0",
-    "napi-rs": "^0.3.9",
+    "napi-rs": "^0.3.10",
     "nodejieba": "^2.4.1",
     "npm-run-all": "^4.1.5",
     "pinyin": "^2.9.1",
