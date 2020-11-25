@@ -2493,11 +2493,6 @@ mute-stream@0.0.8:
   resolved "https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
-nan@^2.14.0:
-  version "2.14.2"
-  resolved "https://registry.npmjs.org/nan/-/nan-2.14.2.tgz#f5376400695168f4cc694ac9393d0c9585eeea19"
-  integrity sha512-M2ufzIiINKCuDfBSAUr1vWQ+vuVcA9kqx8JJUsbQi6yf1uGRyb7HfpdfUr5qLXf3B/t8dPvcjhKMmlfnP47EzQ==
-
 napi-rs@^0.3.10:
   version "0.3.10"
   resolved "https://registry.yarnpkg.com/napi-rs/-/napi-rs-0.3.10.tgz#df8620c9a86bb0a612204c50ac634dd25d1dfe96"
@@ -2533,6 +2528,11 @@ nice-try@^1.0.4:
   resolved "https://registry.npmjs.org/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
+node-addon-api@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-3.0.2.tgz#04bc7b83fd845ba785bb6eae25bc857e1ef75681"
+  integrity sha512-+D4s2HCnxPd5PjjI0STKwncjXTUKKqm74MDMz9OPXavjsGmjkvwgLtA5yoxJUdmpj52+2u+RrXgPipahKczMKg==
+
 node-fetch@^2.6.1:
   version "2.6.1"
   resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
@@ -2559,12 +2559,12 @@ node-pre-gyp@^0.14.0:
     semver "^5.3.0"
     tar "^4.4.2"
 
-nodejieba@^2.2.1, nodejieba@^2.4.2:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/nodejieba/-/nodejieba-2.4.2.tgz#15ba9032e72e89d9b68ecd9e907fcc3da3151ebc"
-  integrity sha512-U/Yey+OCv7XvTnujtjyx+FEIQ+na8nlroyrzs3vM2dIM/Nx2XpoPA8DcfDXmLuLbnlfd0rd1FCsZ5b5yFTTI9A==
+nodejieba@^2.2.1, nodejieba@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/nodejieba/-/nodejieba-2.5.1.tgz#626cc93a104b96de6ce85f59b640fb316d4b763c"
+  integrity sha512-VnJBQSl2G8swDf3ZAXMbXrMCrGFO+kVKbkB93OaBthGbEG5BrxfD8I2m7auaRX8E5C1t+hlwo3HCmQOWKkiZ9A==
   dependencies:
-    nan "^2.14.0"
+    node-addon-api "^3.0.2"
     node-pre-gyp "^0.14.0"
 
 nopt@^4.0.1:
