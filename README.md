@@ -27,9 +27,9 @@ yarn add @napi-rs/pinyin
 
 ### 系统
 
-| Linux | macOS | Windows x64 |
-| ----- | ----- | ----------- |
-| ✓     | ✓     | ✓           |
+| Linux (x64/aarch64) | macOS (x64/aarch64) | Windows x64 |
+| ------------------- | ------------------- | ----------- |
+| ✓                   | ✓                   | ✓           |
 
 ### NodeJS
 

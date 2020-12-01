@@ -1,3 +1,5 @@
+#![deny(clippy::all)]
+
 #[macro_use]
 extern crate napi_derive;
 
@@ -9,16 +11,13 @@ use once_cell::sync::OnceCell;
 use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
 use rayon::prelude::*;
 
-#[cfg(all(unix, not(target_env = "musl")))]
+#[cfg(all(unix, not(target_env = "musl"), not(target_arch = "aarch64")))]
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 #[cfg(windows)]
 #[global_allocator]
 static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
-
-#[cfg(not(test))]
-register_module!(pinyin, init);
 
 static JIEBA: OnceCell<Jieba> = OnceCell::new();
 
@@ -55,38 +54,37 @@ impl TryFrom<u32> for PinyinStyle {
 }
 
 #[cfg(not(test))]
-fn init(module: &mut Module) -> Result<()> {
-  let _ = JIEBA.get_or_init(|| Jieba::new());
+#[module_exports]
+fn init(mut exports: JsObject, env: Env) -> Result<()> {
+  let _ = JIEBA.get_or_init(Jieba::new);
 
-  let mut pinyin_style = module.env.create_object()?;
+  let mut pinyin_style = env.create_object()?;
 
   pinyin_style.define_properties(&vec![
-    Property::new(&module.env, "Plain")?
-      .with_value(module.env.create_uint32(PinyinStyle::Plain as _)?)
+    Property::new(&env, "Plain")?
+      .with_value(env.create_uint32(PinyinStyle::Plain as _)?)
       .with_property_attributes(PropertyAttributes::Enumerable),
-    Property::new(&module.env, "WithTone")?
-      .with_value(module.env.create_uint32(PinyinStyle::WithTone as _)?)
+    Property::new(&env, "WithTone")?
+      .with_value(env.create_uint32(PinyinStyle::WithTone as _)?)
       .with_property_attributes(PropertyAttributes::Enumerable),
-    Property::new(&module.env, "WithToneNum")?
-      .with_value(module.env.create_uint32(PinyinStyle::WithToneNum as _)?)
+    Property::new(&env, "WithToneNum")?
+      .with_value(env.create_uint32(PinyinStyle::WithToneNum as _)?)
       .with_property_attributes(PropertyAttributes::Enumerable),
-    Property::new(&module.env, "WithToneNumEnd")?
-      .with_value(module.env.create_uint32(PinyinStyle::WithToneNumEnd as _)?)
+    Property::new(&env, "WithToneNumEnd")?
+      .with_value(env.create_uint32(PinyinStyle::WithToneNumEnd as _)?)
       .with_property_attributes(PropertyAttributes::Enumerable),
-    Property::new(&module.env, "FirstLetter")?
-      .with_value(module.env.create_uint32(PinyinStyle::FirstLetter as _)?)
+    Property::new(&env, "FirstLetter")?
+      .with_value(env.create_uint32(PinyinStyle::FirstLetter as _)?)
       .with_property_attributes(PropertyAttributes::Enumerable),
   ])?;
 
-  module
-    .exports
-    .set_named_property("PINYIN_STYLE", pinyin_style)?;
+  exports.set_named_property("PINYIN_STYLE", pinyin_style)?;
 
-  module.create_named_method("pinyin", to_pinyin)?;
+  exports.create_named_method("pinyin", to_pinyin)?;
 
-  module.create_named_method("asyncPinyin", async_pinyin)?;
+  exports.create_named_method("asyncPinyin", async_pinyin)?;
 
-  module.create_named_method("compare", compare_pinyin)?;
+  exports.create_named_method("compare", compare_pinyin)?;
   Ok(())
 }
 
@@ -135,7 +133,7 @@ impl Task for AsyncPinyinTask {
         let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_len);
         for c in input_chars {
           if let Some(py) = c.to_pinyin() {
-            if non_hans_chars.len() > 0 {
+            if !non_hans_chars.is_empty() {
               output_py.push(non_hans_chars.par_iter().collect::<String>());
               non_hans_chars.clear();
             }
@@ -144,13 +142,13 @@ impl Task for AsyncPinyinTask {
             non_hans_chars.push(c);
           }
         }
-        if non_hans_chars.len() > 0 {
+        if !non_hans_chars.is_empty() {
           output_py.push(non_hans_chars.into_par_iter().collect::<String>())
         }
         Ok(PinyinData::Default(output_py))
       }
       PinyinOption::SegmentDefault => {
-        let jieba = JIEBA.get_or_init(|| Jieba::new());
+        let jieba = JIEBA.get_or_init(Jieba::new);
         let input_words = jieba.cut_all(self.input.as_str());
         let input_len = self.input.len();
         let mut output_py: Vec<String> = Vec::with_capacity(input_len);
@@ -159,7 +157,7 @@ impl Task for AsyncPinyinTask {
         for word in input_words {
           for maybe_py in word.to_pinyin() {
             if let Some(py) = maybe_py {
-              if non_hans.len() > 0 {
+              if !non_hans.is_empty() {
                 output_py.push(non_hans.clone());
                 non_hans.clear();
               }
@@ -171,7 +169,7 @@ impl Task for AsyncPinyinTask {
             non_hans.push_str(word);
           }
         }
-        if non_hans.len() > 0 {
+        if !non_hans.is_empty() {
           output_py.push(non_hans);
         }
         Ok(PinyinData::Default(output_py))
@@ -183,7 +181,7 @@ impl Task for AsyncPinyinTask {
         let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_len);
         for c in input_chars {
           if let Some(multi_py) = c.to_pinyin_multi() {
-            if non_hans_chars.len() > 0 {
+            if !non_hans_chars.is_empty() {
               output_multi_py.push(vec![non_hans_chars.par_iter().collect::<String>()]);
               non_hans_chars.clear();
             }
@@ -196,13 +194,13 @@ impl Task for AsyncPinyinTask {
             non_hans_chars.push(c);
           }
         }
-        if non_hans_chars.len() > 0 {
+        if !non_hans_chars.is_empty() {
           output_multi_py.push(vec![non_hans_chars.into_par_iter().collect::<String>()]);
         }
         Ok(PinyinData::Multi(output_multi_py))
       }
       PinyinOption::SegmentMulti => {
-        let jieba = JIEBA.get_or_init(|| Jieba::new());
+        let jieba = JIEBA.get_or_init(Jieba::new);
         let input_words = jieba.cut_all(self.input.as_str());
         let input_len = self.input.len();
         let mut output_multi_py: Vec<Vec<String>> = Vec::with_capacity(input_len);
@@ -212,7 +210,7 @@ impl Task for AsyncPinyinTask {
           let mut has_pinyin = false;
           for maybe_py in multi_py {
             if let Some(py) = maybe_py {
-              if non_hans.len() > 0 {
+              if !non_hans.is_empty() {
                 output_multi_py.push(vec![non_hans.clone()]);
                 non_hans.clear();
               }
@@ -228,7 +226,7 @@ impl Task for AsyncPinyinTask {
             non_hans.push_str(word);
           }
         }
-        if non_hans.len() > 0 {
+        if !non_hans.is_empty() {
           output_multi_py.push(vec![non_hans]);
         }
         Ok(PinyinData::Multi(output_multi_py))
@@ -289,7 +287,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
       let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_str.len());
       for c in input_chars {
         if let Some(py) = c.to_pinyin() {
-          if non_hans_chars.len() > 0 {
+          if !non_hans_chars.is_empty() {
             result_arr.set_element(
               index,
               ctx
@@ -305,7 +303,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
           non_hans_chars.push(c);
         }
       }
-      if non_hans_chars.len() > 0 {
+      if !non_hans_chars.is_empty() {
         result_arr.set_element(
           index,
           ctx
@@ -315,7 +313,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
       }
     }
     PinyinOption::SegmentDefault => {
-      let jieba = JIEBA.get_or_init(|| Jieba::new());
+      let jieba = JIEBA.get_or_init(Jieba::new);
       let input_str = input_str.as_str()?;
       let input_words = jieba.cut(input_str, false);
       let mut non_hans = String::with_capacity(input_str.len());
@@ -323,7 +321,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
         let mut has_pinyin = false;
         for maybe_py in word.to_pinyin() {
           if let Some(py) = maybe_py {
-            if non_hans.len() > 0 {
+            if !non_hans.is_empty() {
               result_arr.set_element(index, ctx.env.create_string(non_hans.as_str())?)?;
               non_hans.clear();
               index += 1;
@@ -337,7 +335,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
           non_hans.push_str(word);
         }
       }
-      if non_hans.len() > 0 {
+      if !non_hans.is_empty() {
         result_arr.set_element(index, ctx.env.create_string_from_std(non_hans)?)?;
       }
     }
@@ -347,7 +345,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
       let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_str.len());
       for c in input_chars {
         if let Some(multi_py) = c.to_pinyin_multi() {
-          if non_hans_chars.len() > 0 {
+          if !non_hans_chars.is_empty() {
             let mut buf_arr = ctx.env.create_array_with_length(1)?;
             buf_arr.set_element(
               0,
@@ -360,13 +358,11 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
             index += 1;
           }
           let mut multi_py_vec = ctx.env.create_array_with_length(multi_py.count())?;
-          let mut multi_py_index = 0;
-          for py in multi_py {
+          for (multi_py_index, py) in multi_py.into_iter().enumerate() {
             multi_py_vec.set_element(
-              multi_py_index,
+              multi_py_index as u32,
               ctx.env.create_string(get_pinyin(py, style))?,
             )?;
-            multi_py_index += 1;
           }
           result_arr.set_element(index, multi_py_vec)?;
           index += 1;
@@ -374,7 +370,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
           non_hans_chars.push(c);
         }
       }
-      if non_hans_chars.len() > 0 {
+      if !non_hans_chars.is_empty() {
         let mut buf_arr = ctx.env.create_array_with_length(1)?;
         buf_arr.set_element(
           0,
@@ -386,7 +382,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
       }
     }
     PinyinOption::SegmentMulti => {
-      let jieba = JIEBA.get_or_init(|| Jieba::new());
+      let jieba = JIEBA.get_or_init(Jieba::new);
       let input_str = input_str.as_str()?;
       let input_words = jieba.cut(input_str, false);
       let mut non_hans = String::with_capacity(input_str.len());
@@ -395,7 +391,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
         let mut has_pinyin = false;
         for maybe_py in multi_py {
           if let Some(py) = maybe_py {
-            if non_hans.len() > 0 {
+            if !non_hans.is_empty() {
               let mut buf_arr = ctx.env.create_array_with_length(1)?;
               buf_arr.set_element(0, ctx.env.create_string(non_hans.as_str())?)?;
               result_arr.set_element(index, buf_arr)?;
@@ -403,11 +399,11 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
               index += 1;
             }
             let mut multi_py_vec = ctx.env.create_array_with_length(py.count())?;
-            let mut multi_py_index = 0;
-            for p in py {
-              multi_py_vec
-                .set_element(multi_py_index, ctx.env.create_string(get_pinyin(p, style))?)?;
-              multi_py_index += 1;
+            for (multi_py_index, p) in py.into_iter().enumerate() {
+              multi_py_vec.set_element(
+                multi_py_index as u32,
+                ctx.env.create_string(get_pinyin(p, style))?,
+              )?;
             }
             result_arr.set_element(index, multi_py_vec)?;
             index += 1;
@@ -418,7 +414,7 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
           non_hans.push_str(word);
         }
       }
-      if non_hans.len() > 0 {
+      if !non_hans.is_empty() {
         let mut buf_arr = ctx.env.create_array_with_length(1)?;
         buf_arr.set_element(0, ctx.env.create_string_from_std(non_hans)?)?;
         result_arr.set_element(index, buf_arr)?;
@@ -455,7 +451,7 @@ fn async_pinyin(ctx: CallContext) -> Result<JsObject> {
   let task = AsyncPinyinTask {
     input,
     style,
-    option: option.into(),
+    option,
   };
   ctx.env.spawn(task).map(|v| v.promise_object())
 }
