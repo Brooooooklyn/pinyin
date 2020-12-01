@@ -32,16 +32,6 @@ jobs:
         with:
           node-version: 14
 
-      - name: Install llvm
-        if: matrix.os == 'windows-latest'
-        run: choco install -y llvm
-
-      - name: Set llvm path
-        if: matrix.os == 'windows-latest'
-        run: |
-          echo "LIBCLANG_PATH=C:\\Program Files\\LLVM\\bin" >> $GITHUB_ENV
-        shell: bash
-
       - name: Install
         uses: actions-rs/toolchain@v1
         with:
@@ -64,15 +54,13 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cargo/git
-          key: stable-${{ matrix.os }}gnu-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
+          key: stable-${{ matrix.os }}-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache NPM dependencies
         uses: actions/cache@v1
         with:
           path: node_modules
           key: npm-cache-${{ matrix.os }}-node@14-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            npm-cache-
 
       - name: 'Install dependencies'
         run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
@@ -101,7 +89,7 @@ jobs:
           cargo install cargo-cache --no-default-features --features ci-autoclean
           cargo-cache
 
-  build_musl:
+  build-musl:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     name: stable - linux-musl - node@12
     runs-on: ubuntu-latest
@@ -117,23 +105,171 @@ jobs:
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate Cargo.lock
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: stable-node-alpine-@10-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: stable-node-alpine-@10-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: npm-cache-alpine-node@10-${{ hashFiles('yarn.lock') }}
+
       - name: Pull docker image
         run: |
-          docker pull docker.pkg.github.com/napi-rs/napi-rs/rust-nodejs-alpine:lts
-          docker tag docker.pkg.github.com/napi-rs/napi-rs/rust-nodejs-alpine:lts builder
+          docker pull docker.pkg.github.com/napi-rs/napi-rs/nodejs-rust:10-alpine
+          docker tag docker.pkg.github.com/napi-rs/napi-rs/nodejs-rust:10-alpine builder
+
       - name: 'Install dependencies'
         run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
 
       - name: 'Build'
         run: |
-          docker run --rm -v $(pwd)/.cargo:/root/.cargo -v $(pwd):/fast-escape -w /fast-escape builder sh -c "yarn build --musl"
+          docker run --rm -v ~/.cargo/git:/root/.cargo/git -v ~/.cargo/registry:/root/.cargo/registry -v $(pwd):/${{ env.APP_NAME }} -e DEBUG="napi:*" -w /${{ env.APP_NAME }} builder sh -c "yarn build"
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: bindings-linux-musl
           path: ${{ env.APP_NAME }}.*.node
 
-  test_binding:
+  build-linux-aarch64:
+    name: stable - aarch64-unknown-linux-gnu - node@14
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
+      - uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 14
+          check-latest: true
+
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Install aarch64 toolchain
+        run: rustup target add aarch64-unknown-linux-gnu
+
+      - name: Generate Cargo.lock
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: stable-linux-aarch64-gnu-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: stable-linux-aarch64-gnu-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: npm-cache-linux-aarch64-gnu-node@14-${{ hashFiles('yarn.lock') }}
+
+      - name: Install cross compile toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu -y
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
+
+      - name: Cross build aarch64
+        run: yarn build --target aarch64-unknown-linux-gnu
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: bindings-linux-aarch64
+          path: ${{ env.APP_NAME }}.*.node
+
+  build-apple-silicon:
+    name: nightly - aarch64-apple-darwin - node@14
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 14
+          check-latest: true
+
+      - name: Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          override: true
+
+      - name: Install aarch64 toolchain
+        run: rustup target add aarch64-apple-darwin
+
+      - name: Generate Cargo.lock
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: nightly-apple-aarch64-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: nightly-apple-aarch64-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: npm-cache-apple-aarch64-node@14-${{ hashFiles('yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
+
+      - name: Cross build aarch64
+        run: yarn build --target aarch64-apple-darwin
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: bindings-apple-aarch64
+          path: ${{ env.APP_NAME }}.*.node
+
+  test-binding:
     name: Test bindings on ${{ matrix.os }} - node@${{ matrix.node }}
     needs:
       - build
@@ -157,8 +293,6 @@ jobs:
         with:
           path: node_modules
           key: npm-cache-${{ matrix.os }}-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            npm-cache-
 
       - name: 'Install dependencies'
         run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
@@ -176,21 +310,27 @@ jobs:
       - name: Test bindings
         run: yarn test
 
-  test_musl_binding:
+  test-musl-binding:
     name: Test bindings on alpine - node@${{ matrix.node }}
     needs:
-      - build_musl
+      - build-musl
     strategy:
       fail-fast: false
       matrix:
-        node: ['12', '14', '15']
+        node: ['10', '12', '14', '15']
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: npm-cache-${{ matrix.os }}-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+
       - name: 'Install dependencies'
-        run: yarn install --frozen-lockfile --ignore-scripts --registry https://registry.npmjs.org
+        run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
@@ -203,12 +343,66 @@ jobs:
         shell: bash
 
       - name: Run simple tests
-        run: docker run --rm -v $(pwd)/.cargo:/root/.cargo -v $(pwd):/fast-escape -w /fast-escape node:${{ matrix.node }}-alpine sh -c "node ./simple-test.js"
+        run: docker run --rm -v $(pwd)/.cargo:/root/.cargo -v $(pwd):/${{ env.APP_NAME }} -w /${{ env.APP_NAME }} node:${{ matrix.node }}-alpine sh -c "node ./simple-test.js"
+
+  test-linux-aarch64:
+    name: stable - aarch64-unknown-linux-gnu - node@${{ matrix.node }}
+    runs-on: ubuntu-latest
+
+    needs:
+      - build-linux-aarch64
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['10', '12', '14', '15']
+
+    steps:
+      - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+
+      - uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: npm-cache-test-${{ matrix.os }}-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+
+      - name: 'Install dependencies'
+        run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: bindings-linux-aarch64
+          path: .
+
+      - name: List
+        run: ls -a
+
+      - name: Run tests
+        uses: docker://multiarch/ubuntu-core:arm64-focal
+        with:
+          args: >
+            sh -c "
+              apt-get update && \
+              apt-get install -y ca-certificates gnupg2 curl && \
+              curl -sL https://deb.nodesource.com/setup_${{ matrix.node }}.x | bash - && \
+              apt-get install -y nodejs && \
+              node ./simple-test.js
+            "
 
   dependabot:
     needs:
-      - test_binding
-      - test_musl_binding
+      - build-apple-silicon
+      - test-binding
+      - test-musl-binding
+      - test-linux-aarch64
     runs-on: ubuntu-latest
     steps:
       - name: auto-merge
@@ -221,8 +415,10 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     needs:
-      - test_binding
-      - test_musl_binding
+      - test-binding
+      - test-musl-binding
+      - build-apple-silicon
+      - test-linux-aarch64
 
     steps:
       - uses: actions/checkout@v2
@@ -237,8 +433,7 @@ jobs:
         with:
           path: node_modules
           key: npm-cache-ubuntu-latest-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            npm-cache-
+
       - name: 'Install dependencies'
         run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
 
