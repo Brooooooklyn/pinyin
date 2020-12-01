@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Fastest Chinese words to pinyin library",
   "main": "index.js",
   "repository": "git@github.com:Brooooooklyn/pinyin.git",
@@ -19,19 +19,12 @@
     "汉字",
     "中文"
   ],
-  "files": [
-    "index.d.ts",
-    "index.js"
-  ],
+  "files": ["index.d.ts", "index.js"],
   "napi": {
     "name": "pinyin",
     "triples": {
       "defaults": true,
-      "additional": [
-        "x86_64-unknown-linux-musl",
-        "aarch64-unknown-linux-gnu",
-        "aarch64-apple-darwin"
-      ]
+      "additional": ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-gnu", "aarch64-apple-darwin"]
     }
   },
   "engines": {
@@ -83,27 +76,14 @@
     "@node-rs/helper": "^1.0.0-alpha.1"
   },
   "lint-staged": {
-    "*.@(js|ts|tsx)": [
-      "prettier --write",
-      "eslint -c .eslintrc.yml --fix"
-    ],
-    "*.@(yml|yaml)": [
-      "prettier --parser yaml --write"
-    ],
-    "*.md": [
-      "prettier --parser markdown --write"
-    ],
-    "*.json": [
-      "prettier --parser json --write"
-    ]
+    "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
+    "*.@(yml|yaml)": ["prettier --parser yaml --write"],
+    "*.md": ["prettier --parser markdown --write"],
+    "*.json": ["prettier --parser json --write"]
   },
   "ava": {
-    "require": [
-      "ts-node/register/transpile-only"
-    ],
-    "extensions": [
-      "ts"
-    ],
+    "require": ["ts-node/register/transpile-only"],
+    "extensions": ["ts"],
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
     }
