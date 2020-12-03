@@ -327,7 +327,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: node_modules
-          key: npm-cache-${{ matrix.os }}-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+          key: npm-cache-alpine-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
 
       - name: 'Install dependencies'
         run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
@@ -371,7 +371,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: node_modules
-          key: npm-cache-test-${{ matrix.os }}-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
+          key: npm-cache-test-linux-aarch64-gnu-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
 
       - name: 'Install dependencies'
         run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
