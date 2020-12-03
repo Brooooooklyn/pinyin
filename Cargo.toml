@@ -9,8 +9,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 jieba-rs = "0.6"
-napi = {git = "https://github.com/napi-rs/napi-rs"}
-napi-derive = {git = "https://github.com/napi-rs/napi-rs"}
+napi = "1.0.0-alpha.0"
+napi-derive = "1.0.0-alpha.0"
 once_cell = "1.5"
 pinyin = "0.8"
 rayon = "1.5"
@@ -22,9 +22,9 @@ jemallocator = {version = "0.3", features = ["disable_initial_exec_tls"]}
 mimalloc = {version = "0.1"}
 
 [build-dependencies]
-napi-build = {git = "https://github.com/napi-rs/napi-rs"}
+napi-build = "1.0.0-alpha.0"
 
 [profile.release]
-codegen-units = 1
+codegen-units = 4
 lto = true
 opt-level = 3
