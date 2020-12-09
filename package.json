@@ -64,7 +64,7 @@
     "eslint-plugin-prettier": "^3.2.0",
     "eslint-plugin-sonarjs": "^0.5.0",
     "husky": "^4.3.5",
-    "lint-staged": "^10.5.2",
+    "lint-staged": "^10.5.3",
     "nodejieba": "^2.5.1",
     "npm-run-all": "^4.1.5",
     "pinyin": "^2.9.1",
