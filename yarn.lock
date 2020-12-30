@@ -101,10 +101,10 @@
   resolved "https://registry.yarnpkg.com/@napi-rs/triples/-/triples-1.0.2.tgz#2ce4c6a78568358772008f564ee5009093d20a19"
   integrity sha512-EL3SiX43m9poFSnhDx4d4fn9SSaqyO2rHsCNhETi9bWPmjXK3uPJ0QpPFtx39FEdHcz1vJmsiW41kqc0AgvtzQ==
 
-"@node-rs/helper@^1.0.0-alpha.3":
-  version "1.0.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@node-rs/helper/-/helper-1.0.0-alpha.3.tgz#7aac50cfba509da9e113a282f4bce1e850dd90fb"
-  integrity sha512-t5PYZSVIclx0+RwRFU3OUMMSG3e0SkPrZi7dfthS+8FN83hzx9xYAi3MzHMUNMvw933K6l09pT5BQhIO7/fdCw==
+"@node-rs/helper@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@node-rs/helper/-/helper-1.0.0.tgz#9fcd3f38b84af599e42c0aec272b308da55583e9"
+  integrity sha512-B4CSMHCuYPqai3LMsRTXyvBEP24YRnCZUUsDPYkgFD6tFA+q43rLkaEzsnTJTKJq5ZnJ4n5YJpJwEz7Xn8+0vg==
   dependencies:
     "@napi-rs/triples" "^1.0.2"
     tslib "^2.0.3"
