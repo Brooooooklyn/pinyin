@@ -24,7 +24,13 @@
     "name": "pinyin",
     "triples": {
       "defaults": true,
-      "additional": ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-gnu", "aarch64-apple-darwin"]
+      "additional": [
+        "armv7-unknown-linux-gnueabihf",
+        "x86_64-unknown-linux-musl",
+        "aarch64-unknown-linux-gnu",
+        "aarch64-apple-darwin",
+        "aarch64-linux-android"
+      ]
     }
   },
   "engines": {
@@ -54,12 +60,12 @@
     "@napi-rs/cli": "^1.0.0",
     "@types/pinyin": "^2.8.2",
     "@typescript-eslint/eslint-plugin": "^4.11.1",
-    "@typescript-eslint/parser": "^4.11.0",
+    "@typescript-eslint/parser": "^4.11.1",
     "ava": "^3.14.0",
     "benny": "^3.6.15",
     "chalk": "^4.1.0",
     "eslint": "^7.16.0",
-    "eslint-config-prettier": "^7.0.0",
+    "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.3.0",
     "eslint-plugin-sonarjs": "^0.5.0",
