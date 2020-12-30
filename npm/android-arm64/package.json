@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin-android-arm64",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "os": ["android"],
   "cpu": ["arm64"],
   "main": "pinyin.android-arm64.node",
