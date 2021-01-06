@@ -19,7 +19,7 @@
     "汉字",
     "中文"
   ],
-  "files": ["index.d.ts", "index.js"],
+  "files": ["index.d.ts", "index.js", "src/**", "build.rs", "Cargo.toml", "postinstall.js"],
   "napi": {
     "name": "pinyin",
     "triples": {
@@ -53,6 +53,7 @@
     "format:yaml": "prettier --parser yaml --write './**/*.{yml,yaml}'",
     "lint": "eslint . -c ./.eslintrc.yml './**/*.{ts,tsx,js}'",
     "prepublishOnly": "napi prepublish -t npm",
+    "postinstall": "node postinstall.js",
     "test": "ava",
     "version": "napi version"
   },
