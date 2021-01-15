@@ -58,7 +58,7 @@
     "version": "napi version"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^1.0.1",
+    "@napi-rs/cli": "^1.0.2",
     "@types/pinyin": "^2.8.2",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
     "@typescript-eslint/parser": "^4.13.0",
