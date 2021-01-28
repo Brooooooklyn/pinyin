@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1609945361371,
+  "lastUpdate": 1611854405110,
   "repoUrl": "https://github.com/Brooooooklyn/pinyin",
   "entries": {
     "Benchmark": [
@@ -878,6 +878,86 @@ window.BENCHMARK_DATA = {
             "name": "Long input with segment#node-pinyin",
             "value": 2,
             "range": "±4.73%",
+            "unit": "ops/sec",
+            "extra": "10 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lynweklm@gmail.com",
+            "name": "LongYinan",
+            "username": "Brooooooklyn"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "808293bd3f46a07ac77ac9485711937ed7fc804f",
+          "message": "Merge pull request #74 from Brooooooklyn/win-i686-codegen-units\n\nfeat: support windows i686",
+          "timestamp": "2021-01-29T01:16:09+08:00",
+          "tree_id": "88a48188c39cd94c2459ad2768e1d682187475ab",
+          "url": "https://github.com/Brooooooklyn/pinyin/commit/808293bd3f46a07ac77ac9485711937ed7fc804f"
+        },
+        "date": 1611854403220,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "Short input without segment#@napi-rs/pinyin",
+            "value": 638655,
+            "range": "±0.76%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "Short input without segment#node-pinyin",
+            "value": 330009,
+            "range": "±0.79%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "Long input without segment#@napi-rs/pinyin",
+            "value": 48,
+            "range": "±1.72%",
+            "unit": "ops/sec",
+            "extra": "61 samples"
+          },
+          {
+            "name": "Long input without segment#node-pinyin",
+            "value": 2,
+            "range": "±1.13%",
+            "unit": "ops/sec",
+            "extra": "8 samples"
+          },
+          {
+            "name": "Short input with segment#@napi-rs/pinyin",
+            "value": 385080,
+            "range": "±1.19%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "Short input with segment#node-pinyin",
+            "value": 203806,
+            "range": "±0.54%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "Long input with segment#@napi-rs/pinyin",
+            "value": 110,
+            "range": "±0.56%",
+            "unit": "ops/sec",
+            "extra": "79 samples"
+          },
+          {
+            "name": "Long input with segment#node-pinyin",
+            "value": 2,
+            "range": "±3.37%",
             "unit": "ops/sec",
             "extra": "10 samples"
           }
