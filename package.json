@@ -61,7 +61,7 @@
   "devDependencies": {
     "@napi-rs/cli": "^1.0.3",
     "@types/pinyin": "^2.8.2",
-    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.0",
     "ava": "^3.15.0",
     "benny": "^3.6.15",
