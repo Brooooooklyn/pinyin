@@ -110,5 +110,9 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/Brooooooklyn"
   }
 }
