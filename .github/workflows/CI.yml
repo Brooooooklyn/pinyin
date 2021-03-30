@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-18.04, macos-latest, windows-latest]
 
     name: stable - ${{ matrix.os }} - node@14
     runs-on: ${{ matrix.os }}
@@ -70,11 +70,6 @@ jobs:
         run: cargo test
 
       - name: 'Build'
-        if: matrix.os != 'macos-latest'
-        run: yarn build
-
-      - name: 'Build'
-        if: matrix.os == 'macos-latest'
         run: yarn build
         env:
           MACOSX_DEPLOYMENT_TARGET: '10.13'
@@ -587,23 +582,6 @@ jobs:
               node ./simple-test.js
             "
 
-  dependabot:
-    needs:
-      - build-apple-silicon
-      - build-android-aarch64
-      - build-linux-arm7
-      - build-windows-i686
-      - test-binding
-      - test-musl-binding
-      - test-linux-aarch64
-    runs-on: ubuntu-latest
-    steps:
-      - name: auto-merge
-        uses: ridedott/dependabot-auto-merge-action@master
-        with:
-          GITHUB_LOGIN: dependabot[bot]
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   publish:
     name: Publish
     runs-on: ubuntu-latest
@@ -658,3 +636,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  dependabot:
+    needs:
+      - publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: auto-merge
+        uses: ridedott/dependabot-auto-merge-action@master
+        with:
+          GITHUB_LOGIN: dependabot[bot]
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
