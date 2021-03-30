@@ -484,8 +484,16 @@ jobs:
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
+        if: matrix.os != 'ubuntu-latest'
         with:
           name: bindings-${{ matrix.os }}
+          path: .
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          name: bindings-ubuntu-18.04
           path: .
 
       - name: List packages
