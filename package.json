@@ -60,7 +60,7 @@
     "postpublish": "pinst --enable"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^1.0.3",
+    "@napi-rs/cli": "^1.0.4",
     "@types/pinyin": "^2.8.2",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.22.0",
