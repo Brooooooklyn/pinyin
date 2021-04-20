@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1618814000316,
+  "lastUpdate": 1618900758413,
   "repoUrl": "https://github.com/Brooooooklyn/pinyin",
   "entries": {
     "Benchmark": [
@@ -1518,6 +1518,86 @@ window.BENCHMARK_DATA = {
             "name": "Long input with segment#node-pinyin",
             "value": 2,
             "range": "±1.49%",
+            "unit": "ops/sec",
+            "extra": "9 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lynweklm@gmail.com",
+            "name": "LongYinan",
+            "username": "Brooooooklyn"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6f2ea71cd615a8ae7805e2cba0acc4567b3d3eec",
+          "message": "Merge pull request #125 from Brooooooklyn/dependabot/npm_and_yarn/napi-rs/cli-1.0.4\n\nchore(deps-dev): bump @napi-rs/cli from 1.0.3 to 1.0.4",
+          "timestamp": "2021-04-20T14:35:08+08:00",
+          "tree_id": "23da24d82a2a8708b0e154597551b27ebd5c5274",
+          "url": "https://github.com/Brooooooklyn/pinyin/commit/6f2ea71cd615a8ae7805e2cba0acc4567b3d3eec"
+        },
+        "date": 1618900757791,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "Short input without segment#@napi-rs/pinyin",
+            "value": 602673,
+            "range": "±0.52%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
+          },
+          {
+            "name": "Short input without segment#node-pinyin",
+            "value": 302592,
+            "range": "±0.33%",
+            "unit": "ops/sec",
+            "extra": "94 samples"
+          },
+          {
+            "name": "Long input without segment#@napi-rs/pinyin",
+            "value": 47,
+            "range": "±1.18%",
+            "unit": "ops/sec",
+            "extra": "60 samples"
+          },
+          {
+            "name": "Long input without segment#node-pinyin",
+            "value": 1,
+            "range": "±1.6%",
+            "unit": "ops/sec",
+            "extra": "8 samples"
+          },
+          {
+            "name": "Short input with segment#@napi-rs/pinyin",
+            "value": 364643,
+            "range": "±0.42%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "Short input with segment#node-pinyin",
+            "value": 185124,
+            "range": "±0.87%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "Long input with segment#@napi-rs/pinyin",
+            "value": 107,
+            "range": "±0.6%",
+            "unit": "ops/sec",
+            "extra": "78 samples"
+          },
+          {
+            "name": "Long input with segment#node-pinyin",
+            "value": 2,
+            "range": "±1.05%",
             "unit": "ops/sec",
             "extra": "9 samples"
           }
