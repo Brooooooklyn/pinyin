@@ -25,17 +25,17 @@ yarn add @napi-rs/pinyin
 
 ## 系统/NodeJS 版本
 
-### 系统
-
-| Linux (x64/aarch64) | macOS (x64/aarch64) | Windows x64 |
-| ------------------- | ------------------- | ----------- |
-| ✓                   | ✓                   | ✓           |
-
-### NodeJS
-
-| Node10 | Node 12 | Node14 | Node15 |
-| ------ | ------- | ------ | ------ |
-| ✓      | ✓       | ✓      | ✓      |
+|                       | node10 | node12 | node14 | node16 |
+| --------------------- | ------ | ------ | ------ | ------ |
+| Windows x64           | ✓      | ✓      | ✓      | ✓      |
+| Windows x86           | ✓      | ✓      | ✓      | ✓      |
+| macOS x64             | ✓      | ✓      | ✓      | ✓      |
+| macOS aarch64         | ✓      | ✓      | ✓      | ✓      |
+| Linux x64 gnu         | ✓      | ✓      | ✓      | ✓      |
+| Linux x64 musl        | ✓      | ✓      | ✓      | ✓      |
+| Linux aarch64 gnu     | ✓      | ✓      | ✓      | ✓      |
+| Linux arm gnueabihf   | ✓      | ✓      | ✓      | ✓      |
+| Linux aarch64 android | ✓      | ✓      | ✓      | ✓      |
 
 ## 与 [pinyin](https://github.com/hotoo/pinyin) 性能对比
 

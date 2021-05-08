@@ -167,7 +167,7 @@ jobs:
         run: |
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD $DOCKER_REGISTRY_URL
         env:
-          DOCKER_REGISTRY_URL: docker.pkg.github.com
+          DOCKER_REGISTRY_URL: ghcr.io
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
@@ -196,8 +196,8 @@ jobs:
 
       - name: Pull docker image
         run: |
-          docker pull docker.pkg.github.com/napi-rs/napi-rs/nodejs-rust:10-alpine
-          docker tag docker.pkg.github.com/napi-rs/napi-rs/nodejs-rust:10-alpine builder
+          docker pull ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine
+          docker tag ghcr.io/napi-rs/napi-rs/nodejs-rust:lts-alpine builder
 
       - name: 'Install dependencies'
         run: yarn install --frozen-lockfile --registry https://registry.npmjs.org --network-timeout 300000
@@ -461,7 +461,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node: ['10', '12', '14', '15']
+        node: ['12', '14', '16']
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -510,7 +510,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['10', '12', '14', '15']
+        node: ['12', '14', '16']
     runs-on: ubuntu-latest
 
     steps:
@@ -547,7 +547,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['10', '12', '14', '15']
+        node: ['12', '14', '16']
 
     steps:
       - run: docker run --rm --privileged multiarch/qemu-user-static:register --reset

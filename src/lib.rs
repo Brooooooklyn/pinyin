@@ -155,15 +155,13 @@ impl Task for AsyncPinyinTask {
         let mut has_pinyin = false;
         let mut non_hans = String::with_capacity(input_len);
         for word in input_words {
-          for maybe_py in word.to_pinyin() {
-            if let Some(py) = maybe_py {
-              if !non_hans.is_empty() {
-                output_py.push(non_hans.clone());
-                non_hans.clear();
-              }
-              output_py.push(get_pinyin(py, self.style).to_owned());
-              has_pinyin = true;
+          for py in word.to_pinyin().flatten() {
+            if !non_hans.is_empty() {
+              output_py.push(non_hans.clone());
+              non_hans.clear();
             }
+            output_py.push(get_pinyin(py, self.style).to_owned());
+            has_pinyin = true;
           }
           if !has_pinyin {
             non_hans.push_str(word);
@@ -208,19 +206,17 @@ impl Task for AsyncPinyinTask {
         for word in input_words {
           let multi_py = word.to_pinyin_multi();
           let mut has_pinyin = false;
-          for maybe_py in multi_py {
-            if let Some(py) = maybe_py {
-              if !non_hans.is_empty() {
-                output_multi_py.push(vec![non_hans.clone()]);
-                non_hans.clear();
-              }
-              let mut multi_py_vec = Vec::with_capacity(py.count());
-              for p in py {
-                multi_py_vec.push(get_pinyin(p, self.style).to_owned());
-              }
-              output_multi_py.push(multi_py_vec);
-              has_pinyin = true;
+          for py in multi_py.flatten() {
+            if !non_hans.is_empty() {
+              output_multi_py.push(vec![non_hans.clone()]);
+              non_hans.clear();
             }
+            let mut multi_py_vec = Vec::with_capacity(py.count());
+            for p in py {
+              multi_py_vec.push(get_pinyin(p, self.style).to_owned());
+            }
+            output_multi_py.push(multi_py_vec);
+            has_pinyin = true;
           }
           if !has_pinyin {
             non_hans.push_str(word);
@@ -319,17 +315,15 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
       let mut non_hans = String::with_capacity(input_str.len());
       for word in input_words {
         let mut has_pinyin = false;
-        for maybe_py in word.to_pinyin() {
-          if let Some(py) = maybe_py {
-            if !non_hans.is_empty() {
-              result_arr.set_element(index, ctx.env.create_string(non_hans.as_str())?)?;
-              non_hans.clear();
-              index += 1;
-            }
-            result_arr.set_element(index, ctx.env.create_string(get_pinyin(py, style))?)?;
-            has_pinyin = true;
+        for py in word.to_pinyin().flatten() {
+          if !non_hans.is_empty() {
+            result_arr.set_element(index, ctx.env.create_string(non_hans.as_str())?)?;
+            non_hans.clear();
             index += 1;
           }
+          result_arr.set_element(index, ctx.env.create_string(get_pinyin(py, style))?)?;
+          has_pinyin = true;
+          index += 1;
         }
         if !has_pinyin {
           non_hans.push_str(word);
@@ -389,26 +383,24 @@ fn to_pinyin(ctx: CallContext) -> Result<JsObject> {
       for word in input_words {
         let multi_py = word.to_pinyin_multi();
         let mut has_pinyin = false;
-        for maybe_py in multi_py {
-          if let Some(py) = maybe_py {
-            if !non_hans.is_empty() {
-              let mut buf_arr = ctx.env.create_array_with_length(1)?;
-              buf_arr.set_element(0, ctx.env.create_string(non_hans.as_str())?)?;
-              result_arr.set_element(index, buf_arr)?;
-              non_hans.clear();
-              index += 1;
-            }
-            let mut multi_py_vec = ctx.env.create_array_with_length(py.count())?;
-            for (multi_py_index, p) in py.into_iter().enumerate() {
-              multi_py_vec.set_element(
-                multi_py_index as u32,
-                ctx.env.create_string(get_pinyin(p, style))?,
-              )?;
-            }
-            result_arr.set_element(index, multi_py_vec)?;
+        for py in multi_py.flatten() {
+          if !non_hans.is_empty() {
+            let mut buf_arr = ctx.env.create_array_with_length(1)?;
+            buf_arr.set_element(0, ctx.env.create_string(non_hans.as_str())?)?;
+            result_arr.set_element(index, buf_arr)?;
+            non_hans.clear();
             index += 1;
-            has_pinyin = true;
           }
+          let mut multi_py_vec = ctx.env.create_array_with_length(py.count())?;
+          for (multi_py_index, p) in py.into_iter().enumerate() {
+            multi_py_vec.set_element(
+              multi_py_index as u32,
+              ctx.env.create_string(get_pinyin(p, style))?,
+            )?;
+          }
+          result_arr.set_element(index, multi_py_vec)?;
+          index += 1;
+          has_pinyin = true;
         }
         if !has_pinyin {
           non_hans.push_str(word);
@@ -449,8 +441,8 @@ fn async_pinyin(ctx: CallContext) -> Result<JsObject> {
   let option = to_option(need_segment, should_to_multi);
 
   let task = AsyncPinyinTask {
-    input,
     style,
+    input,
     option,
   };
   ctx.env.spawn(task).map(|v| v.promise_object())
