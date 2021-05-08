@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1620464422234,
+  "lastUpdate": 1620465321258,
   "repoUrl": "https://github.com/Brooooooklyn/pinyin",
   "entries": {
     "Benchmark": [
@@ -1678,6 +1678,86 @@ window.BENCHMARK_DATA = {
             "name": "Long input with segment#node-pinyin",
             "value": 2,
             "range": "±2.46%",
+            "unit": "ops/sec",
+            "extra": "9 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "lynweklm@gmail.com",
+            "name": "LongYinan",
+            "username": "Brooooooklyn"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f50d6b173de5d6cd98d48fcedbd998a80ff538bd",
+          "message": "Merge pull request #128 from Brooooooklyn/dependabot/npm_and_yarn/eslint-config-prettier-8.3.0\n\nchore(deps-dev): bump eslint-config-prettier from 8.1.0 to 8.3.0",
+          "timestamp": "2021-05-08T17:11:16+08:00",
+          "tree_id": "f5f976b6c55b7bc5cd92d7927ac1b26e487e27a9",
+          "url": "https://github.com/Brooooooklyn/pinyin/commit/f50d6b173de5d6cd98d48fcedbd998a80ff538bd"
+        },
+        "date": 1620465320639,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "Short input without segment#@napi-rs/pinyin",
+            "value": 642474,
+            "range": "±0.68%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "Short input without segment#node-pinyin",
+            "value": 319111,
+            "range": "±0.57%",
+            "unit": "ops/sec",
+            "extra": "93 samples"
+          },
+          {
+            "name": "Long input without segment#@napi-rs/pinyin",
+            "value": 49,
+            "range": "±0.99%",
+            "unit": "ops/sec",
+            "extra": "63 samples"
+          },
+          {
+            "name": "Long input without segment#node-pinyin",
+            "value": 1,
+            "range": "±2.47%",
+            "unit": "ops/sec",
+            "extra": "8 samples"
+          },
+          {
+            "name": "Short input with segment#@napi-rs/pinyin",
+            "value": 373181,
+            "range": "±0.42%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "Short input with segment#node-pinyin",
+            "value": 188121,
+            "range": "±0.42%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "Long input with segment#@napi-rs/pinyin",
+            "value": 104,
+            "range": "±0.48%",
+            "unit": "ops/sec",
+            "extra": "75 samples"
+          },
+          {
+            "name": "Long input with segment#node-pinyin",
+            "value": 2,
+            "range": "±1.92%",
             "unit": "ops/sec",
             "extra": "9 samples"
           }
