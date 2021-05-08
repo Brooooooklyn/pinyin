@@ -10,7 +10,6 @@ on:
       # List all required workflow names here.
       - 'CI'
       - 'Lint'
-      - 'Benchmark'
 
 jobs:
   merge:
