@@ -30,7 +30,10 @@
         "i686-pc-windows-msvc",
         "aarch64-unknown-linux-gnu",
         "aarch64-apple-darwin",
-        "aarch64-linux-android"
+        "aarch64-linux-android",
+        "x86_64-unknown-freebsd",
+        "aarch64-pc-windows-msvc",
+        "aarch64-unknown-linux-musl"
       ]
     }
   },
@@ -47,12 +50,12 @@
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
     "format": "run-p format:md format:json format:yaml format:source format:rs",
-    "format:md": "prettier --parser markdown --write './**/*.md'",
-    "format:json": "prettier --parser json --write './**/*.json'",
+    "format:md": "prettier --parser markdown --write \"./**/*.md\"",
+    "format:json": "prettier --parser json --write \"./**/*.json\"",
     "format:rs": "cargo fmt",
-    "format:source": "prettier --config ./package.json --write './**/*.{js,ts}'",
-    "format:yaml": "prettier --parser yaml --write './**/*.{yml,yaml}'",
-    "lint": "eslint . -c ./.eslintrc.yml './**/*.{ts,tsx,js}'",
+    "format:source": "prettier --config ./package.json --write \"./**/*.{js,ts}\"",
+    "format:yaml": "prettier --parser yaml --write \"./**/*.{yml,yaml}\"",
+    "lint": "eslint . -c ./.eslintrc.yml",
     "prepublishOnly": "napi prepublish -t npm",
     "postinstall": "node postinstall.js",
     "test": "ava",

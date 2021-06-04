@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "config:base",
-    ":preserveSemverRanges"
-  ],
+  "extends": ["config:base", ":preserveSemverRanges"],
   "packageRules": [
     {
       "automerge": true,
