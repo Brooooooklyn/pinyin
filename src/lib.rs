@@ -11,11 +11,17 @@ use once_cell::sync::OnceCell;
 use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
 use rayon::prelude::*;
 
-#[cfg(all(unix, not(target_env = "musl"), not(target_arch = "aarch64")))]
+#[cfg(all(
+  unix,
+  not(target_env = "musl"),
+  not(target_arch = "aarch64"),
+  not(target_arch = "arm"),
+  not(debug_assertions)
+))]
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
-#[cfg(windows)]
+#[cfg(all(windows, target_arch = "x86_64", not(debug_assertions)))]
 #[global_allocator]
 static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
