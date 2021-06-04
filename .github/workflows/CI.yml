@@ -46,19 +46,19 @@ jobs:
           command: generate-lockfile
 
       - name: Cache cargo registry
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: stable-${{ matrix.os }}-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo index
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/git
           key: stable-${{ matrix.os }}-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-${{ matrix.os }}-node@14-${{ hashFiles('yarn.lock') }}
@@ -108,7 +108,7 @@ jobs:
         run: node -e "console.log(process.arch)"
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-windows-i686-node@lts-${{ hashFiles('yarn.lock') }}
@@ -132,13 +132,13 @@ jobs:
           command: generate-lockfile
 
       - name: Cache cargo registry
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: stable-windows-i686-node@lts-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo index
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/git
           key: stable-windows-i686-node@lts-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
@@ -177,19 +177,19 @@ jobs:
           command: generate-lockfile
 
       - name: Cache cargo registry
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: stable-node-alpine-@10-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo index
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/git
           key: stable-node-alpine-@10-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-alpine-node@10-${{ hashFiles('yarn.lock') }}
@@ -243,19 +243,19 @@ jobs:
           command: generate-lockfile
 
       - name: Cache cargo registry
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: stable-linux-aarch64-gnu-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo index
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/git
           key: stable-linux-aarch64-gnu-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-linux-aarch64-gnu-node@14-${{ hashFiles('yarn.lock') }}
@@ -306,19 +306,19 @@ jobs:
           command: generate-lockfile
 
       - name: Cache cargo registry
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: nightly-apple-aarch64-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo index
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/git
           key: nightly-apple-aarch64-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-apple-aarch64-node@14-${{ hashFiles('yarn.lock') }}
@@ -363,19 +363,19 @@ jobs:
           command: generate-lockfile
 
       - name: Cache cargo registry
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: stable-linux-arm7-gnu-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo index
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/git
           key: stable-linux-arm7-gnu-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-linux-arm7-gnu-node@14-${{ hashFiles('yarn.lock') }}
@@ -421,19 +421,19 @@ jobs:
           command: generate-lockfile
 
       - name: Cache cargo registry
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/registry
           key: nightly-apple-aarch64-node@14-cargo-registry-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo index
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ~/.cargo/git
           key: nightly-apple-aarch64-node@14-cargo-index-trimmed-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-apple-aarch64-node@14-${{ hashFiles('yarn.lock') }}
@@ -474,7 +474,7 @@ jobs:
           check-latest: true
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-${{ matrix.os }}-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -517,7 +517,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-alpine-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -561,7 +561,7 @@ jobs:
           check-latest: true
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-test-linux-aarch64-gnu-node@${{ matrix.node }}-${{ hashFiles('yarn.lock') }}
@@ -612,7 +612,7 @@ jobs:
           check-latest: true
 
       - name: Cache NPM dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: npm-cache-ubuntu-latest-${{ hashFiles('yarn.lock') }}
