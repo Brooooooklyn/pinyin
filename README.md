@@ -6,13 +6,13 @@
   <a href="https://github.com/Brooooooklyn/pinyin/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@napi-rs/pinyin.svg?sanitize=true" alt="License" /></a>
 </p>
 
-> [rust-pinyin](https://github.com/mozillazg/rust-pinyin) NodeJS 版本，不支持 web.
+> [rust-pinyin](https://github.com/mozillazg/rust-pinyin) Node.js 版本，不支持 web.
 
 ## 功能
 
 - 超高性能
 - 无 `postinstall` 与 `node-gyp`，纯净安装无烦恼
-- 跨 `NodeJS` 版本支持，升级 Node 版本无需 `rebuild/reinstall`
+- 跨 `Node.js` 版本支持，升级 Node 版本无需 `rebuild/reinstall`
 - `linux alpine` 支持
 - **分词**再转拼音
 - 原生异步支持，可运行在 `libuv` 线程池中，不阻塞主线程
