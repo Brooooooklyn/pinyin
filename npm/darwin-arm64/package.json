@@ -1,10 +1,16 @@
 {
   "name": "@napi-rs/pinyin-darwin-arm64",
-  "version": "1.5.1",
-  "os": ["darwin"],
-  "cpu": ["arm64"],
+  "version": "1.6.0",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
   "main": "pinyin.darwin-arm64.node",
-  "files": ["pinyin.darwin-arm64.node"],
+  "files": [
+    "pinyin.darwin-arm64.node"
+  ],
   "description": "Fastest Chinese words to pinyin library",
   "keywords": [
     "napi-rs",

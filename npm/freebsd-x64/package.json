@@ -1,10 +1,16 @@
 {
   "name": "@napi-rs/pinyin-freebsd-x64",
-  "version": "1.5.1",
-  "os": ["freebsd"],
-  "cpu": ["x64"],
+  "version": "1.6.0",
+  "os": [
+    "freebsd"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "main": "pinyin.freebsd-x64.node",
-  "files": ["pinyin.freebsd-x64.node"],
+  "files": [
+    "pinyin.freebsd-x64.node"
+  ],
   "description": "Fastest Chinese words to pinyin library",
   "keywords": [
     "napi-rs",
