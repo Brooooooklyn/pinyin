@@ -62,28 +62,28 @@
   "devDependencies": {
     "@napi-rs/cli": "^1.0.4",
     "@types/pinyin": "^2.8.2",
-    "@typescript-eslint/eslint-plugin": "^4.20.0",
-    "@typescript-eslint/parser": "^4.22.0",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
     "ava": "^3.15.0",
     "benny": "^3.6.15",
-    "chalk": "^4.1.0",
-    "eslint": "^7.26.0",
+    "chalk": "^4.1.1",
+    "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-sonarjs": "^0.7.0",
     "husky": "6",
     "lint-staged": "^11.0.0",
-    "nodejieba": "^2.5.1",
+    "nodejieba": "^2.5.2",
     "npm-run-all": "^4.1.5",
     "pinst": "^2.1.6",
-    "pinyin": "^2.9.1",
-    "prettier": "^2.2.1",
-    "ts-node": "^9.1.1",
+    "pinyin": "^2.10.2",
+    "prettier": "^2.3.0",
+    "ts-node": "^10.0.0",
     "typescript": "^4.3.2"
   },
   "dependencies": {
-    "@node-rs/helper": "^1.1.0"
+    "@node-rs/helper": "^1.1.1"
   },
   "lint-staged": {
     "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
