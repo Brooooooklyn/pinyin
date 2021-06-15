@@ -1,16 +1,10 @@
 {
   "name": "@napi-rs/pinyin-win32-ia32-msvc",
   "version": "1.6.0",
-  "os": [
-    "win32"
-  ],
-  "cpu": [
-    "ia32"
-  ],
+  "os": ["win32"],
+  "cpu": ["ia32"],
   "main": "pinyin.win32-ia32-msvc.node",
-  "files": [
-    "pinyin.win32-ia32-msvc.node"
-  ],
+  "files": ["pinyin.win32-ia32-msvc.node"],
   "description": "Fastest Chinese words to pinyin library",
   "keywords": [
     "napi-rs",

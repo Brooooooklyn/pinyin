@@ -6,7 +6,9 @@
   <a href="https://github.com/Brooooooklyn/pinyin/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@napi-rs/pinyin.svg?sanitize=true" alt="License" /></a>
 </p>
 
-> [rust-pinyin](https://github.com/mozillazg/rust-pinyin) Node.js 版本，不支持 web.
+> 🚀 Help me to become a full-time open-source developer by [sponsoring me on Github](https://github.com/sponsors/Brooooooklyn)
+
+[rust-pinyin](https://github.com/mozillazg/rust-pinyin) Node.js 版本，不支持 web.
 
 ## 功能
 
