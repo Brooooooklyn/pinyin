@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin-win32-x64-msvc",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "os": ["win32"],
   "cpu": ["x64"],
   "main": "pinyin.win32-x64-msvc.node",

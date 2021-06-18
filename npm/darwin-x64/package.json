@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin-darwin-x64",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "os": ["darwin"],
   "cpu": ["x64"],
   "main": "pinyin.darwin-x64.node",
