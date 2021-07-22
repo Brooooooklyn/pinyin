@@ -1,3 +1,9 @@
+## [1.6.2](https://github.com/Brooooooklyn/pinyin/compare/v1.6.1...v1.6.2) (2021-07-22)
+
+### Bug Fixes
+
+- fix linux aarch64 musl build ([a2792f1](https://github.com/Brooooooklyn/pinyin/commit/a2792f1ccccef941a35834d012046fcf7328ce63))
+
 ## [1.6.1](https://github.com/Brooooooklyn/pinyin/compare/v1.6.0...v1.6.1) (2021-06-18)
 
 ### Bug Fixes
