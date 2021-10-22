@@ -99,6 +99,7 @@
   "ava": {
     "require": ["ts-node/register/transpile-only"],
     "extensions": ["ts"],
+    "timeout": "1m",
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
     }
