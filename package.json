@@ -71,7 +71,7 @@
     "@typescript-eslint/parser": "^5.8.0",
     "ava": "^3.15.0",
     "benny": "^3.7.1",
-    "chalk": "4",
+    "chalk": "5",
     "conventional-changelog-cli": "^2.1.1",
     "eslint": "^8.5.0",
     "eslint-config-prettier": "^8.3.0",
