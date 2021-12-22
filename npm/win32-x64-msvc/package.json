@@ -1,10 +1,16 @@
 {
   "name": "@napi-rs/pinyin-win32-x64-msvc",
-  "version": "1.6.2",
-  "os": ["win32"],
-  "cpu": ["x64"],
+  "version": "1.7.0",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "main": "pinyin.win32-x64-msvc.node",
-  "files": ["pinyin.win32-x64-msvc.node"],
+  "files": [
+    "pinyin.win32-x64-msvc.node"
+  ],
   "description": "Fastest Chinese words to pinyin library",
   "keywords": [
     "napi-rs",
