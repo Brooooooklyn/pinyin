@@ -27,10 +27,19 @@ export interface PinyinConvertOptions {
   heteronym?: boolean | undefined | null
   segment?: boolean | undefined | null
 }
-export function pinyin(inputStr: string, opt?: PinyinConvertOptions | undefined | null): string[] | string[][]
+interface HeteronymPinyinConvertOptions extends PinyinConvertOptions {
+  heteronym: true
+}
+export function pinyin(inputStr: string, opt: HeteronymPinyinConvertOptions): string[][]
+export function pinyin(inputStr: string, opt?: PinyinConvertOptions | undefined | null): string[]
+export function asyncPinyin(
+  input: string,
+  opt: HeteronymPinyinConvertOptions,
+  signal?: AbortSignal | undefined | null,
+): Promise<string[][]>
 export function asyncPinyin(
   input: string,
   opt?: PinyinConvertOptions | undefined | null,
   signal?: AbortSignal | undefined | null,
-): Promise<string[] | string[][]>
+): Promise<string[]>
 export function compare(inputA: string, inputB: string): number
