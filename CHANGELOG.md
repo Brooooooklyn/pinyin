@@ -1,11 +1,8 @@
 # [1.7.0](https://github.com/Brooooooklyn/pinyin/compare/v1.6.2...v1.7.0) (2021-12-22)
 
-
 ### Features
 
-* upgrade to napi2 ([be1854d](https://github.com/Brooooooklyn/pinyin/commit/be1854d547acb26b1a26aff3de0d84852a682189))
-
-
+- upgrade to napi2 ([be1854d](https://github.com/Brooooooklyn/pinyin/commit/be1854d547acb26b1a26aff3de0d84852a682189))
 
 ## [1.6.2](https://github.com/Brooooooklyn/pinyin/compare/v1.6.1...v1.6.2) (2021-07-22)
 

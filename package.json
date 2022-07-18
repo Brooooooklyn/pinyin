@@ -19,14 +19,7 @@
     "汉字",
     "中文"
   ],
-  "files": [
-    "index.d.ts",
-    "index.js",
-    "src/**",
-    "build.rs",
-    "Cargo.toml",
-    "postinstall.js"
-  ],
+  "files": ["index.d.ts", "index.js", "src/**", "build.rs", "Cargo.toml", "postinstall.js"],
   "napi": {
     "name": "pinyin",
     "triples": {
@@ -71,51 +64,38 @@
     "postpublish": "pinst --enable"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^2.4.4",
-    "@types/node": "^17.0.21",
+    "@napi-rs/cli": "^2.10.1",
+    "@types/node": "^18.0.6",
     "@types/pinyin": "^2.10.0",
-    "@typescript-eslint/eslint-plugin": "^5.12.1",
-    "@typescript-eslint/parser": "^5.12.1",
-    "ava": "^4.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "ava": "^4.3.1",
     "benny": "^3.7.1",
     "conventional-changelog-cli": "^2.2.2",
-    "eslint": "^8.10.0",
-    "eslint-config-prettier": "^8.4.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-sonarjs": "^0.12.0",
-    "husky": "7",
-    "lint-staged": "^12.3.4",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-sonarjs": "^0.13.0",
+    "husky": "8",
+    "lint-staged": "^13.0.3",
     "nodejieba": "^2.6.0",
     "npm-run-all": "^4.1.5",
     "pinst": "^3.0.0",
-    "pinyin": "^2.11.0",
-    "prettier": "^2.5.1",
-    "ts-node": "^10.5.0",
-    "typescript": "^4.5.5"
+    "pinyin": "^2.11.2",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
   },
   "lint-staged": {
-    "*.@(js|ts|tsx)": [
-      "prettier --write",
-      "eslint -c .eslintrc.yml --fix"
-    ],
-    "*.@(yml|yaml)": [
-      "prettier --parser yaml --write"
-    ],
-    "*.md": [
-      "prettier --parser markdown --write"
-    ],
-    "*.json": [
-      "prettier --parser json --write"
-    ]
+    "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
+    "*.@(yml|yaml)": ["prettier --parser yaml --write"],
+    "*.md": ["prettier --parser markdown --write"],
+    "*.json": ["prettier --parser json --write"]
   },
   "ava": {
-    "require": [
-      "ts-node/register/transpile-only"
-    ],
-    "extensions": [
-      "ts"
-    ],
+    "require": ["ts-node/register/transpile-only"],
+    "extensions": ["ts"],
     "timeout": "1m",
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
@@ -140,5 +120,6 @@
   },
   "dependencies": {
     "@napi-rs/triples": "^1.1.0"
-  }
+  },
+  "packageManager": "yarn@3.2.1"
 }

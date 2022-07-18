@@ -11,14 +11,9 @@ use once_cell::sync::OnceCell;
 use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
 use rayon::prelude::*;
 
-#[cfg(all(
-  any(windows, unix),
-  target_arch = "x86_64",
-  not(target_env = "musl"),
-  not(debug_assertions)
-))]
+#[cfg(not(all(target_os = "linux", target_env = "musl", target_arch = "aarch64")))]
 #[global_allocator]
-static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
+static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
 
 static JIEBA: OnceCell<Jieba> = OnceCell::new();
 
@@ -56,13 +51,13 @@ impl TryFrom<u32> for PinyinStyle {
   }
 }
 
-struct AsyncPinyinTask {
+pub struct AsyncPinyinTask {
   style: PinyinStyle,
   input: String,
   option: PinyinOption,
 }
 
-enum PinyinData {
+pub enum PinyinData {
   Multi(Vec<Vec<String>>),
   Default(Vec<String>),
 }
@@ -233,7 +228,7 @@ impl Task for AsyncPinyinTask {
 }
 
 #[napi(js_name = "pinyin", ts_return_type = "string[] | string[][]")]
-fn to_pinyin(env: Env, input_str: String, opt: Option<PinyinConvertOptions>) -> Result<Array> {
+pub fn to_pinyin(env: Env, input_str: String, opt: Option<PinyinConvertOptions>) -> Result<Array> {
   let opt = opt.unwrap_or(PinyinConvertOptions {
     style: Some(PinyinStyle::Plain),
     segment: Some(false),
@@ -359,7 +354,7 @@ fn get_pinyin(input: Pinyin, style: PinyinStyle) -> &'static str {
 }
 
 #[napi(ts_return_type = "Promise<string[] | string[][]>")]
-fn async_pinyin(
+pub fn async_pinyin(
   input: String,
   opt: Option<PinyinConvertOptions>,
   signal: Option<AbortSignal>,
@@ -385,7 +380,7 @@ fn to_option(need_segment: bool, should_to_multi: bool) -> PinyinOption {
 }
 
 #[napi]
-fn compare(input_a: String, input_b: String) -> Result<i32> {
+pub fn compare(input_a: String, input_b: String) -> Result<i32> {
   let input_a_str = input_a.as_str();
   let input_b_str = input_b.as_str();
   let pinyin_a = input_a_str
