@@ -121,5 +121,5 @@
   "dependencies": {
     "@napi-rs/triples": "^1.1.0"
   },
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@3.2.2"
 }
