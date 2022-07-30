@@ -19,7 +19,14 @@
     "汉字",
     "中文"
   ],
-  "files": ["index.d.ts", "index.js", "src/**", "build.rs", "Cargo.toml", "postinstall.js"],
+  "files": [
+    "index.d.ts",
+    "index.js",
+    "src/**",
+    "build.rs",
+    "Cargo.toml",
+    "postinstall.js"
+  ],
   "napi": {
     "name": "pinyin",
     "triples": {
@@ -64,11 +71,11 @@
     "postpublish": "pinst --enable"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^2.10.1",
-    "@types/node": "^18.0.6",
+    "@napi-rs/cli": "^2.10.3",
+    "@types/node": "^18.6.2",
     "@types/pinyin": "^2.10.0",
-    "@typescript-eslint/eslint-plugin": "^5.30.6",
-    "@typescript-eslint/parser": "^5.30.6",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
     "ava": "^4.3.1",
     "benny": "^3.7.1",
     "conventional-changelog-cli": "^2.2.2",
@@ -88,14 +95,27 @@
     "typescript": "^4.7.4"
   },
   "lint-staged": {
-    "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
-    "*.@(yml|yaml)": ["prettier --parser yaml --write"],
-    "*.md": ["prettier --parser markdown --write"],
-    "*.json": ["prettier --parser json --write"]
+    "*.@(js|ts|tsx)": [
+      "prettier --write",
+      "eslint -c .eslintrc.yml --fix"
+    ],
+    "*.@(yml|yaml)": [
+      "prettier --parser yaml --write"
+    ],
+    "*.md": [
+      "prettier --parser markdown --write"
+    ],
+    "*.json": [
+      "prettier --parser json --write"
+    ]
   },
   "ava": {
-    "require": ["ts-node/register/transpile-only"],
-    "extensions": ["ts"],
+    "require": [
+      "ts-node/register/transpile-only"
+    ],
+    "extensions": [
+      "ts"
+    ],
     "timeout": "1m",
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
