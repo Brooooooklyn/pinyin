@@ -1,10 +1,16 @@
 {
   "name": "@napi-rs/pinyin-android-arm-eabi",
-  "version": "1.7.0",
-  "os": ["android"],
-  "cpu": ["arm"],
+  "version": "1.7.1",
+  "os": [
+    "android"
+  ],
+  "cpu": [
+    "arm"
+  ],
   "main": "pinyin.android-arm-eabi.node",
-  "files": ["pinyin.android-arm-eabi.node"],
+  "files": [
+    "pinyin.android-arm-eabi.node"
+  ],
   "description": "Fastest Chinese words to pinyin library",
   "keywords": [
     "napi-rs",

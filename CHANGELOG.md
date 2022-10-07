@@ -1,3 +1,7 @@
+## [1.7.1](https://github.com/Brooooooklyn/pinyin/compare/v1.7.0...v1.7.1) (2022-10-07)
+
+
+
 # [1.7.0](https://github.com/Brooooooklyn/pinyin/compare/v1.6.2...v1.7.0) (2021-12-22)
 
 ### Features

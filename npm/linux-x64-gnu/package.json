@@ -1,10 +1,16 @@
 {
   "name": "@napi-rs/pinyin-linux-x64-gnu",
-  "version": "1.7.0",
-  "os": ["linux"],
-  "cpu": ["x64"],
+  "version": "1.7.1",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "main": "pinyin.linux-x64-gnu.node",
-  "files": ["pinyin.linux-x64-gnu.node"],
+  "files": [
+    "pinyin.linux-x64-gnu.node"
+  ],
   "description": "Fastest Chinese words to pinyin library",
   "keywords": [
     "napi-rs",
@@ -29,5 +35,7 @@
     "access": "public"
   },
   "repository": "git@github.com:Brooooooklyn/pinyin.git",
-  "libc": ["glibc"]
+  "libc": [
+    "glibc"
+  ]
 }

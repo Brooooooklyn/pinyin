@@ -1,10 +1,16 @@
 {
   "name": "@napi-rs/pinyin-linux-arm-gnueabihf",
-  "version": "1.7.0",
-  "os": ["linux"],
-  "cpu": ["arm"],
+  "version": "1.7.1",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm"
+  ],
   "main": "pinyin.linux-arm-gnueabihf.node",
-  "files": ["pinyin.linux-arm-gnueabihf.node"],
+  "files": [
+    "pinyin.linux-arm-gnueabihf.node"
+  ],
   "description": "Fastest Chinese words to pinyin library",
   "keywords": [
     "napi-rs",
