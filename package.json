@@ -78,7 +78,7 @@
     "@types/pinyin": "^2.10.0",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",
-    "ava": "^4.3.3",
+    "ava": "^5.0.0",
     "benny": "^3.7.1",
     "conventional-changelog-cli": "^2.2.2",
     "eslint": "^8.24.0",
