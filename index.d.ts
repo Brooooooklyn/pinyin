@@ -14,7 +14,7 @@ export const enum PINYIN_STYLE {
   /** 声调在拼音最后，使用数字1-4表示的风格 */
   WithToneNumEnd = 3,
   /** 首字母风格 */
-  FirstLetter = 4,
+  FirstLetter = 4
 }
 export interface PinyinConvertOptions {
   style?: PINYIN_STYLE
@@ -22,9 +22,5 @@ export interface PinyinConvertOptions {
   segment?: boolean
 }
 export function pinyin(inputStr: string, opt?: PinyinConvertOptions | undefined | null): string[] | string[][]
-export function asyncPinyin(
-  input: string,
-  opt?: PinyinConvertOptions | undefined | null,
-  signal?: AbortSignal | undefined | null,
-): Promise<string[] | string[][]>
+export function asyncPinyin(input: string, opt?: PinyinConvertOptions | undefined | null, signal?: AbortSignal | undefined | null): Promise<string[] | string[][]>
 export function compare(inputA: string, inputB: string): number

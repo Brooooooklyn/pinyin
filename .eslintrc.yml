@@ -7,6 +7,8 @@ parserOptions:
   sourceType: module
   project: ./tsconfig.json
 
+ignorePatterns: ["index.js"]
+
 env:
   browser: true
   es6: true
