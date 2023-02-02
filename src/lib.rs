@@ -45,7 +45,7 @@ impl TryFrom<u32> for PinyinStyle {
       4 => Ok(Self::FirstLetter),
       _ => Err(Error::new(
         Status::InvalidArg,
-        format!("Expected 0|1|2|3|4, but `{}` provided", value),
+        format!("Expected 0|1|2|3|4, but `{value}` provided"),
       )),
     }
   }
