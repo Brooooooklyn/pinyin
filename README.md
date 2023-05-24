@@ -45,41 +45,63 @@ yarn add @napi-rs/pinyin
 
 ## 与 [pinyin](https://github.com/hotoo/pinyin) 性能对比
 
-Benchmark over `pinyin` package:
+Benchmark over [`pinyin`](https://github.com/hotoo/pinyin) and [`pinyin-pro`](https://github.com/zh-lx/pinyin-pro) package:
+
+> **Note**
+>
+> [`pinyin-pro`](https://github.com/zh-lx/pinyin-pro) doesn't support segment feature.
+
+System info
+
+```
+OS: macOS 12.3.1 21E258 arm64
+Host: MacBookPro18,2
+Kernel: 21.4.0
+Shell: zsh 5.8
+CPU: Apple M1 Max
+GPU: Apple M1 Max
+Memory: 9539MiB / 65536MiB
+```
 
 ```bash
 Running "Short input without segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    962 035 ops/s, ±0.68%   | fastest
+    2 168 325 ops/s, ±0.36%   | fastest
+
+  pinyin-pro:
+    1 595 118 ops/s, ±0.18%   | 26.44% slower
 
   node-pinyin:
-    434 241 ops/s, ±0.66%   | slowest, 54.86% slower
+    522 675 ops/s, ±0.09%     | slowest, 75.89% slower
 
-Finished 2 cases!
+Finished 3 cases!
   Fastest: @napi-rs/pinyin
   Slowest: node-pinyin
 Running "Long input without segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    59 ops/s, ±0.83%   | fastest
+    566 ops/s, ±0.27%   | fastest
+
+  pinyin-pro:
+    215 ops/s, ±0.60%   | 62.01% slower
 
   node-pinyin:
-    2 ops/s, ±3.30%    | slowest, 96.61% slower
+    1 ops/s, ±3.09%     | slowest, 99.82% slower
 
-Finished 2 cases!
+Finished 3 cases!
   Fastest: @napi-rs/pinyin
   Slowest: node-pinyin
 Running "Short input with segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    530 228 ops/s, ±1.94%   | fastest
+    885 238 ops/s, ±2.00%   | fastest
 
   node-pinyin:
-    307 788 ops/s, ±0.83%   | slowest, 41.95% slower
+    475 546 ops/s, ±0.42%   | slowest, 46.28% slower
 
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
@@ -88,15 +110,14 @@ Running "Long input with segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    152 ops/s, ±1.09%   | fastest
+    317 ops/s, ±0.46%   | fastest
 
   node-pinyin:
-    3 ops/s, ±3.08%     | slowest, 98.03% slower
+    5 ops/s, ±3.66%     | slowest, 98.42% slower
 
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
   Slowest: node-pinyin
-✨  Done in 53.36s.
 ```
 
 ## 用法
