@@ -19,7 +19,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          check-latest: true
           cache: yarn
 
       - name: Install
@@ -27,6 +26,15 @@ jobs:
         with:
           toolchain: stable
           components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: lint-cargo-cache
 
       - name: 'Install dependencies'
         run: yarn install --mode=skip-build
@@ -39,3 +47,6 @@ jobs:
 
       - name: Clippy
         run: cargo clippy
+
+      - name: Cargo test
+        run: cargo test
