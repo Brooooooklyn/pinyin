@@ -1,3 +1,17 @@
+## [1.7.2](https://github.com/Brooooooklyn/pinyin/compare/v1.7.1...v1.7.2) (2023-05-24)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate pinyin to 0.10 ([#225](https://github.com/Brooooooklyn/pinyin/issues/225)) ([444690e](https://github.com/Brooooooklyn/pinyin/commit/444690ea69c873b02893822f76eb8f31b8008c99))
+
+
+### Performance Improvements
+
+* improve performance by reduce memory allocation ([23f7307](https://github.com/Brooooooklyn/pinyin/commit/23f7307bb53773d22726e47b31f6888074886446))
+
+
+
 ## [1.7.1](https://github.com/Brooooooklyn/pinyin/compare/v1.7.0...v1.7.1) (2022-10-07)
 
 
