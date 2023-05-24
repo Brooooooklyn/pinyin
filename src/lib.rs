@@ -246,7 +246,7 @@ pub fn to_pinyin(
   let input_str = get_chars(env, &input)?;
   match option {
     PinyinOption::Default => {
-      let mut result_arr = Vec::new();
+      let mut result_arr = Vec::with_capacity(input_str.len());
       let input_chars = input_str.chars();
       let mut non_hans_chars: Vec<char> = Vec::with_capacity(input_str.len());
       for c in input_chars {

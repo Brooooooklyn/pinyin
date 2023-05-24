@@ -76,6 +76,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.7.2":
+  version: 7.21.5
+  resolution: "@babel/runtime@npm:7.21.5"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: 358f2779d3187f5c67ad302e8f8d435412925d0b991d133c7d4a7b1ddd5a3fda1b6f34537cb64628dfd96a27ae46df105bed3895b8d754b88cacdded8d1129dd
+  languageName: node
+  linkType: hard
+
 "@eslint-community/eslint-utils@npm:^4.2.0":
   version: 4.4.0
   resolution: "@eslint-community/eslint-utils@npm:4.4.0"
@@ -210,7 +219,7 @@ __metadata:
     nodejieba: ^2.6.0
     npm-run-all: ^4.1.5
     pinst: ^3.0.0
-    pinyin: ^2.11.2
+    pinyin: ^3.0.0-alpha.5
     pinyin-pro: ^3.14.0
     prettier: ^2.8.8
     typescript: ^5.0.4
@@ -221,6 +230,145 @@ __metadata:
   version: 1.1.0
   resolution: "@napi-rs/triples@npm:1.1.0"
   checksum: 8da77d47ec15704b1936f5f3995951459fc5d604bf2ed400d9579e3356dc0aeb486b217a503f675dda653221751e1fd5dcaaf8de1bab3c71853e8cfd72309709
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-android-arm-eabi@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-android-arm-eabi@npm:1.7.0"
+  conditions: os=android & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-android-arm64@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-android-arm64@npm:1.7.0"
+  conditions: os=android & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-darwin-arm64@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-darwin-arm64@npm:1.7.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-darwin-x64@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-darwin-x64@npm:1.7.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-freebsd-x64@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-freebsd-x64@npm:1.7.0"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-arm-gnueabihf@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-linux-arm-gnueabihf@npm:1.7.0"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-arm64-gnu@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-linux-arm64-gnu@npm:1.7.0"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-arm64-musl@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-linux-arm64-musl@npm:1.7.0"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-x64-gnu@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-linux-x64-gnu@npm:1.7.0"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-linux-x64-musl@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-linux-x64-musl@npm:1.7.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-win32-arm64-msvc@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-win32-arm64-msvc@npm:1.7.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-win32-ia32-msvc@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-win32-ia32-msvc@npm:1.7.0"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba-win32-x64-msvc@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba-win32-x64-msvc@npm:1.7.0"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@node-rs/jieba@npm:^1.6.0":
+  version: 1.7.0
+  resolution: "@node-rs/jieba@npm:1.7.0"
+  dependencies:
+    "@node-rs/jieba-android-arm-eabi": 1.7.0
+    "@node-rs/jieba-android-arm64": 1.7.0
+    "@node-rs/jieba-darwin-arm64": 1.7.0
+    "@node-rs/jieba-darwin-x64": 1.7.0
+    "@node-rs/jieba-freebsd-x64": 1.7.0
+    "@node-rs/jieba-linux-arm-gnueabihf": 1.7.0
+    "@node-rs/jieba-linux-arm64-gnu": 1.7.0
+    "@node-rs/jieba-linux-arm64-musl": 1.7.0
+    "@node-rs/jieba-linux-x64-gnu": 1.7.0
+    "@node-rs/jieba-linux-x64-musl": 1.7.0
+    "@node-rs/jieba-win32-arm64-msvc": 1.7.0
+    "@node-rs/jieba-win32-ia32-msvc": 1.7.0
+    "@node-rs/jieba-win32-x64-msvc": 1.7.0
+  dependenciesMeta:
+    "@node-rs/jieba-android-arm-eabi":
+      optional: true
+    "@node-rs/jieba-android-arm64":
+      optional: true
+    "@node-rs/jieba-darwin-arm64":
+      optional: true
+    "@node-rs/jieba-darwin-x64":
+      optional: true
+    "@node-rs/jieba-freebsd-x64":
+      optional: true
+    "@node-rs/jieba-linux-arm-gnueabihf":
+      optional: true
+    "@node-rs/jieba-linux-arm64-gnu":
+      optional: true
+    "@node-rs/jieba-linux-arm64-musl":
+      optional: true
+    "@node-rs/jieba-linux-x64-gnu":
+      optional: true
+    "@node-rs/jieba-linux-x64-musl":
+      optional: true
+    "@node-rs/jieba-win32-arm64-msvc":
+      optional: true
+    "@node-rs/jieba-win32-ia32-msvc":
+      optional: true
+    "@node-rs/jieba-win32-x64-msvc":
+      optional: true
+  checksum: 6e1bcb17aca9eda3b6d9f97a73a2a42b8249008f5dbdc1a3d4357c82299addfe2efd63eac42360480b53bed0b524fd221f39e43c5385cf23d61e87f6b9d5ba6b
   languageName: node
   linkType: hard
 
@@ -460,6 +608,13 @@ __metadata:
   version: 2.4.1
   resolution: "@types/normalize-package-data@npm:2.4.1"
   checksum: e87bccbf11f95035c89a132b52b79ce69a1e3652fe55962363063c9c0dae0fe2477ebc585e03a9652adc6f381d24ba5589cc5e51849df4ced3d3e004a7d40ed5
+  languageName: node
+  linkType: hard
+
+"@types/parse-json@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@types/parse-json@npm:4.0.0"
+  checksum: fd6bce2b674b6efc3db4c7c3d336bd70c90838e8439de639b909ce22f3720d21344f52427f1d9e57b265fcb7f6c018699b99e5e0c208a1a4823014269a6bf35b
   languageName: node
   linkType: hard
 
@@ -945,6 +1100,28 @@ __metadata:
   bin:
     ava: entrypoints/cli.mjs
   checksum: d5991f1f3d7ca0e63e0df185c5c025a9c80614dd42537336a9b96ea29e8a8d5ad680c1e775dacabb55f3b1b2d63764e468f201d52a44166c8a88d4e9309cde61
+  languageName: node
+  linkType: hard
+
+"babel-plugin-macros@npm:^2.6.1":
+  version: 2.8.0
+  resolution: "babel-plugin-macros@npm:2.8.0"
+  dependencies:
+    "@babel/runtime": ^7.7.2
+    cosmiconfig: ^6.0.0
+    resolve: ^1.12.0
+  checksum: 59b09a21cf3ae1e14186c1b021917d004b49b953824b24953a54c6502da79e8051d4ac31cfd4a0ae7f6ea5ddf1f7edd93df4895dd3c3982a5b2431859c2889ac
+  languageName: node
+  linkType: hard
+
+"babel-plugin-preval@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "babel-plugin-preval@npm:4.0.0"
+  dependencies:
+    "@babel/runtime": ^7.7.2
+    babel-plugin-macros: ^2.6.1
+    require-from-string: ^2.0.2
+  checksum: e2c199a2ea04f827d5b84b06f7a4b24af5da6ffa021930f22ce79671e2e331dfd9dbc28c46a2af0c81c7447101895926838948e8ccd1a0dc51e0f298cbef6f95
   languageName: node
   linkType: hard
 
@@ -1595,6 +1772,19 @@ __metadata:
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
   checksum: 9de8597363a8e9b9952491ebe18167e3b36e7707569eed0ebf14f8bba773611376466ae34575bca8cfe3c767890c859c74056084738f09d4e4a6f902b2ad7d99
+  languageName: node
+  linkType: hard
+
+"cosmiconfig@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "cosmiconfig@npm:6.0.0"
+  dependencies:
+    "@types/parse-json": ^4.0.0
+    import-fresh: ^3.1.0
+    parse-json: ^5.0.0
+    path-type: ^4.0.0
+    yaml: ^1.7.2
+  checksum: 8eed7c854b91643ecb820767d0deb038b50780ecc3d53b0b19e03ed8aabed4ae77271198d1ae3d49c3b110867edf679f5faad924820a8d1774144a87cb6f98fc
   languageName: node
   linkType: hard
 
@@ -2810,7 +3000,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"import-fresh@npm:^3.0.0, import-fresh@npm:^3.2.1":
+"import-fresh@npm:^3.0.0, import-fresh@npm:^3.1.0, import-fresh@npm:^3.2.1":
   version: 3.3.0
   resolution: "import-fresh@npm:3.3.0"
   dependencies:
@@ -3994,7 +4184,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-assign@npm:^4.0.1, object-assign@npm:^4.1.1":
+"object-assign@npm:^4.1.1":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
@@ -4378,19 +4568,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinyin@npm:^2.11.2":
-  version: 2.11.2
-  resolution: "pinyin@npm:2.11.2"
+"pinyin@npm:^3.0.0-alpha.5":
+  version: 3.0.0-alpha.5
+  resolution: "pinyin@npm:3.0.0-alpha.5"
   dependencies:
+    "@node-rs/jieba": ^1.6.0
     commander: ~1.1.1
     nodejieba: 2.5.2
-    object-assign: ^4.0.1
+    segmentit: ^2.0.3
   dependenciesMeta:
+    "@node-rs/jieba":
+      optional: true
     nodejieba:
+      optional: true
+    segmentit:
       optional: true
   bin:
     pinyin: bin/pinyin
-  checksum: 95b1e196b7be80dd8b7fe64142fcc19bd9c50423112e5c8dc6e0199e76fbb0319e93eebaf6c44c7cc7ab7019190e293a0cf3e8a838c2881f76231885f3611a60
+  checksum: aed9b54eaaad72f642f2993aa4be51c9ed824f56bbfdd0b3198de1ebbd230f20b98fbf06ee0cdfea2c5404a31c72b71389ad3f0db6b20b5ff99c8009bb5f52d1
   languageName: node
   linkType: hard
 
@@ -4458,6 +4653,15 @@ __metadata:
   dependencies:
     parse-ms: ^3.0.0
   checksum: b7d2a8182887af0e5ab93f9df331f10db9b8eda86855e2de115eb01a6c501bde5631a8813b1b0abdd7d045e79b08ae875369a8fd279a3dacd6d9e572bdd3bfa6
+  languageName: node
+  linkType: hard
+
+"preval.macro@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "preval.macro@npm:4.0.0"
+  dependencies:
+    babel-plugin-preval: ^4.0.0
+  checksum: 07a9e060541a144c45501febb0eb72e504fa53abc1188db3d6171440d194c1de4d77aee3eea96272d5f9b8b7625aeb5eeabb235a2160df2e00129242142f019e
   languageName: node
   linkType: hard
 
@@ -4602,6 +4806,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"regenerator-runtime@npm:^0.13.11":
+  version: 0.13.11
+  resolution: "regenerator-runtime@npm:0.13.11"
+  checksum: 27481628d22a1c4e3ff551096a683b424242a216fee44685467307f14d58020af1e19660bf2e26064de946bad7eff28950eae9f8209d55723e2d9351e632bbb4
+  languageName: node
+  linkType: hard
+
 "regexp.prototype.flags@npm:^1.4.3":
   version: 1.4.3
   resolution: "regexp.prototype.flags@npm:1.4.3"
@@ -4617,6 +4828,13 @@ __metadata:
   version: 2.1.1
   resolution: "require-directory@npm:2.1.1"
   checksum: fb47e70bf0001fdeabdc0429d431863e9475e7e43ea5f94ad86503d918423c1543361cc5166d713eaa7029dd7a3d34775af04764bebff99ef413111a5af18c80
+  languageName: node
+  linkType: hard
+
+"require-from-string@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "require-from-string@npm:2.0.2"
+  checksum: a03ef6895445f33a4015300c426699bc66b2b044ba7b670aa238610381b56d3f07c686251740d575e22f4c87531ba662d06937508f0f3c0f1ddc04db3130560b
   languageName: node
   linkType: hard
 
@@ -4656,7 +4874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.22.1":
+"resolve@npm:^1.12.0, resolve@npm:^1.22.1":
   version: 1.22.3
   resolution: "resolve@npm:1.22.3"
   dependencies:
@@ -4682,7 +4900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>":
   version: 1.22.3
   resolution: "resolve@patch:resolve@npm%3A1.22.3#~builtin<compat/resolve>::version=1.22.3&hash=c3c19d"
   dependencies:
@@ -4784,6 +5002,15 @@ __metadata:
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
   checksum: cab8f25ae6f1434abee8d80023d7e72b598cf1327164ddab31003c51215526801e40b66c5e65d658a0af1e9d6478cadcb4c745f4bd6751f97d8644786c0978b0
+  languageName: node
+  linkType: hard
+
+"segmentit@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "segmentit@npm:2.0.3"
+  dependencies:
+    preval.macro: ^4.0.0
+  checksum: 98c1c36ee2e00cfc22beb92b4ce424f2e11c8f1f8d6517f6cf13fc2d5dd2638de8be668aaf3ad746601961dafa010a153625d6087a89e36dde8481a73da1ada5
   languageName: node
   linkType: hard
 
@@ -5665,6 +5892,13 @@ __metadata:
   version: 4.0.0
   resolution: "yallist@npm:4.0.0"
   checksum: 343617202af32df2a15a3be36a5a8c0c8545208f3d3dfbc6bb7c3e3b7e8c6f8e7485432e4f3b88da3031a6e20afa7c711eded32ddfb122896ac5d914e75848d5
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^1.7.2":
+  version: 1.10.2
+  resolution: "yaml@npm:1.10.2"
+  checksum: ce4ada136e8a78a0b08dc10b4b900936912d15de59905b2bf415b4d33c63df1d555d23acb2a41b23cf9fb5da41c256441afca3d6509de7247daa062fd2c5ea5f
   languageName: node
   linkType: hard
 

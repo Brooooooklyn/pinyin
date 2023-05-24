@@ -68,40 +68,40 @@ Running "Short input without segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    2 168 325 ops/s, ±0.36%   | fastest
+    2 183 922 ops/s, ±0.32%   | fastest
 
   pinyin-pro:
-    1 595 118 ops/s, ±0.18%   | 26.44% slower
+    1 603 486 ops/s, ±0.10%   | slowest, 26.58% slower
 
   node-pinyin:
-    522 675 ops/s, ±0.09%     | slowest, 75.89% slower
+    2 150 629 ops/s, ±0.21%   | 1.52% slower
 
 Finished 3 cases!
   Fastest: @napi-rs/pinyin
-  Slowest: node-pinyin
+  Slowest: pinyin-pro
 Running "Long input without segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    566 ops/s, ±0.27%   | fastest
+    551 ops/s, ±0.55%   | fastest
 
   pinyin-pro:
-    215 ops/s, ±0.60%   | 62.01% slower
+    182 ops/s, ±11.67%   | slowest, 66.97% slower
 
   node-pinyin:
-    1 ops/s, ±3.09%     | slowest, 99.82% slower
+    226 ops/s, ±14.00%   | 58.98% slower
 
 Finished 3 cases!
   Fastest: @napi-rs/pinyin
-  Slowest: node-pinyin
+  Slowest: pinyin-pro
 Running "Short input with segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    885 238 ops/s, ±2.00%   | fastest
+    863 839 ops/s, ±0.61%   | fastest
 
   node-pinyin:
-    475 546 ops/s, ±0.42%   | slowest, 46.28% slower
+    710 893 ops/s, ±0.58%   | slowest, 17.71% slower
 
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
@@ -110,10 +110,10 @@ Running "Long input with segment" suite...
 Progress: 100%
 
   @napi-rs/pinyin:
-    317 ops/s, ±0.46%   | fastest
+    304 ops/s, ±1.99%   | fastest
 
   node-pinyin:
-    5 ops/s, ±3.66%     | slowest, 98.42% slower
+    8 ops/s, ±2.85%     | slowest, 97.37% slower
 
 Finished 2 cases!
   Fastest: @napi-rs/pinyin
