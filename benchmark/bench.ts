@@ -4,11 +4,13 @@ import { join } from 'path'
 import b from 'benny'
 import { Summary } from 'benny/lib/internal/common-types'
 import nodePinyin from 'pinyin'
+import { pinyin as pinyinPro } from 'pinyin-pro'
 
 import { pinyin } from '../index'
 
 const short = '你好拼音'
-const long = readFileSync(join(__dirname, 'long.txt'), 'utf-8')
+const long = readFileSync(join(__dirname, 'long.txt'))
+const longText = long.toString('utf8')
 
 async function run() {
   const output = [
@@ -17,6 +19,10 @@ async function run() {
 
       b.add('@napi-rs/pinyin', () => {
         pinyin(short)
+      }),
+
+      b.add('pinyin-pro', () => {
+        pinyinPro(short)
       }),
 
       b.add('node-pinyin', () => {
@@ -34,8 +40,12 @@ async function run() {
         pinyin(long)
       }),
 
+      b.add('pinyin-pro', () => {
+        pinyinPro(longText)
+      }),
+
       b.add('node-pinyin', () => {
-        nodePinyin(long)
+        nodePinyin(longText)
       }),
 
       b.cycle(),
@@ -64,7 +74,7 @@ async function run() {
       }),
 
       b.add('node-pinyin', () => {
-        nodePinyin(long, { segment: true })
+        nodePinyin(longText, { segment: true })
       }),
 
       b.cycle(),
