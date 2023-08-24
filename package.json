@@ -85,7 +85,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-sonarjs": "^0.20.0",
+    "eslint-plugin-sonarjs": "^0.21.0",
     "husky": "8",
     "lint-staged": "^14.0.0",
     "nodejieba": "^2.6.0",
