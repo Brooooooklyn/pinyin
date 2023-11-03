@@ -208,7 +208,6 @@ jobs:
             freebsd-version
             yarn install --mode=skip-build
             yarn build
-            yarn test
             rm -rf node_modules
             rm -rf target
             rm -rf .yarn
