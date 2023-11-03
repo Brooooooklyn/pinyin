@@ -1,19 +1,17 @@
 #![deny(clippy::all)]
 
-#[macro_use]
-extern crate napi_derive;
-
 use std::convert::TryFrom;
 
 use jieba_rs::Jieba;
 use napi::{bindgen_prelude::*, JsBuffer, NapiRaw, NapiValue};
+use napi_derive::napi;
 use once_cell::sync::Lazy;
 use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
 use rayon::prelude::*;
 
 #[cfg(not(all(target_os = "linux", target_env = "musl", target_arch = "aarch64")))]
 #[global_allocator]
-static ALLOC: mimalloc_rust::GlobalMiMalloc = mimalloc_rust::GlobalMiMalloc;
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 static JIEBA: Lazy<Jieba> = Lazy::new(Jieba::new);
 
