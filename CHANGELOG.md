@@ -1,3 +1,12 @@
+## [1.7.4](https://github.com/Brooooooklyn/pinyin/compare/v1.7.3...v1.7.4) (2024-03-21)
+
+
+### Bug Fixes
+
+* **compare:** Compare with tone ([#271](https://github.com/Brooooooklyn/pinyin/issues/271)) ([993610c](https://github.com/Brooooooklyn/pinyin/commit/993610c082c55760755ec3076aae7a3d73043d43))
+
+
+
 ## [1.7.3](https://github.com/Brooooooklyn/pinyin/compare/v1.7.2...v1.7.3) (2023-05-24)
 
 

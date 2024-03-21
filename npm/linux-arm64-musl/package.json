@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin-linux-arm64-musl",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "os": [
     "linux"
   ],

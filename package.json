@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "Fastest Chinese words to pinyin library",
   "main": "index.js",
   "repository": "git@github.com:Brooooooklyn/pinyin.git",
