@@ -2,8 +2,10 @@ import test from 'ava'
 
 import { compare, pinyin, asyncPinyin, PINYIN_STYLE } from '../index'
 
+// @ts-expect-error
 const styles = Object.values(PINYIN_STYLE) as PINYIN_STYLE[]
 
+// @ts-expect-error
 const STYLE_NAMES: Record<number, string> = Object.entries(PINYIN_STYLE).reduce((acc, [k, v]) => {
   // @ts-expect-error
   acc[v] = k
@@ -90,4 +92,10 @@ test('b啊 => 啊b', (t) => {
   const data = 'b啊'.split('')
   const sortedData = data.sort(compare)
   t.deepEqual(sortedData, '啊b'.split(''))
+})
+
+test('饿鹅312cba => 123abc鹅饿', (t) => {
+  const data = '饿鹅312cba'.split('')
+  const sortedData = data.sort(compare)
+  t.deepEqual(sortedData, '123abc鹅饿'.split(''))
 })
