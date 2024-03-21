@@ -1,6 +1,6 @@
 #![deny(clippy::all)]
 
-use std::convert::TryFrom;
+use std::{cmp::Ordering, convert::TryFrom};
 
 use jieba_rs::Jieba;
 use napi::{bindgen_prelude::*, JsBuffer, NapiRaw, NapiValue};
@@ -412,10 +412,62 @@ fn to_option(need_segment: bool, should_to_multi: bool) -> PinyinOption {
   (u8::from(need_segment) << 1 | u8::from(should_to_multi)).into()
 }
 
+/**
+ * 将带声调的拼音转换为数字表示声调的拼音
+ * replace pinyin with tone to pinyin with tone number
+ *
+ * 如  ā 替换为 a1, á 替换为 a2, ǎ 替换为 a3, à 替换为 a4
+ * e.g. ā -> a1, á -> a2, ǎ -> a3, à -> a4
+ */
+fn pinyin_tone_to_number(input: &str) -> String {
+  let replacements = [
+    ('ā', "a1"),
+    ('á', "a2"),
+    ('ǎ', "a3"),
+    ('à', "a4"),
+    ('ē', "e1"),
+    ('é', "e2"),
+    ('ě', "e3"),
+    ('è', "e4"),
+    ('ī', "i1"),
+    ('í', "i2"),
+    ('ǐ', "i3"),
+    ('ì', "i4"),
+    ('ō', "o1"),
+    ('ó', "o2"),
+    ('ǒ', "o3"),
+    ('ò', "o4"),
+    ('ū', "u1"),
+    ('ú', "u2"),
+    ('ǔ', "u3"),
+    ('ù', "u4"),
+    ('ǖ', "ü1"),
+    ('ǘ', "ü2"),
+    ('ǚ', "ü3"),
+    ('ǜ', "ü4"),
+  ];
+
+  let mut output = input.to_string();
+  for &(character, replacement) in &replacements {
+    output = output.replace(character, replacement);
+  }
+
+  output
+}
+
+/**
+ * 比较两个带声调的拼音字符串
+ * compare two pinyin with tone strings
+ */
+fn cmp_pinyin_with_tone(input_a: &str, input_b: &str) -> Ordering {
+  let pinyin_a = pinyin_tone_to_number(input_a);
+  let pinyin_b = pinyin_tone_to_number(input_b);
+  pinyin_a.cmp(&pinyin_b)
+}
+
 #[napi]
 pub fn compare(input_a: String, input_b: String) -> Result<i32> {
   let input_a_str = input_a.as_str();
-  let input_b_str = input_b.as_str();
   let pinyin_a = input_a_str
     .to_pinyin()
     .next()
@@ -423,13 +475,15 @@ pub fn compare(input_a: String, input_b: String) -> Result<i32> {
     .map(Pinyin::with_tone)
     .unwrap_or(input_a_str);
 
+  let input_b_str = input_b.as_str();
   let pinyin_b = input_b_str
     .to_pinyin()
     .next()
     .and_then(|p| p)
     .map(Pinyin::with_tone)
-    .unwrap_or(input_a_str);
-  Ok(pinyin_a.cmp(pinyin_b) as _)
+    .unwrap_or(input_b_str);
+
+  Ok(cmp_pinyin_with_tone(pinyin_a, pinyin_b) as _)
 }
 
 #[cfg(test)]
