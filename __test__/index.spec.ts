@@ -99,3 +99,27 @@ test('饿鹅312cba => 123abc鹅饿', (t) => {
   const sortedData = data.sort(compare)
   t.deepEqual(sortedData, '123abc鹅饿'.split(''))
 })
+
+test('能比较多个文字的字符串', (t) => {
+  const smaller = '蜘蛛侠1'
+  const middle = '蜘蛛侠12'
+  const greater = '蜘蛛侠3'
+  const empty = ''
+
+  t.deepEqual(compare(smaller, middle), -1)
+  t.deepEqual(compare(middle, middle), 0)
+  t.deepEqual(compare(middle, greater), -1)
+  t.deepEqual(compare(greater, middle), 1)
+  t.deepEqual(compare(empty, empty), 0)
+})
+
+test('能比较 emoji', (t) => {
+  const smaller = '😀'
+  const middle = '😃'
+  const greater = '😄'
+
+  t.deepEqual(compare(smaller, middle), -1)
+  t.deepEqual(compare(middle, middle), 0)
+  t.deepEqual(compare(middle, greater), -1)
+  t.deepEqual(compare(greater, middle), 1)
+})
