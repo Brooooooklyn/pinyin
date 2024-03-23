@@ -465,36 +465,51 @@ fn cmp_pinyin_with_tone(input_a: &str, input_b: &str) -> Ordering {
   pinyin_a.cmp(&pinyin_b)
 }
 
+/**
+ * 将给定的字符串转换为带声调的拼音字符串
+ * convert the given string to pinyin string with tone
+ */
+fn str_to_pinyin_with_tone(input: &str) -> String {
+  input
+    .chars()
+    .map(|c| {
+      c.to_pinyin()
+        .map_or(c.to_string(), |p| p.with_tone().to_string())
+    })
+    .collect::<String>()
+}
+
 #[napi]
 pub fn compare(input_a: String, input_b: String) -> Result<i32> {
-  let input_a_str = input_a.as_str();
-  let pinyin_a = input_a_str
-    .to_pinyin()
-    .next()
-    .and_then(|p| p)
-    .map(Pinyin::with_tone)
-    .unwrap_or(input_a_str);
+  let a_with_tone = str_to_pinyin_with_tone(&input_a);
+  let b_with_tone = str_to_pinyin_with_tone(&input_b);
 
-  let input_b_str = input_b.as_str();
-  let pinyin_b = input_b_str
-    .to_pinyin()
-    .next()
-    .and_then(|p| p)
-    .map(Pinyin::with_tone)
-    .unwrap_or(input_b_str);
-
-  Ok(cmp_pinyin_with_tone(pinyin_a, pinyin_b) as _)
+  Ok(cmp_pinyin_with_tone(&a_with_tone, &b_with_tone) as _)
 }
 
 #[cfg(test)]
 mod test {
 
-  use super::{to_option, PinyinOption};
+  use super::{compare, to_option, PinyinOption};
   #[test]
   fn convert_option() {
     assert_eq!(to_option(false, false), PinyinOption::Default);
     assert_eq!(to_option(false, true), PinyinOption::Multi);
     assert_eq!(to_option(true, false), PinyinOption::SegmentDefault);
     assert_eq!(to_option(true, true), PinyinOption::SegmentMulti);
+  }
+
+  #[test]
+  fn do_compare() {
+    let smaller = String::from("蜘蛛侠1");
+    let middle = String::from("蜘蛛侠12");
+    let greater = String::from("蜘蛛侠3");
+    let empty = String::from("");
+
+    assert_eq!(compare(smaller.clone(), middle.clone()).unwrap(), -1);
+    assert_eq!(compare(middle.clone(), middle.clone()).unwrap(), 0);
+    assert_eq!(compare(middle.clone(), greater.clone()).unwrap(), -1);
+    assert_eq!(compare(greater.clone(), middle.clone()).unwrap(), 1);
+    assert_eq!(compare(empty.clone(), empty.clone()).unwrap(), 0);
   }
 }
