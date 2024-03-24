@@ -1,3 +1,12 @@
+## [1.7.5](https://github.com/Brooooooklyn/pinyin/compare/v1.7.4...v1.7.5) (2024-03-24)
+
+
+### Bug Fixes
+
+* **compare:** Support compare string ([#272](https://github.com/Brooooooklyn/pinyin/issues/272)) ([69fc4f7](https://github.com/Brooooooklyn/pinyin/commit/69fc4f7601e530f36f8d80ceaaa40ab4c3e455cd))
+
+
+
 ## [1.7.4](https://github.com/Brooooooklyn/pinyin/compare/v1.7.3...v1.7.4) (2024-03-21)
 
 

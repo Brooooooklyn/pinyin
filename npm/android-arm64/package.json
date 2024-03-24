@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin-android-arm64",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "os": [
     "android"
   ],

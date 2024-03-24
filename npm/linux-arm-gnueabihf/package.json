@@ -1,6 +1,6 @@
 {
   "name": "@napi-rs/pinyin-linux-arm-gnueabihf",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "os": [
     "linux"
   ],
