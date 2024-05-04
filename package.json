@@ -80,7 +80,7 @@
     "@typescript-eslint/parser": "^7.0.0",
     "ava": "^6.0.0",
     "benny": "^3.7.1",
-    "conventional-changelog-cli": "^4.1.0",
+    "conventional-changelog-cli": "^5.0.0",
     "eslint": "^8.52.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
