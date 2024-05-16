@@ -9,7 +9,7 @@ use once_cell::sync::Lazy;
 use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
 use rayon::prelude::*;
 
-#[cfg(not(all(target_os = "linux", target_env = "musl", target_arch = "aarch64")))]
+#[cfg(not(all(target_os = "linux", target_arch = "arm")))]
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
