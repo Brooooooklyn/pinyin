@@ -84,7 +84,7 @@
     "lint-staged": "^15.2.2",
     "nodejieba": "^2.6.0",
     "npm-run-all2": "^6.1.2",
-    "oxlint": "^0.5.0",
+    "oxlint": "^0.6.0",
     "pinst": "^3.0.0",
     "pinyin": "^4.0.0-alpha.0",
     "pinyin-pro": "^3.20.4",
