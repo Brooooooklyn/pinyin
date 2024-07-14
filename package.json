@@ -82,7 +82,7 @@
     "eslint": "^9.2.0",
     "husky": "9",
     "lint-staged": "^15.2.2",
-    "nodejieba": "^2.6.0",
+    "nodejieba": "^3.0.0",
     "npm-run-all2": "^6.1.2",
     "oxlint": "^0.5.0",
     "pinst": "^3.0.0",

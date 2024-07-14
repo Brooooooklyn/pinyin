@@ -191,7 +191,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/node-pre-gyp@npm:^1.0.4, @mapbox/node-pre-gyp@npm:^1.0.5":
+"@mapbox/node-pre-gyp@npm:^1.0.5, @mapbox/node-pre-gyp@npm:^1.0.9":
   version: 1.0.11
   resolution: "@mapbox/node-pre-gyp@npm:1.0.11"
   dependencies:
@@ -235,7 +235,7 @@ __metadata:
     eslint: "npm:^9.2.0"
     husky: "npm:9"
     lint-staged: "npm:^15.2.2"
-    nodejieba: "npm:^2.6.0"
+    nodejieba: "npm:^3.0.0"
     npm-run-all2: "npm:^6.1.2"
     oxlint: "npm:^0.5.0"
     pinst: "npm:^3.0.0"
@@ -2951,13 +2951,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodejieba@npm:^2.6.0":
-  version: 2.6.0
-  resolution: "nodejieba@npm:2.6.0"
+"nodejieba@npm:^3.0.0":
+  version: 3.1.0
+  resolution: "nodejieba@npm:3.1.0"
   dependencies:
-    "@mapbox/node-pre-gyp": "npm:^1.0.4"
+    "@mapbox/node-pre-gyp": "npm:^1.0.9"
     node-addon-api: "npm:^3.0.2"
-  checksum: 10c0/c8d72f1b31928133836c451f18885304eafeff8c72b2015f99d2eedf9be03c2a37e95768456d6812acab5f16206f741cc2bc6f68d88f7fed22d241a5ca19e318
+  checksum: 10c0/29ebd590b7a4a0a7ebbf308ada53da053594bc1df47125950a6524d0effce26d1551312b36dd0e3f90f675070f04ac7906b8f4e7c98e3763b50ca5a8772d2b6d
   languageName: node
   linkType: hard
 
