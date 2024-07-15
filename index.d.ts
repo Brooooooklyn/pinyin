@@ -21,10 +21,13 @@ export interface PinyinConvertOptions {
   heteronym?: boolean
   segment?: boolean
 }
-export function pinyin(input: string | Buffer, opt?: PinyinConvertOptions | undefined | null): string[] | string[][]
-export function asyncPinyin(
+export declare function pinyin(
+  input: string | Buffer,
+  opt?: PinyinConvertOptions | undefined | null,
+): string[] | string[][]
+export declare function asyncPinyin(
   input: string | Buffer,
   opt?: PinyinConvertOptions | undefined | null,
   signal?: AbortSignal | undefined | null,
 ): Promise<string[] | string[][]>
-export function compare(inputA: string, inputB: string): number
+export declare function compare(inputA: string, inputB: string): number
