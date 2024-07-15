@@ -1,42 +1,28 @@
 ## [1.7.5](https://github.com/Brooooooklyn/pinyin/compare/v1.7.4...v1.7.5) (2024-03-24)
 
-
 ### Bug Fixes
 
-* **compare:** Support compare string ([#272](https://github.com/Brooooooklyn/pinyin/issues/272)) ([69fc4f7](https://github.com/Brooooooklyn/pinyin/commit/69fc4f7601e530f36f8d80ceaaa40ab4c3e455cd))
-
-
+- **compare:** Support compare string ([#272](https://github.com/Brooooooklyn/pinyin/issues/272)) ([69fc4f7](https://github.com/Brooooooklyn/pinyin/commit/69fc4f7601e530f36f8d80ceaaa40ab4c3e455cd))
 
 ## [1.7.4](https://github.com/Brooooooklyn/pinyin/compare/v1.7.3...v1.7.4) (2024-03-21)
 
-
 ### Bug Fixes
 
-* **compare:** Compare with tone ([#271](https://github.com/Brooooooklyn/pinyin/issues/271)) ([993610c](https://github.com/Brooooooklyn/pinyin/commit/993610c082c55760755ec3076aae7a3d73043d43))
-
-
+- **compare:** Compare with tone ([#271](https://github.com/Brooooooklyn/pinyin/issues/271)) ([993610c](https://github.com/Brooooooklyn/pinyin/commit/993610c082c55760755ec3076aae7a3d73043d43))
 
 ## [1.7.3](https://github.com/Brooooooklyn/pinyin/compare/v1.7.2...v1.7.3) (2023-05-24)
 
-
-
 ## [1.7.2](https://github.com/Brooooooklyn/pinyin/compare/v1.7.1...v1.7.2) (2023-05-24)
-
 
 ### Bug Fixes
 
-* **deps:** update rust crate pinyin to 0.10 ([#225](https://github.com/Brooooooklyn/pinyin/issues/225)) ([444690e](https://github.com/Brooooooklyn/pinyin/commit/444690ea69c873b02893822f76eb8f31b8008c99))
-
+- **deps:** update rust crate pinyin to 0.10 ([#225](https://github.com/Brooooooklyn/pinyin/issues/225)) ([444690e](https://github.com/Brooooooklyn/pinyin/commit/444690ea69c873b02893822f76eb8f31b8008c99))
 
 ### Performance Improvements
 
-* improve performance by reduce memory allocation ([23f7307](https://github.com/Brooooooklyn/pinyin/commit/23f7307bb53773d22726e47b31f6888074886446))
-
-
+- improve performance by reduce memory allocation ([23f7307](https://github.com/Brooooooklyn/pinyin/commit/23f7307bb53773d22726e47b31f6888074886446))
 
 ## [1.7.1](https://github.com/Brooooooklyn/pinyin/compare/v1.7.0...v1.7.1) (2022-10-07)
-
-
 
 # [1.7.0](https://github.com/Brooooooklyn/pinyin/compare/v1.6.2...v1.7.0) (2021-12-22)
 
