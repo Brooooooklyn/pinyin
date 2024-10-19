@@ -77,7 +77,7 @@
     "lint-staged": "^15.2.7",
     "nodejieba": "^3.1.1",
     "npm-run-all2": "^6.2.2",
-    "oxlint": "^0.9.0",
+    "oxlint": "^0.10.0",
     "pinst": "^3.0.0",
     "pinyin": "^4.0.0-alpha.2",
     "pinyin-pro": "^3.23.1",
@@ -115,7 +115,7 @@
     "type": "github",
     "url": "https://github.com/sponsors/Brooooooklyn"
   },
-  "packageManager": "yarn@4.5.0",
+  "packageManager": "yarn@4.5.1",
   "dependencies": {
     "@napi-rs/triples": "^1.2.0"
   }
