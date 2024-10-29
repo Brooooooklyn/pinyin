@@ -67,7 +67,7 @@
     "@napi-rs/cli": "^2.18.4",
     "@swc-node/register": "^1.10.7",
     "@swc/core": "^1.6.13",
-    "@types/node": "^20.14.10",
+    "@types/node": "^22.0.0",
     "@types/pinyin": "^2.10.2",
     "ava": "^6.1.3",
     "benny": "^3.7.1",
