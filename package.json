@@ -115,7 +115,7 @@
     "type": "github",
     "url": "https://github.com/sponsors/Brooooooklyn"
   },
-  "packageManager": "yarn@4.5.3",
+  "packageManager": "yarn@4.6.0",
   "dependencies": {
     "@napi-rs/triples": "^1.2.0"
   }
