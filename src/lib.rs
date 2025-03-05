@@ -409,7 +409,7 @@ pub fn async_pinyin(
 }
 
 fn to_option(need_segment: bool, should_to_multi: bool) -> PinyinOption {
-  (u8::from(need_segment) << 1 | u8::from(should_to_multi)).into()
+  ((u8::from(need_segment) << 1) | u8::from(should_to_multi)).into()
 }
 
 /**

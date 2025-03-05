@@ -19,7 +19,14 @@
     "汉字",
     "中文"
   ],
-  "files": ["index.d.ts", "index.js", "src/**", "build.rs", "Cargo.toml", "postinstall.js"],
+  "files": [
+    "index.d.ts",
+    "index.js",
+    "src/**",
+    "build.rs",
+    "Cargo.toml",
+    "postinstall.js"
+  ],
   "napi": {
     "name": "pinyin",
     "triples": {
@@ -85,14 +92,27 @@
     "typescript": "^5.5.3"
   },
   "lint-staged": {
-    "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
-    "*.@(yml|yaml)": ["prettier --parser yaml --write"],
-    "*.md": ["prettier --parser markdown --write"],
-    "*.json": ["prettier --parser json --write"]
+    "*.@(js|ts|tsx)": [
+      "prettier --write",
+      "eslint -c .eslintrc.yml --fix"
+    ],
+    "*.@(yml|yaml)": [
+      "prettier --parser yaml --write"
+    ],
+    "*.md": [
+      "prettier --parser markdown --write"
+    ],
+    "*.json": [
+      "prettier --parser json --write"
+    ]
   },
   "ava": {
-    "require": ["@swc-node/register"],
-    "extensions": ["ts"],
+    "require": [
+      "@swc-node/register"
+    ],
+    "extensions": [
+      "ts"
+    ],
     "timeout": "1m",
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
