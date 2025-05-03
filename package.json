@@ -83,7 +83,7 @@
     "husky": "9",
     "lint-staged": "^15.2.7",
     "nodejieba": "^3.1.1",
-    "npm-run-all2": "^7.0.0",
+    "npm-run-all2": "^8.0.0",
     "oxlint": "^0.16.0",
     "pinst": "^3.0.0",
     "pinyin": "^4.0.0-alpha.2",
