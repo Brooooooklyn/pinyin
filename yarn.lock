@@ -252,7 +252,7 @@ __metadata:
   resolution: "@napi-rs/pinyin@workspace:."
   dependencies:
     "@napi-rs/cli": "npm:^2.18.4"
-    "@napi-rs/triples": "npm:^1.2.0"
+    "@napi-rs/triples": "npm:^2.0.0"
     "@swc-node/register": "npm:^1.10.7"
     "@swc/core": "npm:^1.6.13"
     "@types/node": "npm:^22.0.0"
@@ -274,10 +274,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@napi-rs/triples@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@napi-rs/triples@npm:1.2.0"
-  checksum: 10c0/e8294cc63d36fe0b062dc5293a0a2c72ae9318676dd76168e969a8f47b95180e7fe80a301fc0d9c6688399494744bfe21275b58f247f2981b558898743389e0f
+"@napi-rs/triples@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@napi-rs/triples@npm:2.0.0"
+  checksum: 10c0/7fc9b8e37602a9a5f4ea4ee17cc34aa0662dbdb2294ac688bb2e05cc5b373c6583463238aea749f39f20c7e32362f3b203e3c22993b538c51bbd2ac0c39591e3
   languageName: node
   linkType: hard
 
