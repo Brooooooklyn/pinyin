@@ -147,7 +147,6 @@ asyncPinyin('中心').then(console.log.bind(console)) // [ [ 'zhōng' ], [ 'xīn
 - **options?** `<Options>`
 
   转拼音参数
-
   - **Options.heteronym?** `<boolean>`
 
     是否处理多音字， 默认 `false`。如果为 `true`，返回类型为 `string[][]/Promise<string[][]>`, 如果为 `false` 返回类型为 `string[]/Promise<string[]>`
@@ -156,7 +155,6 @@ asyncPinyin('中心').then(console.log.bind(console)) // [ [ 'zhōng' ], [ 'xīn
 
     拼音风格，默认为 `PINYIN_STYLE.WithTone`
     可选值为:
-
     - `Plain` 普通风格，不带声调
 
     - `WithTone` 带声调的风格

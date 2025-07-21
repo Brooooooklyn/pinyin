@@ -3,20 +3,20 @@
 use std::{cmp::Ordering, convert::TryFrom};
 
 use jieba_rs::Jieba;
-use napi::{bindgen_prelude::*, JsBuffer, NapiRaw, NapiValue};
+use napi::{bindgen_prelude::*, ScopedTask};
 use napi_derive::napi;
 use once_cell::sync::Lazy;
 use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
 use rayon::prelude::*;
 
-#[cfg(not(all(target_os = "linux", target_arch = "arm")))]
+#[cfg(not(target_family = "wasm"))]
 #[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+static GLOBAL: mimalloc_safe::MiMalloc = mimalloc_safe::MiMalloc;
 
 static JIEBA: Lazy<Jieba> = Lazy::new(Jieba::new);
 
 #[napi(js_name = "PINYIN_STYLE")]
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 /// 拼音风格
 pub enum PinyinStyle {
   /// 普通风格，不带声调
@@ -88,9 +88,9 @@ impl From<u8> for PinyinOption {
   }
 }
 
-impl Task for AsyncPinyinTask {
+impl<'task> ScopedTask<'task> for AsyncPinyinTask {
   type Output = PinyinData;
-  type JsValue = napi::JsObject;
+  type JsValue = Array<'task>;
 
   fn compute(&mut self) -> Result<Self::Output> {
     let input = get_chars_buffer(&self.input);
@@ -201,10 +201,10 @@ impl Task for AsyncPinyinTask {
     }
   }
 
-  fn resolve(&mut self, env: Env, output: Self::Output) -> Result<Self::JsValue> {
+  fn resolve(&mut self, env: &'task Env, output: Self::Output) -> Result<Self::JsValue> {
     let js_value = match output {
       PinyinData::Default(arr) => {
-        let mut output_arr = env.create_array_with_length(arr.len())?;
+        let mut output_arr = env.create_array(arr.len() as u32)?;
 
         for (index, item) in arr.into_iter().enumerate() {
           output_arr.set_element(index as u32, env.create_string_from_std(item)?)?;
@@ -213,9 +213,9 @@ impl Task for AsyncPinyinTask {
         output_arr
       }
       PinyinData::Multi(arr) => {
-        let mut output_arr = env.create_array_with_length(arr.len())?;
+        let mut output_arr = env.create_array(arr.len() as u32)?;
         for (index, multi) in arr.into_iter().enumerate() {
-          let mut multi_arr = env.create_array_with_length(multi.len())?;
+          let mut multi_arr = env.create_array(multi.len() as u32)?;
           for (multi_index, item) in multi.into_iter().enumerate() {
             multi_arr.set_element(multi_index as u32, env.create_string_from_std(item)?)?;
           }
@@ -231,7 +231,7 @@ impl Task for AsyncPinyinTask {
 #[napi(js_name = "pinyin", ts_return_type = "string[] | string[][]")]
 pub fn to_pinyin(
   env: Env,
-  input: Either<String, JsBuffer>,
+  input: Either<String, &[u8]>,
   opt: Option<PinyinConvertOptions>,
 ) -> Result<Array> {
   let opt = opt.unwrap_or(PinyinConvertOptions {
@@ -241,7 +241,7 @@ pub fn to_pinyin(
   });
   let option = to_option(opt.segment.unwrap_or(false), opt.heteronym.unwrap_or(false));
   let style = opt.style.unwrap_or(PinyinStyle::Plain);
-  let input_str = get_chars(env, &input)?;
+  let input_str = get_chars(&input)?;
   match option {
     PinyinOption::Default => {
       let mut result_arr = Vec::with_capacity(input_str.len());
@@ -364,19 +364,12 @@ fn get_pinyin(input: Pinyin, style: PinyinStyle) -> &'static str {
   }
 }
 
-fn get_chars(env: Env, input: &Either<String, JsBuffer>) -> Result<&str> {
+fn get_chars<'a>(input: &'a Either<String, &'a [u8]>) -> Result<&'a str> {
   match input {
     Either::A(input) => Ok(input.as_str()),
-    Either::B(input) => {
-      let buf = unsafe { JsBuffer::from_raw_unchecked(env.raw(), input.raw()) };
-      let buf_value = buf.into_value()?;
-      Ok(unsafe {
-        std::str::from_utf8_unchecked(std::slice::from_raw_parts(
-          buf_value.as_ptr(),
-          buf_value.len(),
-        ))
-      })
-    }
+    Either::B(input) => Ok(unsafe {
+      std::str::from_utf8_unchecked(std::slice::from_raw_parts(input.as_ptr(), input.len()))
+    }),
   }
 }
 

@@ -9,17 +9,17 @@ crate-type = ["cdylib"]
 
 [dependencies]
 jieba-rs = "0.7"
-napi = "2"
-napi-derive = "2"
+napi = "3"
+napi-derive = "3"
 once_cell = "1"
 pinyin = "0.10"
 rayon = "1"
 
-[target.'cfg(not(target_os = "linux"))'.dependencies]
-mimalloc = { version = "0.1" }
+[target.'cfg(all(not(target_os = "linux"), not(target_family = "wasm")))'.dependencies]
+mimalloc-safe = { version = "0.1" }
 
-[target.'cfg(all(target_os = "linux", not(target_arch = "arm")))'.dependencies]
-mimalloc = { version = "0.1", features = ["local_dynamic_tls"] }
+[target.'cfg(target_os = "linux")'.dependencies]
+mimalloc-safe = { version = "0.1", features = ["local_dynamic_tls"] }
 
 [build-dependencies]
 napi-build = "2"
