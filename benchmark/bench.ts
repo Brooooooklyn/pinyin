@@ -1,101 +1,75 @@
-import { promises as fs, readFileSync } from 'fs'
-import { join } from 'path'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
-import b from 'benny'
-import { Summary } from 'benny/lib/internal/common-types'
-import nodePinyin from 'pinyin'
+import { Bench } from 'tinybench'
+import { pinyin as nodePinyin } from 'pinyin'
 import { pinyin as pinyinPro } from 'pinyin-pro'
 
 import { pinyin } from '../index'
 
 const short = '你好拼音'
-const long = readFileSync(join(__dirname, 'long.txt'))
+const long = readFileSync(join(import.meta.dirname, 'long.txt'))
 const longText = long.toString('utf8')
 
-async function run() {
-  const output = [
-    await b.suite(
-      'Short input without segment',
+// Short input without segment
+const shortBench = new Bench()
 
-      b.add('@napi-rs/pinyin', () => {
-        pinyin(short)
-      }),
+shortBench
+  .add('@napi-rs/pinyin', () => {
+    pinyin(short)
+  })
+  .add('pinyin-pro', () => {
+    pinyinPro(short)
+  })
+  .add('node-pinyin', () => {
+    nodePinyin(short)
+  })
 
-      b.add('pinyin-pro', () => {
-        pinyinPro(short)
-      }),
+await shortBench.run()
 
-      b.add('node-pinyin', () => {
-        nodePinyin(short)
-      }),
+console.table(shortBench.table())
 
-      b.cycle(),
-      b.complete(),
-    ),
+// Long input without segment
+const longBench = new Bench()
 
-    await b.suite(
-      'Long input without segment',
+longBench
+  .add('@napi-rs/pinyin', () => {
+    pinyin(long)
+  })
+  .add('pinyin-pro', () => {
+    pinyinPro(longText)
+  })
+  .add('node-pinyin', () => {
+    nodePinyin(longText)
+  })
 
-      b.add('@napi-rs/pinyin', () => {
-        pinyin(long)
-      }),
+await longBench.run()
+console.table(longBench.table())
 
-      b.add('pinyin-pro', () => {
-        pinyinPro(longText)
-      }),
+// Short input with segment
+const shortSegmentBench = new Bench()
 
-      b.add('node-pinyin', () => {
-        nodePinyin(longText)
-      }),
+shortSegmentBench
+  .add('@napi-rs/pinyin', () => {
+    pinyin(short, { segment: true })
+  })
+  .add('node-pinyin', () => {
+    nodePinyin(short, { segment: true })
+  })
 
-      b.cycle(),
-      b.complete(),
-    ),
-    await b.suite(
-      'Short input with segment',
+await shortSegmentBench.run()
+console.table(shortSegmentBench.table())
 
-      b.add('@napi-rs/pinyin', () => {
-        pinyin(short, { segment: true })
-      }),
+// Long input with segment
+const longSegmentBench = new Bench()
 
-      b.add('node-pinyin', () => {
-        nodePinyin(short, { segment: true })
-      }),
+longSegmentBench
+  .add('@napi-rs/pinyin', () => {
+    pinyin(long, { segment: true })
+  })
+  .add('node-pinyin', () => {
+    nodePinyin(longText, { segment: true })
+  })
 
-      b.cycle(),
-      b.complete(),
-    ),
-
-    await b.suite(
-      'Long input with segment',
-
-      b.add('@napi-rs/pinyin', () => {
-        pinyin(long, { segment: true })
-      }),
-
-      b.add('node-pinyin', () => {
-        nodePinyin(longText, { segment: true })
-      }),
-
-      b.cycle(),
-      b.complete(),
-    ),
-  ]
-    .map(formatSummary)
-    .join('\n')
-
-  await fs.writeFile(join(process.cwd(), 'bench.txt'), output, 'utf8')
-}
-
-function formatSummary(summary: Summary): string {
-  return summary.results
-    .map(
-      (result) =>
-        `${summary.name}#${result.name} x ${result.ops} ops/sec ±${result.margin}% (${result.samples} runs sampled)`,
-    )
-    .join('\n')
-}
-
-run().catch((e) => {
-  console.error(e)
-})
+await longSegmentBench.run()
+console.table(longSegmentBench.table())

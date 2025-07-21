@@ -1,9 +1,14 @@
-const { execSync } = require('child_process')
-const { readFileSync, writeFileSync } = require('fs')
-const { join } = require('path')
-const { platform, arch } = require('os')
+import { execSync } from 'node:child_process'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { platform, arch } from 'node:os'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
 
-const { platformArchTriples } = require('@napi-rs/triples')
+import { platformArchTriples } from '@napi-rs/triples'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const PLATFORM_NAME = platform()
 const ARCH_NAME = arch()
