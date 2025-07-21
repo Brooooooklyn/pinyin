@@ -1,3 +1,12 @@
+## [1.7.6](https://github.com/Brooooooklyn/pinyin/compare/v1.7.5...v1.7.6) (2025-07-21)
+
+
+### Features
+
+* upgrade to NAPI-RS 3.0 ([#324](https://github.com/Brooooooklyn/pinyin/issues/324)) ([f923a4f](https://github.com/Brooooooklyn/pinyin/commit/f923a4f9e9a01e0085aba42af91b9a7edfb32e0e))
+
+
+
 ## [1.7.5](https://github.com/Brooooooklyn/pinyin/compare/v1.7.4...v1.7.5) (2024-03-24)
 
 ### Bug Fixes
