@@ -8,7 +8,7 @@ version = "0.1.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-jieba-rs = "0.7"
+jieba-rs = "0.8"
 napi = "3"
 napi-derive = "3"
 once_cell = "1"
