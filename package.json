@@ -25,7 +25,7 @@
     "src/**",
     "build.rs",
     "Cargo.toml",
-    "postinstall.js"
+    "postinstall.mjs"
   ],
   "napi": {
     "binaryName": "pinyin",
