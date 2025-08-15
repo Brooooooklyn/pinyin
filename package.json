@@ -92,7 +92,7 @@
     "pinyin": "^4.0.0",
     "pinyin-pro": "^3.26.0",
     "prettier": "^3.6.2",
-    "tinybench": "^4.0.1",
+    "tinybench": "^5.0.0",
     "typescript": "^5.8.3"
   },
   "lint-staged": {
