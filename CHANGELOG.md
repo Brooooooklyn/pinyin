@@ -1,3 +1,12 @@
+## [1.7.7](https://github.com/Brooooooklyn/pinyin/compare/v1.7.6...v1.7.7) (2025-09-11)
+
+
+### Bug Fixes
+
+* update postinstall file name ([#327](https://github.com/Brooooooklyn/pinyin/issues/327)) ([155d8c8](https://github.com/Brooooooklyn/pinyin/commit/155d8c80ede77a6430b77cc435b62298b306e20f))
+
+
+
 ## [1.7.6](https://github.com/Brooooooklyn/pinyin/compare/v1.7.5...v1.7.6) (2025-07-21)
 
 
