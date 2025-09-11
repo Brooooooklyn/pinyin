@@ -229,11 +229,11 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
 }
 
 #[napi(js_name = "pinyin", ts_return_type = "string[] | string[][]")]
-pub fn to_pinyin(
-  env: Env,
-  input: Either<String, &[u8]>,
+pub fn to_pinyin<'env>(
+  env: &'env Env,
+  input: Either<String, &'env [u8]>,
   opt: Option<PinyinConvertOptions>,
-) -> Result<Array> {
+) -> Result<Array<'env>> {
   let opt = opt.unwrap_or(PinyinConvertOptions {
     style: Some(PinyinStyle::Plain),
     segment: Some(false),
@@ -269,7 +269,7 @@ pub fn to_pinyin(
           non_hans_chars.into_iter().collect::<String>()
         });
       }
-      Array::from_vec(&env, result_arr)
+      Array::from_vec(env, result_arr)
     }
     PinyinOption::SegmentDefault => {
       let mut result_arr = Vec::new();
@@ -292,7 +292,7 @@ pub fn to_pinyin(
       if !non_hans.is_empty() {
         result_arr.push(non_hans);
       }
-      Array::from_vec(&env, result_arr)
+      Array::from_vec(env, result_arr)
     }
     PinyinOption::Multi => {
       let mut result_arr = Vec::new();
@@ -318,7 +318,7 @@ pub fn to_pinyin(
         let buf_arr = vec![non_hans_chars.into_par_iter().collect::<String>()];
         result_arr.push(buf_arr);
       }
-      Array::from_vec(&env, result_arr)
+      Array::from_vec(env, result_arr)
     }
     PinyinOption::SegmentMulti => {
       let mut result_arr = Vec::new();
@@ -349,7 +349,7 @@ pub fn to_pinyin(
         let buf_arr = vec![non_hans];
         result_arr.push(buf_arr);
       }
-      Array::from_vec(&env, result_arr)
+      Array::from_vec(env, result_arr)
     }
   }
 }

@@ -8,12 +8,12 @@
 
 > 🚀 Help me to become a full-time open-source developer by [sponsoring me on Github](https://github.com/sponsors/Brooooooklyn)
 
-[rust-pinyin](https://github.com/mozillazg/rust-pinyin) Node.js 版本，不支持 web.
+[rust-pinyin](https://github.com/mozillazg/rust-pinyin) Node.js 版本，WebAssembly 版本支持 Web/Node.js.
 
 ## 功能
 
 - 超高性能
-- 无 `postinstall` 与 `node-gyp`，纯净安装无烦恼
+- 无 `postinstall` 与 `node-gyp`
 - 跨 `Node.js` 版本支持，升级 Node 版本无需 `rebuild/reinstall`
 - `linux alpine` 支持
 - **分词**再转拼音

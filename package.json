@@ -69,31 +69,31 @@
     "format:source": "prettier --config ./package.json --write \"./**/*.{js,ts}\"",
     "format:yaml": "prettier --parser yaml --write \"./**/*.{yml,yaml}\"",
     "lint": "oxlint",
+    "preversion": "napi build --platform && git add .",
     "prepublishOnly": "napi prepublish -t npm",
-    "postinstall": "node postinstall.mjs",
     "test": "ava",
     "version": "napi version && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
     "postpublish": "pinst --enable"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^3.0.1",
+    "@napi-rs/cli": "^3.2.0",
     "@oxc-node/core": "^0.0.32",
-    "@types/node": "^24.0.15",
+    "@types/node": "^24.3.1",
     "@types/pinyin": "^2.10.2",
     "ava": "^6.4.1",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^9.31.0",
+    "eslint": "^9.35.0",
     "husky": "9",
-    "lint-staged": "^16.1.2",
-    "nodejieba": "^3.4.4",
+    "lint-staged": "^16.1.6",
+    "nodejieba": "^3.5.2",
     "npm-run-all2": "^8.0.4",
-    "oxlint": "^1.7.0",
+    "oxlint": "^1.14.0",
     "pinst": "^3.0.0",
     "pinyin": "^4.0.0",
-    "pinyin-pro": "^3.26.0",
+    "pinyin-pro": "^3.27.0",
     "prettier": "^3.6.2",
-    "tinybench": "^5.0.0",
-    "typescript": "^5.8.3"
+    "tinybench": "^5.0.1",
+    "typescript": "^5.9.2"
   },
   "lint-staged": {
     "*.@(js|ts|tsx)": [
@@ -140,8 +140,5 @@
     "type": "github",
     "url": "https://github.com/sponsors/Brooooooklyn"
   },
-  "packageManager": "yarn@4.9.3",
-  "dependencies": {
-    "@napi-rs/triples": "^2.0.0"
-  }
+  "packageManager": "yarn@4.9.4"
 }
