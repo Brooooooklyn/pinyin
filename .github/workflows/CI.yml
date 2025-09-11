@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: 'yarn'
@@ -115,13 +115,18 @@ jobs:
             build: yarn build --target aarch64-unknown-linux-ohos
           - host: ubuntu-latest
             target: wasm32-wasip1-threads
-            build: yarn build --target wasm32-wasip1-threads
+            build: |
+              wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-27/wasi-sdk-27.0-x86_64-linux.tar.gz
+              tar -xvf wasi-sdk-27.0-x86_64-linux.tar.gz
+              export WASI_SDK_PATH="$(pwd)/wasi-sdk-27.0-x86_64-linux"
+              export BINDGEN_EXTRA_CLANG_ARGS="--sysroot=$WASI_SDK_PATH/share/wasi-sysroot"
+              yarn build --target wasm32-wasip1-threads
     name: stable - ${{ matrix.settings.target }} - node@22
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: yarn
@@ -141,10 +146,10 @@ jobs:
             .cargo-cache
             target/
           key: ${{ matrix.settings.target }}-cargo-${{ matrix.settings.host }}
-      - uses: goto-bus-stop/setup-zig@v2
+      - uses: mlugg/setup-zig@v2
         if: ${{ contains(matrix.settings.target, 'musl') }}
         with:
-          version: 0.14.1
+          version: 0.15.1
       - name: Install cargo-zigbuild
         uses: taiki-e/install-action@v2
         if: ${{ contains(matrix.settings.target, 'musl') }}
@@ -245,7 +250,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: yarn
@@ -282,7 +287,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: yarn
@@ -345,7 +350,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: yarn
@@ -377,7 +382,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: yarn
