@@ -82,7 +82,7 @@
     "@types/pinyin": "^2.10.2",
     "ava": "^6.4.1",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^9.35.0",
+    "eslint": "^10.0.0",
     "husky": "9",
     "lint-staged": "^16.1.6",
     "nodejieba": "^3.5.2",
