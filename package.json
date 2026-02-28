@@ -80,7 +80,7 @@
     "@oxc-node/core": "^0.0.35",
     "@types/node": "^24.3.1",
     "@types/pinyin": "^2.10.2",
-    "ava": "^6.4.1",
+    "ava": "^7.0.0",
     "conventional-changelog-cli": "^5.0.0",
     "eslint": "^10.0.0",
     "husky": "9",
