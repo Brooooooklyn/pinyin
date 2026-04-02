@@ -116,7 +116,7 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
         Ok(PinyinData::Default(output_py))
       }
       PinyinOption::SegmentDefault => {
-        let input_words = JIEBA.cut_all(input);
+        let input_words = JIEBA.cut(input, false);
         let input_len = input.len();
         let mut output_py: Vec<String> = Vec::with_capacity(input_len);
         let mut has_pinyin = false;
@@ -170,7 +170,7 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
         Ok(PinyinData::Multi(output_multi_py))
       }
       PinyinOption::SegmentMulti => {
-        let input_words = JIEBA.cut_all(input);
+        let input_words = JIEBA.cut(input, false);
         let input_len = input.len();
         let mut output_multi_py: Vec<Vec<String>> = Vec::with_capacity(input_len);
         let mut non_hans = String::with_capacity(input.len());
