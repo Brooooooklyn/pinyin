@@ -82,6 +82,13 @@ test('mixed with multi segment', (t) => {
   ])
 })
 
+test('issue #244: asyncPinyin with segment should not duplicate', async (t) => {
+  t.deepEqual(
+    await asyncPinyin('中心', { style: PINYIN_STYLE.Plain, segment: true }),
+    ['zhong', 'xin']  // was ['zhong', 'zhong', 'xin', 'xin'] before the fix
+  )
+})
+
 test('我,要,排,序 => 序,我,排,要', (t) => {
   const data = '我要排序'.split('')
   const sortedData = data.sort(compare)
