@@ -115,9 +115,9 @@
       "--import",
       "@oxc-node/core/register"
     ],
-    "extensions": {
-      "ts": "module"
-    },
+    "extensions": [
+      "ts"
+    ],
     "timeout": "1m",
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
