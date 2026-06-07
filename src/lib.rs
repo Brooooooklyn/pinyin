@@ -122,7 +122,7 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
         let mut has_pinyin = false;
         let mut non_hans = String::with_capacity(input_len);
         for word in input_words {
-          for py in word.to_pinyin().flatten() {
+          for py in word.word.to_pinyin().flatten() {
             if !non_hans.is_empty() {
               output_py.push(non_hans.clone());
               non_hans.clear();
@@ -131,7 +131,7 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
             has_pinyin = true;
           }
           if !has_pinyin {
-            non_hans.push_str(word);
+            non_hans.push_str(word.word);
           }
         }
         if !non_hans.is_empty() {
@@ -175,7 +175,7 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
         let mut output_multi_py: Vec<Vec<String>> = Vec::with_capacity(input_len);
         let mut non_hans = String::with_capacity(input.len());
         for word in input_words {
-          let multi_py = word.to_pinyin_multi();
+          let multi_py = word.word.to_pinyin_multi();
           let mut has_pinyin = false;
           for py in multi_py.flatten() {
             if !non_hans.is_empty() {
@@ -190,7 +190,7 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
             has_pinyin = true;
           }
           if !has_pinyin {
-            non_hans.push_str(word);
+            non_hans.push_str(word.word);
           }
         }
         if !non_hans.is_empty() {
@@ -277,7 +277,7 @@ pub fn to_pinyin<'env>(
       let mut non_hans = String::with_capacity(input_str.len());
       for word in input_words {
         let mut has_pinyin = false;
-        for py in word.to_pinyin().flatten() {
+        for py in word.word.to_pinyin().flatten() {
           if !non_hans.is_empty() {
             result_arr.push(non_hans.clone());
             non_hans.clear();
@@ -286,7 +286,7 @@ pub fn to_pinyin<'env>(
           has_pinyin = true;
         }
         if !has_pinyin {
-          non_hans.push_str(word);
+          non_hans.push_str(word.word);
         }
       }
       if !non_hans.is_empty() {
@@ -325,7 +325,7 @@ pub fn to_pinyin<'env>(
       let input_words = JIEBA.cut(input_str, false);
       let mut non_hans = String::with_capacity(input_str.len());
       for word in input_words {
-        let multi_py = word.to_pinyin_multi();
+        let multi_py = word.word.to_pinyin_multi();
         let mut has_pinyin = false;
         for py in multi_py.flatten() {
           if !non_hans.is_empty() {
@@ -342,7 +342,7 @@ pub fn to_pinyin<'env>(
           has_pinyin = true;
         }
         if !has_pinyin {
-          non_hans.push_str(word);
+          non_hans.push_str(word.word);
         }
       }
       if !non_hans.is_empty() {
