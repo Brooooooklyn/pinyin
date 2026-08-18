@@ -119,9 +119,9 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
         let input_words = JIEBA.cut(input, false);
         let input_len = input.len();
         let mut output_py: Vec<String> = Vec::with_capacity(input_len);
-        let mut has_pinyin = false;
         let mut non_hans = String::with_capacity(input_len);
         for word in input_words {
+          let mut has_pinyin = false;
           for py in word.word.to_pinyin().flatten() {
             if !non_hans.is_empty() {
               output_py.push(non_hans.clone());
