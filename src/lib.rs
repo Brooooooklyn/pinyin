@@ -93,7 +93,7 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
   type JsValue = Array<'task>;
 
   fn compute(&mut self) -> Result<Self::Output> {
-    let input = get_chars_buffer(&self.input);
+    let input = get_chars_buffer(&self.input)?;
     match self.option {
       PinyinOption::Default => {
         let input_len = input.len();
@@ -367,16 +367,24 @@ fn get_pinyin(input: Pinyin, style: PinyinStyle) -> &'static str {
 fn get_chars<'a>(input: &'a Either<String, &'a [u8]>) -> Result<&'a str> {
   match input {
     Either::A(input) => Ok(input.as_str()),
-    Either::B(input) => Ok(unsafe {
-      std::str::from_utf8_unchecked(std::slice::from_raw_parts(input.as_ptr(), input.len()))
+    Either::B(input) => std::str::from_utf8(input).map_err(|err| {
+      Error::new(
+        Status::InvalidArg,
+        format!("Input buffer must contain valid UTF-8: {err}"),
+      )
     }),
   }
 }
 
-fn get_chars_buffer(input: &Either<String, Buffer>) -> &str {
+fn get_chars_buffer(input: &Either<String, Buffer>) -> Result<&str> {
   match input {
-    Either::A(input) => input.as_str(),
-    Either::B(input) => unsafe { std::str::from_utf8_unchecked(input.as_ref()) },
+    Either::A(input) => Ok(input.as_str()),
+    Either::B(input) => std::str::from_utf8(input.as_ref()).map_err(|err| {
+      Error::new(
+        Status::InvalidArg,
+        format!("Input buffer must contain valid UTF-8: {err}"),
+      )
+    }),
   }
 }
 
