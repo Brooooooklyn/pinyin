@@ -14,7 +14,10 @@ const __wasi = new __WASI({
 })
 
 const __wasmUrl = new URL('./pinyin.wasm32-wasi.wasm', import.meta.url).href
-const __wasmResponse = await globalThis.fetch(__wasmUrl)
+const __wasmResponse = await globalThis.fetch(__wasmUrl, {
+  credentials: 'same-origin',
+  mode: 'same-origin',
+})
 if (!__wasmResponse.ok) {
   throw new Error(
     'Failed to fetch WASI module ' +
@@ -23,6 +26,11 @@ if (!__wasmResponse.ok) {
       __wasmResponse.status +
       ' ' +
       (__wasmResponse.statusText || 'Unknown Status'),
+  )
+}
+if (__wasmResponse.url !== __wasmUrl) {
+  throw new Error(
+    'Refusing to load WASI module from unexpected location ' + __wasmResponse.url,
   )
 }
 const __wasmFile = await __wasmResponse.arrayBuffer()
