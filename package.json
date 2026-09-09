@@ -19,14 +19,7 @@
     "汉字",
     "中文"
   ],
-  "files": [
-    "index.d.ts",
-    "index.js",
-    "src/**",
-    "build.rs",
-    "Cargo.toml",
-    "postinstall.mjs"
-  ],
+  "files": ["index.d.ts", "index.js", "src/**", "build.rs", "Cargo.toml", "postinstall.mjs"],
   "napi": {
     "binaryName": "pinyin",
     "targets": [
@@ -76,48 +69,38 @@
     "postpublish": "pinst --enable"
   },
   "devDependencies": {
-    "@napi-rs/cli": "^3.2.0",
+    "@emnapi/core": "^2.0.0-alpha.5",
+    "@emnapi/runtime": "^2.0.0-alpha.5",
+    "@napi-rs/cli": "^3.9.0",
+    "@napi-rs/wasm-runtime": "^1.2.3",
     "@oxc-node/core": "^0.1.0",
-    "@types/node": "^24.3.1",
+    "@types/node": "^26.5.0",
     "@types/pinyin": "^2.10.2",
-    "ava": "^8.0.0",
+    "ava": "^8.0.1",
     "conventional-changelog-cli": "^5.0.0",
-    "eslint": "^10.0.0",
+    "emnapi": "^2.0.0-alpha.5",
+    "eslint": "^10.10.0",
     "husky": "9",
-    "lint-staged": "^17.0.0",
-    "nodejieba": "^3.5.2",
-    "npm-run-all2": "^9.0.0",
-    "oxlint": "^1.14.0",
+    "lint-staged": "^17.5.0",
+    "nodejieba": "^3.5.8",
+    "npm-run-all2": "^9.0.3",
+    "oxlint": "^1.82.0",
     "pinst": "^3.0.0",
     "pinyin": "^4.0.0",
-    "pinyin-pro": "^3.27.0",
-    "prettier": "^3.6.2",
-    "tinybench": "^6.0.0",
-    "typescript": "^7.0.0"
+    "pinyin-pro": "^3.29.3",
+    "prettier": "^3.9.6",
+    "tinybench": "^6.1.6",
+    "typescript": "^7.0.2"
   },
   "lint-staged": {
-    "*.@(js|ts|tsx)": [
-      "prettier --write",
-      "eslint -c .eslintrc.yml --fix"
-    ],
-    "*.@(yml|yaml)": [
-      "prettier --parser yaml --write"
-    ],
-    "*.md": [
-      "prettier --parser markdown --write"
-    ],
-    "*.json": [
-      "prettier --parser json --write"
-    ]
+    "*.@(js|ts|tsx)": ["prettier --write", "eslint -c .eslintrc.yml --fix"],
+    "*.@(yml|yaml)": ["prettier --parser yaml --write"],
+    "*.md": ["prettier --parser markdown --write"],
+    "*.json": ["prettier --parser json --write"]
   },
   "ava": {
-    "nodeArguments": [
-      "--import",
-      "@oxc-node/core/register"
-    ],
-    "extensions": [
-      "ts"
-    ],
+    "nodeArguments": ["--import", "@oxc-node/core/register"],
+    "extensions": ["ts"],
     "timeout": "1m",
     "environmentVariables": {
       "TS_NODE_PROJECT": "./tsconfig.json"
