@@ -115,10 +115,7 @@ jobs:
             build: yarn build --target aarch64-unknown-linux-ohos
           - host: ubuntu-latest
             target: wasm32-wasip1-threads
-            # Pinned to wasi-sdk 33. wasi-sdk 34 changed the signature of
-            # __wasilibc_futex_wait_atomic_wait, which no longer matches the
-            # prebuilt libemnapi-napi-rs-mt.a that emnapi 2.0.0-alpha.5 ships.
-            # The link then emits an invalid wasm module.
+            # wasi-sdk 34 drops __wasi_init_tp; stable's crt1-reactor.o needs it. Unpin after Rust 1.100. napi-rs#3491
             build: |
               wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-33/wasi-sdk-33.0-x86_64-linux.tar.gz
               tar -xvf wasi-sdk-33.0-x86_64-linux.tar.gz
