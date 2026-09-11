@@ -105,11 +105,11 @@ asyncPinyin('中心').then(console.log.bind(console)) // ['zhong', 'xin']
 
   - **Options.segment?** `<boolean>`
 
-    是否使用词语词典选择上下文读音，默认 `false`。例如 `pinyin('重庆银行音乐', { segment: true })` 返回 `['chong', 'qing', 'yin', 'hang', 'yin', 'yue']`。此行为修正了旧版只分词却未改变读音的问题；`heteronym: true` 仍返回各字符的全部候选读音。
+    是否分词，默认 `false`。未指定 `segmenter` 时完全保留旧版 Jieba 分词行为与逐字读音：`pinyin('重庆银行音乐', { segment: true })` 返回 `['zhong', 'qing', 'yin', 'xing', 'yin', 'le']`。旧版混合词处理也保留，例如 `B超` 返回 `['chao']`，包括 `heteronym: true` 时忽略词内未收录字符的行为。
 
   - **Options.segmenter?** `<'phrase' | 'jieba'>`
 
-    `segment: true` 时使用的读音选择方式，默认 `'phrase'`。`'jieba'` 使用 `jieba-rs` 分词，优先选择词内的读音匹配，同时保留跨词边界的词典回退（例如「划分 / 为」中的「分为」）。未匹配字符使用默认读音。Node 接口使用 `HMM=false`；首次非 ASCII 的 Jieba 转换会初始化共享词典。`segment: false` 或 `heteronym: true` 不执行分词。
+    显式启用 `segment: true` 的上下文读音选择；省略时保留旧版行为。`'phrase'` 直接匹配读音词典；`'jieba'` 使用 `jieba-rs` 分词，优先选择词内的读音匹配，同时保留跨词边界的词典回退（例如「划分 / 为」中的「分为」）。未匹配字符使用默认读音。Node 接口使用 `HMM=false`；首次非 ASCII 的 Jieba 转换会初始化共享词典。显式指定 `segmenter` 时，`segment: false` 或 `heteronym: true` 使用逐字读音并跳过上下文分词；省略 `segmenter` 的旧版多音字分词行为不变。
 
 ```ts
 pinyin('重庆银行音乐', { segment: true, segmenter: 'jieba' })
@@ -122,12 +122,12 @@ await asyncPinyin('重庆银行音乐', { segment: true, segmenter: 'jieba' })
 ```ts
 import { pinyinString, PINYIN_STYLE } from '@napi-rs/pinyin'
 
-pinyinString('重庆银行', { segment: true, style: PINYIN_STYLE.WithTone })
+pinyinString('重庆银行', { segment: true, segmenter: 'phrase', style: PINYIN_STYLE.WithTone })
 // 'chóng qìng yín háng'
 pinyinString('中国', { separator: '-' })
 // 'zhong-guo'
 ```
 
-`pinyinString` 接受 `string | Uint8Array`，支持 `style`、`segment`、`segmenter` 和 `separator`（默认空格）。当最终需要文本时，它能避免先创建大量 JavaScript 数组元素再拼接。连续的非汉字内容按原样保留为一个片段，非法 UTF-8 字节输入会报错。
+`pinyinString` 接受 `string | Uint8Array`，支持 `style`、`segment`、`segmenter` 和 `separator`（默认空格）。当最终需要文本时，它能避免先创建大量 JavaScript 数组元素再拼接。结果与相同选项的 `pinyin(...).join(separator)` 一致，非法 UTF-8 字节输入会报错。
 
 Rust 使用方式与词典来源见 [`napi-pinyin-core`](crates/pinyin-core)。词典保留了上游 MIT 许可；本实现没有提供 pinyin-pro 的所有自定义词典、姓氏和变调选项。

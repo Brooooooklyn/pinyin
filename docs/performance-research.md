@@ -1,8 +1,8 @@
 # Pinyin algorithms, SIMD optimization, and benchmarks
 
-This is the consolidated research and implementation report for the standalone Rust core, optional Jieba integration, UTF-8/UTF-16 work, JSON escaping, and remaining SIMD paths. The implementation replaces per-character allocations and repeated JavaScript boundary work with static data and specialized output writers. It also makes contextual segmentation affect pronunciation. The old character lookup itself was already inexpensive.
+This is the consolidated research and implementation report for the standalone Rust core, optional Jieba integration, UTF-8/UTF-16 work, JSON escaping, and remaining SIMD paths. The implementation replaces per-character allocations and repeated JavaScript boundary work with static data and specialized output writers. It adds explicitly selected contextual pronunciation while preserving every existing Node option. The old character lookup itself was already inexpensive.
 
-The final Jieba-enabled binding is **1.93–7.75× faster than pinyin-pro 3.29.3** on the measured 100,000-character synthetic corpus with identical outputs, depending on output style and shape. Natural prose differs in dictionary coverage and reading policy; those timings are not an equivalent-accuracy comparison. The last optimization pass reduces long-ASCII string conversion time by **6.5–11.4×** relative to the preceding UTF-16 implementation. Smaller changes vary with desktop noise; neither result establishes an absolute performance limit.
+The archived research build at `5267ab2` was **1.93–7.75× faster than pinyin-pro 3.29.3** on the measured 100,000-character synthetic corpus with identical outputs, depending on output style and shape. Natural prose differs in dictionary coverage and reading policy; those timings are not an equivalent-accuracy comparison. That archived optimization pass reduced long-ASCII string conversion time by **6.5–11.4×** relative to the preceding UTF-16 implementation. Smaller changes vary with desktop noise; neither result establishes an absolute performance limit. These numbers predate the compatibility and Rust transcoder changes below and are not measurements of the current branch.
 
 - [Algorithms and compatibility](#algorithm-comparison)
 - [Jieba integration](#jieba-integration)
@@ -13,6 +13,57 @@ The final Jieba-enabled binding is **1.93–7.75× faster than pinyin-pro 3.29.3
 - [Rejected experiments](#experiments-that-did-not-become-the-implementation)
 - [Validation and reproduction](#validation-and-reproduction)
 - [Historical stage measurements](#historical-stage-measurements) and [sources](#sources)
+
+## Compatibility and CI follow-up (September 12, 2026)
+
+The first PR revision unintentionally changed existing `segment: true` outputs. The binding now keeps the original behavior unless a new contextual `segmenter` is explicitly supplied. Regression tests cover mixed Jieba dictionary words, every style, heteronyms, sync/async calls, byte input, and direct versus bulk output. A freshly built `f4409a3` native binding matched the new binding in **6,705 comparisons** across 76 fixtures, including all 64 mixed Latin/CJK words in the default Jieba dictionary. Core tests separately compare legacy segmentation with the original pinyin 0.11.0 pipeline.
+
+[CI run 34618899152](https://github.com/Brooooooklyn/pinyin/actions/runs/34618899152) failed inside the C++ source bundled by `simdutf` 0.7.0: Zig's x64 musl compiler rejected AVX-512 intrinsics requiring `evex512`, and the ARM64 GNU cross compiler rejected newer NEON/C++ constructs. Global CPU flags would not be a portable fix. The dependency is removed from both the manifest and lockfile. Our existing Rust-only `simdutf8::compat` validator remains unchanged: it validates UTF-8 and preserves error offsets; it does not provide UTF-16 or UTF-32 transcoding. Native conversion now uses local Rust NEON/SSSE3 blocks, while the existing Rust WASM SIMD128 implementation remains. The optional kernel crate has no dependencies.
+
+Local follow-up validation passed all 220 binding tests in each fresh native SIMD, native scalar, standard NAPI WASI, and explicit SIMD WASI release build. All six kernel tests passed on ARM64 and x64 under Rosetta; the core passed nine default tests and ten feature-enabled correctness tests plus six Jieba tests. Encoding tests, default/scalar Clippy, x64 kernel Clippy, formatting, lint, and focused TypeScript checks passed. The kernels also compile for both formerly failing Linux targets. Remote build/test status is reported by the PR checks.
+
+Native SSSE3 is checked at runtime; CPUs without it take the scalar conversion path. ARM64 uses baseline NEON. ASCII/JSON scans and packed trie comparisons retain their NEON/SSE2 implementations independently. No AVX or CPU-specific build flags are added. Standard and SIMD WASM continue through NAPI-RS, and the SIMD build helper uses the public `NapiCli.build` API.
+
+The older research sections after this follow-up retain historical measurements. Their saved binaries used the former C++ transcoder. Early benchmark options without `segmenter` selected contextual phrases in those experimental builds; use explicit `segmenter: 'phrase'` to request that behavior now. They are not measurements of restored legacy segmentation.
+
+### Native follow-up measurements
+
+Release builds on the same active M5 Max desktop, Node v24.21.0, with no concurrent local build/test jobs during timing. Inputs are preconstructed JavaScript strings. Each row checks exact output equality, warms both bindings with 30 calls, and records seven alternating 100 ms rounds. Values are median microseconds per complete synchronous call; small differences are within desktop variation. The baseline is the saved pre-fix PR binary, except the legacy row, which compares against the freshly rebuilt original `f4409a3` binding. There is no claim that removing C++ improves every workload.
+
+| Call                | Unicode scalars | Before, µs | Rust kernels, µs |
+| ------------------- | --------------: | ---------: | ---------------: |
+| ascii string        |          114000 |      19.49 |            16.77 |
+| dense default array |           87000 |    1837.37 |          1795.13 |
+| dense phrase array  |           87000 |    1958.45 |          1970.82 |
+| dense phrase string |           87000 |     708.41 |           706.26 |
+| dense jieba array   |           87000 |    3212.85 |          3167.31 |
+| mixed array         |           76000 |     731.07 |           759.41 |
+| mixed string        |           76000 |     247.31 |           272.04 |
+| legacy array        |           76000 |    2636.69 |          1477.27 |
+
+Dense Chinese performance stayed close to the earlier C++ build. ASCII string output improved in this run; mixed text was about 4% slower for arrays and 10% slower for strings. Restored legacy segmented arrays remained about 1.78× faster than original main on this fixture. These checks do not rerun the historical pinyin-pro comparison or establish x64 speedups.
+
+The dense fixture repeats `重庆银行音乐会中国文字拼音汉语语言文学发展经济文化北京上海` 3,000 times; mixed text repeats `B超 A股\0🙂中é文 https://example.com/重庆银行音乐 ` 2,000 times, with an actual NUL; ASCII repeats the alphabet plus ` 0123456789\n` 3,000 times, with an actual newline. Dense default and ASCII use default options. Phrase and Jieba rows explicitly set `segment: true`, their corresponding `segmenter`, and tone style; mixed and legacy rows use tone style, with `segment: true` only for legacy.
+
+<details>
+<summary>Follow-up sample provenance</summary>
+
+- pre-fix PR SHA-256: `97ea1a39389f759ee9cc5fd8ee9d84d82986afd16fb190b73e6192fca9a6838e`
+- current native SHA-256: `5cce08ef0bb101f6a01663454e2383ffea00a36447d5f3596af9c8dfd7ed7675`
+- original main SHA-256: `20263a1ad1876e8b5043c4e0b87e412751d01bd9dae661fd63979f9525aaa2a4`
+
+Seven per-round microsecond samples, before / after:
+
+- ascii string: 25.62, 19.49, 19.69, 19.57, 19.22, 19.16, 19.22 / 17.02, 16.64, 17.00, 16.71, 17.21, 16.63, 16.77
+- dense default array: 1754.65, 1788.94, 1777.11, 1862.71, 1862.34, 1856.56, 1837.37 / 1772.57, 1795.13, 1750.61, 1789.03, 1855.32, 1836.59, 1828.22
+- dense phrase array: 1977.27, 2002.71, 1947.62, 1958.45, 1931.92, 1992.32, 1947.72 / 1889.31, 1933.23, 1903.89, 1970.82, 2002.86, 1993.19, 1990.68
+- dense phrase string: 708.41, 703.63, 702.91, 705.74, 716.47, 711.31, 719.84 / 701.02, 694.37, 706.26, 725.20, 699.44, 717.37, 720.50
+- dense jieba array: 3205.69, 3232.57, 3189.76, 3180.72, 3212.85, 3213.01, 3216.00 / 3130.47, 3279.40, 3119.15, 3151.90, 3167.31, 3187.13, 3172.60
+- mixed array: 738.93, 731.07, 718.76, 738.91, 717.53, 741.88, 723.26 / 766.62, 743.73, 763.82, 757.95, 759.41, 747.65, 771.36
+- mixed string: 252.45, 247.31, 243.44, 248.79, 251.37, 244.74, 239.60 / 269.76, 273.45, 284.51, 272.04, 273.38, 270.94, 270.92
+- legacy array: 2643.00, 2679.41, 2636.69, 2632.31, 2639.61, 2627.34, 2611.10 / 1541.44, 1509.39, 1469.43, 1458.72, 1498.06, 1477.27, 1471.56
+
+</details>
 
 ## Scope and reference versions
 
@@ -85,7 +136,7 @@ Bulk serialization trades a temporary serialized buffer for fewer native calls. 
 
 The default remains plain pinyin, not tone-marked pinyin. Output stays `string[]`, or `string[][]` with `heteronym: true`. Adjacent non-Han characters remain grouped, empty input returns an empty array, and neutral tones receive no numeric suffix. UTF-8 errors and the asynchronous input snapshot guarantee remain intact.
 
-`segment: true` now performs phrase pronunciation selection. This is an intentional behavior correction: 重庆银行音乐 becomes `chong qing yin hang yin yue`, while default character mode retains `zhong qing yin xing yin le`. With heteronyms enabled, both segment settings return the complete character alternatives in their legacy order. The flag selects pronunciation context; it does not return word boundaries.
+`segment: true` without `segmenter` preserves the original Jieba `HMM=false` pipeline, including heteronyms. 重庆银行音乐 retains `zhong qing yin xing yin le`. A segmented word containing any mapped character drops its unmapped characters, so `B超` still produces `['chao']` and `A股` produces `['gu']`; wholly unmapped words remain grouped. The compatibility iterator borrows input ranges and syllables rather than allocating each reading. Contextual pronunciation requires `segment: true, segmenter: 'phrase'` or `segmenter: 'jieba'`. Both are additive opt-ins, and both preserve unmapped characters. With those explicit resolvers, heteronyms return all character alternatives in their legacy order.
 
 This is not complete pinyin-pro API or pronunciation-policy compatibility. The core does not implement its surname modes, custom mutable dictionary priorities, numeric-context rules, productive tone-sandhi rules, or optional traditional-to-simplified phrase matching. Traditional characters still have character readings where the retained dataset supplies them. Individual phrase entries may already include neutral or sandhi tones.
 
@@ -111,7 +162,7 @@ pinyinString('重庆银行音乐', options)
 await asyncPinyin('重庆银行音乐', options)
 ```
 
-`segmenter` defaults to `'phrase'`. It selects the contextual resolver when `segment: true`; with `segment: false`, or with `heteronym: true`, the engine uses character readings and skips segmentation. Unknown segmenter names are rejected. Node uses `HMM=false`, matching the original integration's segmentation setting. Rust callers can supply their own Jieba instance, customize its word dictionary, and choose the HMM flag.
+Omitting `segmenter` retains legacy segmentation when `segment: true`, including with heteronyms. Explicit `'phrase'` and `'jieba'` select contextual resolvers only when `segment: true` and `heteronym` is false; otherwise those explicit modes use character readings. Unknown segmenter names are rejected. Node uses `HMM=false`, matching the original integration's segmentation setting. Rust callers can supply their own Jieba instance, customize its word dictionary, and choose the HMM flag.
 
 ### What the integration does
 
@@ -148,7 +199,7 @@ ARM64 selects NEON automatically. The default `std` feature enables runtime AVX2
 
 1. **UTF-16 input extraction.** The pinyin APIs use N-API's UTF-16 string getter instead of asking the engine to calculate and write UTF-8. Native ARM64/x64 builds use a validating SIMD UTF-16-to-UTF-8 conversion for longer input. The temporary UTF-16 allocation is released before dictionary work. Core input and token ranges remain UTF-8: this is not a claim that the entire resolver runs on UTF-16. [Node-API string extraction](https://nodejs.org/api/n-api.html#napi_get_value_string_utf16).
 2. **Direct tone-marked output.** The build script emits optional UTF-16 syllable tables. String output uses a specialized writer, including a separate loop for empty separators. Bulk flat and heteronym arrays stream UTF-16 JSON; short arrays create engine strings directly from static syllable slices. This removes both the intermediate UTF-8 tone output and its subsequent conversion. [Node-API UTF-16 string creation](https://nodejs.org/api/n-api.html#napi_create_string_utf16).
-3. **SIMD conversion where encoding remains necessary.** Non-ASCII output in other styles and long unchanged text runs use `simdutf` 0.7.0, whose bundled C++ source is 7.7.1. Inputs shorter than 32 UTF-16 units and output runs shorter than 64 UTF-8 bytes avoid FFI. The scalar decoder reserves the UTF-8 upper bound once, avoiding repeated allocations on short Chinese input. Malformed UTF-16 reuses that allocation for standard replacement decoding. [Rust simdutf API](https://docs.rs/simdutf/0.7.0/simdutf/).
+3. **Rust SIMD conversion where encoding remains necessary.** Bounded native kernels handle ASCII and three-byte BMP blocks using ARM64 NEON or runtime-detected x64 SSSE3. Other Unicode and malformed UTF-16 use standard scalar encoding and replacement, including inside vector-selected inputs. Inputs shorter than 32 UTF-16 units and output spans shorter than 64 UTF-8 bytes use scalar conversion. Output capacity is reserved from conservative input bounds; only initialized output is exposed. No C++ transcoding library is linked.
 
 Plain, numeric, and initial array output uses UTF-8 JSON; tone output writes UTF-16 directly. Known syllables bypass JSON escape scanning. Unknown UTF-8 tokens now use `json-escape-simd`, while UTF-16 output retains the bounded escape finder and bulk transcoding. The core takes valid UTF-8, and lone JavaScript surrogates retain standard replacement decoding.
 
@@ -158,7 +209,7 @@ Plain, numeric, and initial array output uses UTF-8 JSON; tone output writes UTF
 | ---------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | ASCII inside mixed input           | Skip 32-byte blocks using NEON, SSE2, or WASM SIMD128, then handle the bounded tail | String output; controls remain unchanged text. The public token/array iterator retains its original loop after regression checks |
 | Unchanged output spans             | Accumulate adjacent unmapped characters and append each complete span once          | UTF-8 strings copy directly; UTF-16 strings transcode the span in bulk                                                           |
-| Phrase scratch decoding            | Use simdutf UTF-8-to-UTF-32 on sufficiently long, Chinese-heavy input               | Native ARM64/x64; scalar decoding elsewhere                                                                                      |
+| Phrase scratch decoding            | Decode ASCII/BMP blocks with Rust intrinsics on long, Chinese-heavy input           | Native ARM64/x64; scalar decoding elsewhere                                                                                      |
 | Decoded input reuse                | Retain the phrase scratch characters for dense Chinese string output                | Both phrase and Jieba resolvers; arrays retain the faster streaming byte iterator                                                |
 | Small trie branches                | Compare four padded labels at once; keep each trie node eight bytes                 | Nodes with two to four children; larger branches keep sorted scalar searches                                                     |
 | Plain/numeric/initial array output | Use json-escape-simd 3.1.1 for unchanged text in the UTF-8 JSON writer              | Known dictionary syllables bypass escape scanning; tone output retains direct UTF-16                                             |

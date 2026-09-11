@@ -1,6 +1,6 @@
 # napi-pinyin-core
 
-A standalone Rust Chinese-to-pinyin engine with no runtime or build dependencies beyond the standard library by default. An optional `jieba` feature adds word segmentation. The Node.js and WebAssembly bindings enable that feature while keeping phrase matching as the default resolver.
+A standalone Rust Chinese-to-pinyin engine with no runtime or build dependencies beyond the standard library by default. An optional `jieba` feature adds word segmentation. The Node.js and WebAssembly bindings enable that feature while preserving legacy Node segmentation unless a contextual resolver is explicitly selected. The standalone core is a new API: its `phrases` flag directly enables phrase matching.
 
 ```toml
 [dependencies]
@@ -86,7 +86,7 @@ assert_eq!(String::from_utf16(&units).unwrap(), "chóng qìng yín háng");
 
 The `simd` feature enables `napi-pinyin-kernels` for ASCII span scanning, packed trie comparisons, and selective UTF-8 decoding. Dense Chinese string output can reuse the decoded phrase scratch buffer; mixed and ASCII-heavy text keeps a byte cursor. With `utf16`, unchanged spans also use bulk transcoding. Default builds remain dependency-free.
 
-Native ARM64/x64 transcoding uses simdutf and requires a C++ toolchain. Other native targets use portable fallbacks. WebAssembly enables vector kernels only with `-C target-feature=+simd128`; ordinary WASM builds retain their existing host requirements.
+Native transcoding uses Rust NEON on ARM64 and runtime-detected SSSE3 on x64, with portable fallbacks. The kernels have no C++ dependency. WebAssembly enables vector kernels only with `-C target-feature=+simd128`; ordinary WASM builds retain their existing host requirements.
 
 The Node workspace additionally applies a pinned Jieba 0.10.3 patch for its private ARM64 character classifier. That Cargo patch does not propagate to standalone consumers of this crate, which can use the published Jieba dependency unchanged. See the [remaining SIMD optimization report](../../docs/performance-research.md#implemented-simd-and-output-paths) for benchmarks, the patch's scope, and validation.
 

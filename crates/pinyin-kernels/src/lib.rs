@@ -5,6 +5,9 @@ mod wasm;
 #[cfg(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128"))]
 pub use wasm::{append_utf16, from_utf16_lossy};
 
+#[cfg(all(feature = "simd", any(target_arch = "aarch64", target_arch = "x86_64")))]
+mod native;
+
 /// Length of the leading ASCII run, including controls. Never reads past input.
 #[inline]
 pub fn ascii_prefix(input: &[u8]) -> usize {
@@ -95,21 +98,7 @@ pub fn decode(input: &str) -> Vec<char> {
       .count()
       >= 28
   {
-    // SAFETY: input is valid UTF-8. Count gives the exact number of scalars;
-    // the conversion initializes that many valid Unicode scalar values. char
-    // has u32's layout, and valid UTF-8 cannot encode surrogate code points.
-    unsafe {
-      let count = simdutf::count_utf8(input.as_bytes());
-      let mut output = Vec::<char>::with_capacity(count);
-      let written = simdutf::convert_valid_utf8_to_utf32(
-        input.as_ptr(),
-        input.len(),
-        output.as_mut_ptr().cast(),
-      );
-      assert_eq!(written, count);
-      output.set_len(written);
-      return output;
-    }
+    return native::decode(input);
   }
   input.chars().collect()
 }
@@ -237,30 +226,12 @@ pub fn json_escape(input: &[u8]) -> Option<usize> {
     .map(|i| start + i)
 }
 
-/// Append valid UTF-8 without an intermediate allocation. Small runs avoid FFI.
+/// Append valid UTF-8 without an intermediate allocation.
 #[cfg(not(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128")))]
 pub fn append_utf16(input: &str, output: &mut Vec<u16>) {
-  #[cfg(all(
-    feature = "simd",
-    not(target_family = "wasm"),
-    any(target_arch = "aarch64", target_arch = "x86_64")
-  ))]
+  #[cfg(all(feature = "simd", any(target_arch = "aarch64", target_arch = "x86_64")))]
   if input.len() >= 64 {
-    let start = output.len();
-    output.reserve(input.len());
-    // SAFETY: &str is valid UTF-8. Its byte count bounds the number of UTF-16
-    // units. reserve provides that much uninitialized, non-overlapping space;
-    // simdutf initializes exactly the returned number of units before set_len.
-    unsafe {
-      let written = simdutf::convert_valid_utf8_to_utf16(
-        input.as_ptr(),
-        input.len(),
-        output.as_mut_ptr().add(start),
-      );
-      debug_assert!(written <= input.len());
-      output.set_len(start + written);
-    }
-    return;
+    return native::append_utf16(input, output);
   }
   output.extend(input.encode_utf16());
 }
@@ -268,33 +239,16 @@ pub fn append_utf16(input: &str, output: &mut Vec<u16>) {
 /// Match N-API's UTF-8 extraction, including replacement of lone JS surrogates.
 #[cfg(not(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128")))]
 pub fn from_utf16_lossy(input: &[u16]) -> String {
-  // This bound also avoids reallocating for short CJK strings in the fallback.
-  let capacity = input.len().checked_mul(3).expect("input too large");
-  #[allow(unused_mut)] // The SIMD backend writes through the spare capacity.
-  let mut output = Vec::with_capacity(capacity);
-  #[cfg(all(
-    feature = "simd",
-    not(target_family = "wasm"),
-    any(target_arch = "aarch64", target_arch = "x86_64")
-  ))]
+  #[cfg(all(feature = "simd", any(target_arch = "aarch64", target_arch = "x86_64")))]
   if input.len() >= 32 {
-    // SAFETY: input is readable for its length; the output is separate and has
-    // capacity for every possible valid result. This validating API returns 0
-    // for malformed UTF-16. Never expose a partial result on that path.
-    let written =
-      unsafe { simdutf::convert_utf16_to_utf8(input.as_ptr(), input.len(), output.as_mut_ptr()) };
-    if written != 0 {
-      debug_assert!(written <= capacity);
-      // SAFETY: successful validation initialized `written` bytes of valid UTF-8.
-      unsafe {
-        output.set_len(written);
-        return String::from_utf8_unchecked(output);
-      }
-    }
+    return native::from_utf16_lossy(input);
   }
-  // The length is still zero even if validation wrote a partial result. Reuse
-  // that allocation and overwrite it with standard lossy decoding.
-  let mut output = String::from_utf8(output).expect("empty output is valid UTF-8");
+  scalar_from_utf16_lossy(input)
+}
+
+#[cfg(not(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128")))]
+fn scalar_from_utf16_lossy(input: &[u16]) -> String {
+  let mut output = String::with_capacity(input.len().checked_mul(3).expect("input too large"));
   output.extend(
     char::decode_utf16(input.iter().copied()).map(|c| c.unwrap_or(char::REPLACEMENT_CHARACTER)),
   );

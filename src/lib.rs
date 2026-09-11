@@ -13,40 +13,58 @@ static JIEBA: LazyLock<pinyin_core::jieba::Jieba> = LazyLock::new(pinyin_core::j
 #[derive(Clone, Copy)]
 enum Resolution {
   Character,
+  Legacy,
   Phrase,
   Jieba,
 }
 
 impl Resolution {
   fn new(segment: Option<bool>, segmenter: Option<&str>, multi: bool) -> Result<Self> {
-    let contextual = match segmenter.unwrap_or("phrase") {
-      "phrase" => Self::Phrase,
-      "jieba" => Self::Jieba,
-      other => {
+    let contextual = match segmenter {
+      None => Self::Legacy,
+      Some("phrase") => Self::Phrase,
+      Some("jieba") => Self::Jieba,
+      Some(other) => {
         return Err(Error::new(
           Status::InvalidArg,
           format!("Unknown segmenter: {other}; expected phrase or jieba"),
         ))
       }
     };
-    Ok(if segment.unwrap_or(false) && !multi {
-      contextual
-    } else {
-      Self::Character
-    })
+    Ok(
+      if segment.unwrap_or(false) && (!multi || matches!(contextual, Self::Legacy)) {
+        contextual
+      } else {
+        Self::Character
+      },
+    )
   }
 
-  fn tokens(self, input: &str) -> pinyin_core::Tokens<'_> {
-    match self {
+  fn tokens(self, input: &str) -> ResolutionTokens<'_> {
+    if matches!(self, Self::Legacy) && !input.is_ascii() {
+      return ResolutionTokens::Legacy(pinyin_core::jieba::legacy_tokens(input, &JIEBA));
+    }
+    ResolutionTokens::Core(match self {
+      Self::Legacy => pinyin_core::tokens(input, false),
       Self::Character => pinyin_core::tokens(input, false),
       Self::Phrase => pinyin_core::tokens(input, true),
       Self::Jieba if input.is_ascii() => pinyin_core::tokens(input, false),
       Self::Jieba => pinyin_core::jieba::tokens(input, &JIEBA, false),
-    }
+    })
   }
 
   fn pinyin(self, input: &str, style: Style, separator: &str) -> String {
     match self {
+      Self::Legacy => {
+        let mut output = String::with_capacity(input.len().saturating_mul(2));
+        for (i, token) in self.tokens(input).enumerate() {
+          if i != 0 {
+            output.push_str(separator);
+          }
+          output.push_str(token.text(input, style));
+        }
+        output
+      }
       Self::Character => pinyin_core::pinyin(input, style, false, separator),
       Self::Phrase => pinyin_core::pinyin(input, style, true, separator),
       Self::Jieba if input.is_ascii() => input.to_owned(),
@@ -56,9 +74,39 @@ impl Resolution {
 
   fn pinyin_utf16(self, input: &str, style: Style, separator: &str) -> Vec<u16> {
     match self {
+      Self::Legacy => {
+        let mut output = Vec::with_capacity(input.len().saturating_mul(2));
+        let separator: Vec<_> = separator.encode_utf16().collect();
+        for (i, token) in self.tokens(input).enumerate() {
+          if i != 0 {
+            output.extend_from_slice(&separator);
+          }
+          if let Some(syllable) = token.syllable() {
+            output.extend_from_slice(syllable.utf16(style));
+          } else {
+            encoding::append_utf16(token.text(input, style), &mut output);
+          }
+        }
+        output
+      }
       Self::Character => pinyin_core::utf16::pinyin(input, style, false, separator),
       Self::Phrase => pinyin_core::utf16::pinyin(input, style, true, separator),
       Self::Jieba => pinyin_core::jieba::pinyin_utf16(input, style, &JIEBA, false, separator),
+    }
+  }
+}
+
+enum ResolutionTokens<'a> {
+  Core(pinyin_core::Tokens<'a>),
+  Legacy(pinyin_core::jieba::LegacyTokens<'a>),
+}
+
+impl Iterator for ResolutionTokens<'_> {
+  type Item = Token;
+  fn next(&mut self) -> Option<Token> {
+    match self {
+      Self::Core(tokens) => tokens.next(),
+      Self::Legacy(tokens) => tokens.next(),
     }
   }
 }
@@ -156,9 +204,10 @@ impl From<PinyinStyle> for Style {
 pub struct PinyinConvertOptions {
   pub style: Option<PinyinStyle>,
   pub heteronym: Option<bool>,
-  /// Resolve dictionary phrases. With heteronym, all character readings are returned.
+  /// Use legacy Jieba segmentation by default, preserving per-character readings.
   pub segment: Option<bool>,
-  /// Resolver used when segment is true. Defaults to phrase. Jieba uses HMM=false.
+  /// Opt in to contextual phrase or Jieba readings when segment is true. With
+  /// heteronym, these modes return all character readings. Jieba uses HMM=false.
   #[napi(ts_type = "'phrase' | 'jieba'")]
   pub segmenter: Option<String>,
 }
@@ -168,7 +217,8 @@ pub struct PinyinConvertOptions {
 pub struct PinyinStringOptions {
   pub style: Option<PinyinStyle>,
   pub segment: Option<bool>,
-  /// Resolver used when segment is true. Defaults to phrase. Jieba uses HMM=false.
+  /// Opt in to contextual readings when segment is true; omission uses legacy
+  /// Jieba segmentation and per-character readings. Jieba uses HMM=false.
   #[napi(ts_type = "'phrase' | 'jieba'")]
   pub segmenter: Option<String>,
   /// Separator between syllables and unchanged non-Han runs. Defaults to a space.
@@ -240,7 +290,20 @@ fn json_output(
 }
 
 fn prepare_output(input: &str, style: Style, resolution: Resolution, multi: bool) -> PinyinOutput {
-  let mut tokens = resolution.tokens(input);
+  // Dispatch once so the hot array loop does not branch on resolver type for
+  // every syllable. Each iterator gets its own monomorphized output writer.
+  match resolution.tokens(input) {
+    ResolutionTokens::Core(tokens) => prepare_tokens(input, style, tokens, multi),
+    ResolutionTokens::Legacy(tokens) => prepare_tokens(input, style, tokens, multi),
+  }
+}
+
+fn prepare_tokens(
+  input: &str,
+  style: Style,
+  mut tokens: impl Iterator<Item = Token>,
+  multi: bool,
+) -> PinyinOutput {
   // Keep only a bounded prefix while choosing the measured array crossover.
   // Large inputs stream into the encoded result without a full token vector.
   let threshold = if multi { 4 } else { 32 };

@@ -6,6 +6,76 @@
 use super::{Style, Tokens};
 pub use jieba_rs::Jieba;
 
+/// Compatibility iterator for the original Node binding's `segment: true`.
+/// Readings remain per-character. A word containing any mapped character
+/// discards its unmapped characters; wholly unmapped words are grouped.
+pub struct LegacyTokens<'a> {
+  words: std::vec::IntoIter<jieba_rs::Token<'a>>,
+  chars: std::str::CharIndices<'a>,
+  offset: usize,
+  base: usize,
+  unchanged: Option<super::Token>,
+}
+
+pub fn legacy_tokens<'a>(input: &'a str, segmenter: &Jieba) -> LegacyTokens<'a> {
+  let ascii = input.is_ascii();
+  LegacyTokens {
+    words: if ascii {
+      Vec::new()
+    } else {
+      segmenter.cut(input, false)
+    }
+    .into_iter(),
+    chars: "".char_indices(),
+    offset: 0,
+    base: 0,
+    unchanged: (ascii && !input.is_empty()).then_some(super::Token {
+      start: 0,
+      end: input.len(),
+      entry: 0,
+    }),
+  }
+}
+
+impl Iterator for LegacyTokens<'_> {
+  type Item = super::Token;
+
+  fn next(&mut self) -> Option<Self::Item> {
+    loop {
+      for (offset, ch) in self.chars.by_ref() {
+        let entry = super::entry(ch);
+        if entry != 0 {
+          let start = self.base + offset;
+          return Some(super::Token {
+            start,
+            end: start + ch.len_utf8(),
+            entry,
+          });
+        }
+      }
+      let Some(word) = self.words.next() else {
+        return self.unchanged.take();
+      };
+      self.base = self.offset;
+      self.offset += word.word.len();
+      if word.word.chars().any(|ch| super::entry(ch) != 0) {
+        self.chars = word.word.char_indices();
+        if let Some(unchanged) = self.unchanged.take() {
+          return Some(unchanged);
+        }
+      } else if let Some(unchanged) = &mut self.unchanged {
+        unchanged.end = self.offset;
+      } else {
+        self.unchanged = Some(super::Token {
+          start: self.base,
+          end: self.offset,
+          entry: 0,
+        });
+      }
+    }
+  }
+}
+
 fn phrase_readings(input: &str, segmenter: &Jieba, hmm: bool) -> super::Prepared {
   let chars = super::decode(input);
   let mut choices = vec![0u16; chars.len()];

@@ -187,9 +187,16 @@ for (const style of styles) {
   }
 }
 
-test('segment resolves phrases and heteronym retains all readings', (t) => {
+test('contextual phrases require explicit opt-in and heteronym retains all readings', (t) => {
   t.deepEqual(pinyin('重庆银行音乐'), ['zhong', 'qing', 'yin', 'xing', 'yin', 'le'])
-  t.deepEqual(pinyin('重庆银行音乐', { segment: true }), ['chong', 'qing', 'yin', 'hang', 'yin', 'yue'])
+  t.deepEqual(pinyin('重庆银行音乐', { segment: true, segmenter: 'phrase' }), [
+    'chong',
+    'qing',
+    'yin',
+    'hang',
+    'yin',
+    'yue',
+  ])
   t.deepEqual(pinyin('重庆银行音乐', { segment: true, heteronym: true }), pinyin('重庆银行音乐', { heteronym: true }))
 })
 
@@ -220,7 +227,10 @@ test('Jieba resolves word pronunciations and snapshots async input', async (t) =
   t.deepEqual(pinyin('重庆银行音乐', options), ['chong', 'qing', 'yin', 'hang', 'yin', 'yue'])
   for (const text of ['划分为', '统称为']) {
     const toneOptions = { ...options, style: PINYIN_STYLE.WithTone }
-    t.deepEqual(pinyin(text, toneOptions), pinyin(text, { segment: true, style: PINYIN_STYLE.WithTone }))
+    t.deepEqual(
+      pinyin(text, toneOptions),
+      pinyin(text, { segment: true, segmenter: 'phrase', style: PINYIN_STYLE.WithTone }),
+    )
     t.is((pinyin(text, toneOptions) as string[]).at(-1), 'wéi')
   }
   const input = Buffer.from('重庆银行音乐'.repeat(2000))
@@ -401,3 +411,36 @@ test('bulk parser references belong to each worker environment and are cleaned u
     }
   }
 })
+
+for (const style of styles) {
+  for (const heteronym of [false, true]) {
+    test(`legacy segment compatibility including mixed Jieba words ${style}/${heteronym}`, async (t) => {
+      const options = { style, heteronym, segment: true }
+      const characterOptions = { style, heteronym }
+      const fixtures: [string, string][] = [
+        ['重庆银行音乐', '重庆银行音乐'],
+        ['B超', '超'],
+        ['A股', '股'],
+        ['T恤', '恤'],
+        ['C盘', '盘'],
+        ['X光', '光'],
+        ['🙂B超! A股\0T恤?C盘 X光é', '🙂超! 股\0恤?盘 光é'],
+      ]
+      for (const [text, legacyText] of fixtures) {
+        for (const repeat of [1, 40]) {
+          const input = Array(repeat).fill(text).join('|')
+          const expected = pinyin(Array(repeat).fill(legacyText).join('|'), characterOptions)
+          t.deepEqual(pinyin(input, options), expected)
+          t.deepEqual(pinyin(Buffer.from(input), options), expected)
+          t.deepEqual(await asyncPinyin(input, options), expected)
+          t.deepEqual(await asyncPinyin(Buffer.from(input), options), expected)
+          if (!heteronym) {
+            for (const separator of ['', '|🙂\0']) {
+              t.is(pinyinString(input, { ...options, separator }), (expected as string[]).join(separator))
+            }
+          }
+        }
+      }
+    })
+  }
+}
