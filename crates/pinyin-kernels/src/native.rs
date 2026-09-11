@@ -1,5 +1,10 @@
-//! Rust-only SIMD transcoding. Every block load/store is bounded; mixed Unicode
-//! and malformed UTF-16 use the standard scalar codecs at character boundaries.
+//! Rust-only SIMD transcoding with bounded block loads and stores.
+//! Mixed Unicode and malformed UTF-16 use scalar codecs at character boundaries.
+
+use crate::{
+  error::{next_utf8, reserve, utf8_capacity},
+  Error, Result,
+};
 #[cfg(target_arch = "aarch64")]
 #[path = "neon.rs"]
 mod blocks;
@@ -18,12 +23,12 @@ fn available() -> bool {
   }
 }
 
-pub fn append_utf16(input: &str, output: &mut Vec<u16>) {
+pub fn append_utf16(input: &str, output: &mut Vec<u16>) -> Result<()> {
+  reserve(output, input.len(), "UTF-8 to UTF-16")?;
   if !available() {
     output.extend(input.encode_utf16());
-    return;
+    return Ok(());
   }
-  output.reserve(input.len());
   let mut i = 0;
   while i < input.len() {
     // SAFETY: CPU support was checked; block checks its input length. The UTF-8
@@ -41,18 +46,20 @@ pub fn append_utf16(input: &str, output: &mut Vec<u16>) {
       }
       i += read;
     } else {
-      let ch = input[i..].chars().next().unwrap();
+      let ch = next_utf8(input, i)?;
       output.extend_from_slice(ch.encode_utf16(&mut [0; 2]));
       i += ch.len_utf8();
     }
   }
+  Ok(())
 }
 
-pub fn decode(input: &str) -> Vec<char> {
+pub fn decode(input: &str) -> Result<Vec<char>> {
   if !available() {
-    return input.chars().collect();
+    return Ok(input.chars().collect());
   }
-  let mut output = Vec::with_capacity(input.len() / 3);
+  let mut output = Vec::new();
+  reserve(&mut output, input.len() / 3, "UTF-8 character decoding")?;
   let mut i = 0;
   while i < input.len() {
     let mut units = [0u16; 16];
@@ -60,25 +67,28 @@ pub fn decode(input: &str) -> Vec<char> {
     // accepts only ASCII or complete three-byte encodings from valid UTF-8.
     let (read, written) = unsafe { blocks::utf8(&input.as_bytes()[i..], units.as_mut_ptr()) };
     if read != 0 {
+      reserve(&mut output, written, "UTF-8 character decoding")?;
       output.extend(units[..written].iter().map(|&unit| {
         // SAFETY: the block emits only ASCII or non-surrogate BMP scalars.
         unsafe { char::from_u32_unchecked(u32::from(unit)) }
       }));
       i += read;
     } else {
-      let ch = input[i..].chars().next().unwrap();
+      let ch = next_utf8(input, i)?;
+      reserve(&mut output, 1, "UTF-8 character decoding")?;
       output.push(ch);
       i += ch.len_utf8();
     }
   }
-  output
+  Ok(output)
 }
 
-pub fn from_utf16_lossy(input: &[u16]) -> String {
+pub fn from_utf16_lossy(input: &[u16]) -> Result<String> {
   if !available() {
     return super::scalar_from_utf16_lossy(input);
   }
-  let mut output = Vec::<u8>::with_capacity(input.len().checked_mul(3).expect("input too large"));
+  let mut output = Vec::<u8>::new();
+  reserve(&mut output, utf8_capacity(input.len())?, "UTF-16 to UTF-8")?;
   let mut i = 0;
   let mut written = 0;
   // SAFETY: each input unit produces at most three bytes (a valid surrogate
@@ -118,7 +128,11 @@ pub fn from_utf16_lossy(input: &[u16]) -> String {
         } else {
           let decoded = char::decode_utf16(input[i..].iter().copied())
             .next()
-            .unwrap();
+            .ok_or(Error::InvalidCursor {
+              encoding: "UTF-16",
+              offset: i,
+              input_len: input.len(),
+            })?;
           let valid = decoded.is_ok();
           let ch = decoded.unwrap_or(char::REPLACEMENT_CHARACTER);
           i += if valid { ch.len_utf16() } else { 1 };
@@ -130,6 +144,6 @@ pub fn from_utf16_lossy(input: &[u16]) -> String {
       }
     }
     output.set_len(written);
-    String::from_utf8_unchecked(output)
+    Ok(String::from_utf8_unchecked(output))
   }
 }

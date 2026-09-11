@@ -3,8 +3,8 @@
 //! The caller owns the segmenter and may reuse or customize its word dictionary.
 //! Jieba does not provide pinyin readings; unmatched characters keep core defaults.
 
-use super::{Style, Tokens};
-pub use jieba_rs::Jieba;
+use super::{Result, Style, Tokens};
+pub use jieba_rs::{Error, Jieba};
 
 /// Compatibility iterator for the original Node binding's `segment: true`.
 /// Readings remain per-character. A word containing any mapped character
@@ -76,8 +76,8 @@ impl Iterator for LegacyTokens<'_> {
   }
 }
 
-fn phrase_readings(input: &str, segmenter: &Jieba, hmm: bool) -> super::Prepared {
-  let chars = super::decode(input);
+fn phrase_readings(input: &str, segmenter: &Jieba, hmm: bool) -> Result<super::Prepared> {
+  let chars = super::decode(input)?;
   let mut choices = vec![0u16; chars.len()];
   let mut boundaries = vec![0u8; chars.len()];
   for word in segmenter.cut(input, hmm) {
@@ -87,16 +87,19 @@ fn phrase_readings(input: &str, segmenter: &Jieba, hmm: bool) -> super::Prepared
     }
   }
   super::resolve_phrase_readings::<true>(&chars, &mut choices, &boundaries);
-  super::Prepared::new(chars, choices)
+  Ok(super::Prepared::new(chars, choices))
 }
 
 /// Prefer phrase matches inside Jieba words, retaining cross-boundary fallback.
 /// Adjacent non-Han text remains grouped across segmentation boundaries.
-pub fn tokens<'a>(input: &'a str, segmenter: &Jieba, hmm: bool) -> Tokens<'a> {
+pub fn tokens<'a>(input: &'a str, segmenter: &Jieba, hmm: bool) -> Result<Tokens<'a>> {
   if input.is_ascii() {
     return super::tokens(input, false);
   }
-  super::tokens_with_overrides(input, phrase_readings(input, segmenter, hmm))
+  Ok(super::tokens_with_overrides(
+    input,
+    phrase_readings(input, segmenter, hmm)?,
+  ))
 }
 
 /// Append output while reusing the caller's segmenter and output capacity.
@@ -107,24 +110,31 @@ pub fn write_pinyin(
   hmm: bool,
   separator: &str,
   output: &mut String,
-) {
+) -> Result<()> {
   if input.is_ascii() {
     output.push_str(input);
-    return;
+    return Ok(());
   }
-  let overrides = phrase_readings(input, segmenter, hmm);
+  let overrides = phrase_readings(input, segmenter, hmm)?;
   if separator.is_empty() {
     super::write_characters::<false>(input, style, separator, overrides, output);
   } else {
     super::write_characters::<true>(input, style, separator, overrides, output);
   }
+  Ok(())
 }
 
 /// Return delimited pinyin using Jieba word boundaries and core phrase readings.
-pub fn pinyin(input: &str, style: Style, segmenter: &Jieba, hmm: bool, separator: &str) -> String {
+pub fn pinyin(
+  input: &str,
+  style: Style,
+  segmenter: &Jieba,
+  hmm: bool,
+  separator: &str,
+) -> Result<String> {
   let mut output = String::with_capacity(input.len().saturating_mul(2));
-  write_pinyin(input, style, segmenter, hmm, separator, &mut output);
-  output
+  write_pinyin(input, style, segmenter, hmm, separator, &mut output)?;
+  Ok(output)
 }
 
 /// Direct UTF-16 output using the same Jieba boundaries and phrase decisions.
@@ -135,14 +145,14 @@ pub fn pinyin_utf16(
   segmenter: &Jieba,
   hmm: bool,
   separator: &str,
-) -> Vec<u16> {
+) -> Result<Vec<u16>> {
   let mut output = Vec::with_capacity(input.len().saturating_mul(2));
   let separator: Vec<_> = separator.encode_utf16().collect();
   let overrides = if input.is_ascii() {
     super::Prepared::default()
   } else {
-    phrase_readings(input, segmenter, hmm)
+    phrase_readings(input, segmenter, hmm)?
   };
-  super::utf16::write_with_overrides(input, style, &separator, overrides, &mut output);
-  output
+  super::utf16::write_with_overrides(input, style, &separator, overrides, &mut output)?;
+  Ok(output)
 }

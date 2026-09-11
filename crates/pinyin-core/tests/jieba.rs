@@ -9,26 +9,26 @@ static SEGMENTER: LazyLock<jieba::Jieba> = LazyLock::new(jieba::Jieba::new);
 fn boundaries_guide_overlapping_phrases_without_discarding_fallbacks() {
   let mut segmenter = jieba::Jieba::empty();
   assert_eq!(
-    jieba::pinyin("重庆", Style::Plain, &segmenter, false, " "),
+    jieba::pinyin("重庆", Style::Plain, &segmenter, false, " ").unwrap(),
     "chong qing"
   );
   // 一号 and 号叫 overlap. A caller's segmentation dictionary guides which
   // phrase wins, while the same pronunciation data is used in both cases.
-  let original = pinyin_core::pinyin("一号叫", Style::Tone, true, " ");
+  let original = pinyin_core::pinyin("一号叫", Style::Tone, true, " ").unwrap();
   assert_eq!(original, "yī hào jiào");
   segmenter.add_word("号叫", Some(100), None);
   assert_eq!(
-    jieba::pinyin("一号叫", Style::Tone, &segmenter, false, " "),
+    jieba::pinyin("一号叫", Style::Tone, &segmenter, false, " ").unwrap(),
     "yī háo jiào"
   );
   segmenter.clear();
   assert_eq!(
-    jieba::pinyin("一号叫", Style::Tone, &segmenter, false, " "),
+    jieba::pinyin("一号叫", Style::Tone, &segmenter, false, " ").unwrap(),
     original
   );
   segmenter.add_word("重庆银行", Some(100), None);
   assert_eq!(
-    jieba::pinyin("重庆银行", Style::Plain, &segmenter, false, " "),
+    jieba::pinyin("重庆银行", Style::Plain, &segmenter, false, " ").unwrap(),
     "chong qing yin hang"
   );
 }
@@ -36,7 +36,7 @@ fn boundaries_guide_overlapping_phrases_without_discarding_fallbacks() {
 #[test]
 fn contextual_readings_are_selected_after_default_jieba_segmentation() {
   assert_eq!(
-    jieba::pinyin("重庆银行音乐", Style::Tone, &SEGMENTER, false, " "),
+    jieba::pinyin("重庆银行音乐", Style::Tone, &SEGMENTER, false, " ").unwrap(),
     "chóng qìng yín háng yīn yuè"
   );
 }
@@ -50,7 +50,7 @@ fn unicode_ranges_and_non_han_grouping_survive_both_hmm_modes() {
     "A中\"\\\t\u{2028}文",
   ] {
     for hmm in [false, true] {
-      let tokens: Vec<_> = jieba::tokens(input, &SEGMENTER, hmm).collect();
+      let tokens: Vec<_> = jieba::tokens(input, &SEGMENTER, hmm).unwrap().collect();
       let reconstructed: String = tokens.iter().map(|token| &input[token.range()]).collect();
       assert_eq!(reconstructed, input);
       assert!(!tokens
@@ -69,11 +69,11 @@ fn unicode_ranges_and_non_han_grouping_survive_both_hmm_modes() {
           .collect::<Vec<_>>()
           .join("|🙂\0");
         assert_eq!(
-          jieba::pinyin(input, style, &SEGMENTER, hmm, "|🙂\0"),
+          jieba::pinyin(input, style, &SEGMENTER, hmm, "|🙂\0").unwrap(),
           expected
         );
         let mut output = String::from("prefix:");
-        jieba::write_pinyin(input, style, &SEGMENTER, hmm, "|🙂\0", &mut output);
+        jieba::write_pinyin(input, style, &SEGMENTER, hmm, "|🙂\0", &mut output).unwrap();
         assert_eq!(output, format!("prefix:{expected}"));
         #[cfg(feature = "utf16")]
         for separator in ["", " ", "|🙂\0"] {
@@ -83,7 +83,7 @@ fn unicode_ranges_and_non_han_grouping_survive_both_hmm_modes() {
             .collect::<Vec<_>>()
             .join(separator);
           assert_eq!(
-            jieba::pinyin_utf16(input, style, &SEGMENTER, hmm, separator),
+            jieba::pinyin_utf16(input, style, &SEGMENTER, hmm, separator).unwrap(),
             expected.encode_utf16().collect::<Vec<_>>()
           );
         }
@@ -101,8 +101,8 @@ fn word_boundaries_preserve_known_cross_word_pronunciations() {
       .iter()
       .any(|word| word.word == "为"));
     assert_eq!(
-      jieba::pinyin(input, Style::Tone, &SEGMENTER, false, " "),
-      pinyin_core::pinyin(input, Style::Tone, true, " ")
+      jieba::pinyin(input, Style::Tone, &SEGMENTER, false, " ").unwrap(),
+      pinyin_core::pinyin(input, Style::Tone, true, " ").unwrap()
     );
   }
 }
@@ -176,7 +176,7 @@ fn weighted_trie_matches_independent_full_dictionary_solver() {
         }
       }
       assert_eq!(
-        jieba::pinyin(&input, Style::Tone, &SEGMENTER, hmm, ""),
+        jieba::pinyin(&input, Style::Tone, &SEGMENTER, hmm, "").unwrap(),
         expected,
         "{input:?}"
       );

@@ -1,14 +1,24 @@
 #![deny(clippy::all)]
+#![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used))]
 
 mod encoding;
+mod error;
 mod output;
 
+use error::PinyinError;
 use napi::{bindgen_prelude::*, ScopedTask};
 use napi_derive::napi;
 use pinyin_core::{Style, Token};
 use std::{borrow::Cow, cell::RefCell, collections::HashMap, sync::LazyLock};
 
-static JIEBA: LazyLock<pinyin_core::jieba::Jieba> = LazyLock::new(pinyin_core::jieba::Jieba::new);
+static JIEBA: LazyLock<std::result::Result<pinyin_core::jieba::Jieba, pinyin_core::jieba::Error>> =
+  LazyLock::new(pinyin_core::jieba::Jieba::try_new);
+
+fn jieba() -> Result<&'static pinyin_core::jieba::Jieba> {
+  JIEBA
+    .as_ref()
+    .map_err(|source| PinyinError::Dictionary(source).into())
+}
 
 #[derive(Clone, Copy)]
 enum Resolution {
@@ -24,12 +34,7 @@ impl Resolution {
       None => Self::Legacy,
       Some("phrase") => Self::Phrase,
       Some("jieba") => Self::Jieba,
-      Some(other) => {
-        return Err(Error::new(
-          Status::InvalidArg,
-          format!("Unknown segmenter: {other}; expected phrase or jieba"),
-        ))
-      }
+      Some(other) => return Err(PinyinError::UnknownSegmenter(other.to_owned()).into()),
     };
     Ok(
       if segment.unwrap_or(false) && (!multi || matches!(contextual, Self::Legacy)) {
@@ -40,24 +45,30 @@ impl Resolution {
     )
   }
 
-  fn tokens(self, input: &str) -> ResolutionTokens<'_> {
+  fn tokens(self, input: &str) -> Result<ResolutionTokens<'_>> {
     if matches!(self, Self::Legacy) && !input.is_ascii() {
-      return ResolutionTokens::Legacy(pinyin_core::jieba::legacy_tokens(input, &JIEBA));
+      return Ok(ResolutionTokens::Legacy(pinyin_core::jieba::legacy_tokens(
+        input,
+        jieba()?,
+      )));
     }
-    ResolutionTokens::Core(match self {
-      Self::Legacy => pinyin_core::tokens(input, false),
-      Self::Character => pinyin_core::tokens(input, false),
-      Self::Phrase => pinyin_core::tokens(input, true),
-      Self::Jieba if input.is_ascii() => pinyin_core::tokens(input, false),
-      Self::Jieba => pinyin_core::jieba::tokens(input, &JIEBA, false),
-    })
+    Ok(ResolutionTokens::Core(
+      match self {
+        Self::Legacy => pinyin_core::tokens(input, false),
+        Self::Character => pinyin_core::tokens(input, false),
+        Self::Phrase => pinyin_core::tokens(input, true),
+        Self::Jieba if input.is_ascii() => pinyin_core::tokens(input, false),
+        Self::Jieba => pinyin_core::jieba::tokens(input, jieba()?, false),
+      }
+      .map_err(PinyinError::from)?,
+    ))
   }
 
-  fn pinyin(self, input: &str, style: Style, separator: &str) -> String {
-    match self {
+  fn pinyin(self, input: &str, style: Style, separator: &str) -> Result<String> {
+    Ok(match self {
       Self::Legacy => {
         let mut output = String::with_capacity(input.len().saturating_mul(2));
-        for (i, token) in self.tokens(input).enumerate() {
+        for (i, token) in self.tokens(input)?.enumerate() {
           if i != 0 {
             output.push_str(separator);
           }
@@ -65,34 +76,45 @@ impl Resolution {
         }
         output
       }
-      Self::Character => pinyin_core::pinyin(input, style, false, separator),
-      Self::Phrase => pinyin_core::pinyin(input, style, true, separator),
+      Self::Character => {
+        pinyin_core::pinyin(input, style, false, separator).map_err(PinyinError::from)?
+      }
+      Self::Phrase => {
+        pinyin_core::pinyin(input, style, true, separator).map_err(PinyinError::from)?
+      }
       Self::Jieba if input.is_ascii() => input.to_owned(),
-      Self::Jieba => pinyin_core::jieba::pinyin(input, style, &JIEBA, false, separator),
-    }
+      Self::Jieba => pinyin_core::jieba::pinyin(input, style, jieba()?, false, separator)
+        .map_err(PinyinError::from)?,
+    })
   }
 
-  fn pinyin_utf16(self, input: &str, style: Style, separator: &str) -> Vec<u16> {
-    match self {
+  fn pinyin_utf16(self, input: &str, style: Style, separator: &str) -> Result<Vec<u16>> {
+    Ok(match self {
       Self::Legacy => {
         let mut output = Vec::with_capacity(input.len().saturating_mul(2));
         let separator: Vec<_> = separator.encode_utf16().collect();
-        for (i, token) in self.tokens(input).enumerate() {
+        for (i, token) in self.tokens(input)?.enumerate() {
           if i != 0 {
             output.extend_from_slice(&separator);
           }
           if let Some(syllable) = token.syllable() {
             output.extend_from_slice(syllable.utf16(style));
           } else {
-            encoding::append_utf16(token.text(input, style), &mut output);
+            encoding::append_utf16(token.text(input, style), &mut output)
+              .map_err(PinyinError::from)?;
           }
         }
         output
       }
-      Self::Character => pinyin_core::utf16::pinyin(input, style, false, separator),
-      Self::Phrase => pinyin_core::utf16::pinyin(input, style, true, separator),
-      Self::Jieba => pinyin_core::jieba::pinyin_utf16(input, style, &JIEBA, false, separator),
-    }
+      Self::Character => {
+        pinyin_core::utf16::pinyin(input, style, false, separator).map_err(PinyinError::from)?
+      }
+      Self::Phrase => {
+        pinyin_core::utf16::pinyin(input, style, true, separator).map_err(PinyinError::from)?
+      }
+      Self::Jieba => pinyin_core::jieba::pinyin_utf16(input, style, jieba()?, false, separator)
+        .map_err(PinyinError::from)?,
+    })
   }
 }
 
@@ -117,21 +139,21 @@ type EngineString = Either<Latin1String, Utf16String>;
 // semantics. This also avoids the WASI helper's malformed-surrogate UTF-8 bug.
 type InputString = Utf16String;
 
-fn string_input(input: &InputString) -> String {
-  encoding::from_utf16_lossy(input)
+fn string_input(input: &InputString) -> Result<String> {
+  encoding::from_utf16_lossy(input).map_err(|source| PinyinError::from(source).into())
 }
 
-fn engine_string(value: String) -> EngineString {
+fn engine_string(value: String) -> Result<EngineString> {
   // ASCII already has V8's one-byte representation. Other output is encoded in
   // Rust before the boundary, avoiding V8's more expensive UTF-8 conversion.
   // The WASI runtime's Latin-1 helper stops at NUL even with an explicit length.
   // Its UTF-16 path preserves embedded NULs, as required by both public APIs.
   if value.is_ascii() && (!cfg!(target_family = "wasm") || !value.as_bytes().contains(&0)) {
-    Either::A(value.into())
+    Ok(Either::A(value.into()))
   } else {
     let mut units = Vec::with_capacity(value.len());
-    encoding::append_utf16(&value, &mut units);
-    Either::B(units.into())
+    encoding::append_utf16(&value, &mut units).map_err(PinyinError::from)?;
+    Ok(Either::B(units.into()))
   }
 }
 
@@ -157,12 +179,9 @@ pub fn initialize(_exports: Object, env: Env) -> Result<()> {
 fn parse_array<'env>(env: &'env Env, json: EngineString) -> Result<Array<'env>> {
   JSON_PARSERS.with(|parsers| {
     let parsers = parsers.borrow();
-    let parse = parsers.get(&(env.raw() as usize)).ok_or_else(|| {
-      Error::new(
-        Status::GenericFailure,
-        "Pinyin environment is not initialized",
-      )
-    })?;
+    let parse = parsers
+      .get(&(env.raw() as usize))
+      .ok_or(PinyinError::UninitializedEnvironment)?;
     parse.borrow_back(env)?.call(json)
   })
 }
@@ -228,19 +247,14 @@ pub struct PinyinStringOptions {
 
 fn utf8(input: &[u8]) -> Result<&str> {
   // Keep std-compatible offsets and early rejection, with SIMD on supported CPUs.
-  simdutf8::compat::from_utf8(input).map_err(|err| {
-    Error::new(
-      Status::InvalidArg,
-      format!("Input buffer must contain valid UTF-8: {err}"),
-    )
-  })
+  simdutf8::compat::from_utf8(input).map_err(|source| PinyinError::InvalidUtf8(source).into())
 }
 
 fn input_str(input: Either<InputString, &[u8]>) -> Result<Cow<'_, str>> {
   match input {
     // Consume the temporary UTF-16 copy so it is freed before dictionary work
     // and output allocation. Byte input continues to borrow without copying.
-    Either::A(input) => Ok(Cow::Owned(string_input(&input))),
+    Either::A(input) => Ok(Cow::Owned(string_input(&input)?)),
     Either::B(input) => utf8(input).map(Cow::Borrowed),
   }
 }
@@ -250,9 +264,11 @@ fn json_output(
   tokens: impl Iterator<Item = Token>,
   style: Style,
   multi: bool,
-) -> EngineString {
+) -> Result<EngineString> {
   if style == Style::Tone {
-    return Either::B(output::json_utf16(input, tokens, style, multi).into());
+    return Ok(Either::B(
+      output::json_utf16(input, tokens, style, multi)?.into(),
+    ));
   }
   let mut joined = Vec::with_capacity(input.len().saturating_mul(2));
   joined.push(b'[');
@@ -289,10 +305,15 @@ fn json_output(
   engine_string(unsafe { String::from_utf8_unchecked(joined) })
 }
 
-fn prepare_output(input: &str, style: Style, resolution: Resolution, multi: bool) -> PinyinOutput {
+fn prepare_output(
+  input: &str,
+  style: Style,
+  resolution: Resolution,
+  multi: bool,
+) -> Result<PinyinOutput> {
   // Dispatch once so the hot array loop does not branch on resolver type for
   // every syllable. Each iterator gets its own monomorphized output writer.
-  match resolution.tokens(input) {
+  match resolution.tokens(input)? {
     ResolutionTokens::Core(tokens) => prepare_tokens(input, style, tokens, multi),
     ResolutionTokens::Legacy(tokens) => prepare_tokens(input, style, tokens, multi),
   }
@@ -303,7 +324,7 @@ fn prepare_tokens(
   style: Style,
   mut tokens: impl Iterator<Item = Token>,
   multi: bool,
-) -> PinyinOutput {
+) -> Result<PinyinOutput> {
   // Keep only a bounded prefix while choosing the measured array crossover.
   // Large inputs stream into the encoded result without a full token vector.
   let threshold = if multi { 4 } else { 32 };
@@ -311,15 +332,15 @@ fn prepare_tokens(
   for _ in 0..threshold {
     match tokens.next() {
       Some(token) => prefix.push(token),
-      None => return PinyinOutput::Direct(prefix),
+      None => return Ok(PinyinOutput::Direct(prefix)),
     }
   }
-  PinyinOutput::Json(json_output(
+  Ok(PinyinOutput::Json(json_output(
     input,
     prefix.into_iter().chain(tokens),
     style,
     multi,
-  ))
+  )?))
 }
 
 fn to_js<'env>(
@@ -332,7 +353,7 @@ fn to_js<'env>(
   let length = tokens
     .len()
     .try_into()
-    .map_err(|_| Error::new(Status::InvalidArg, "Too many output tokens"))?;
+    .map_err(|_| PinyinError::TooManyTokens)?;
   let mut output = env.create_array(length)?;
   for (i, token) in tokens.iter().copied().enumerate() {
     if multi {
@@ -375,7 +396,7 @@ pub fn to_pinyin<'env>(
   let input = text.as_ref();
   let style = opt.style.unwrap_or(PinyinStyle::Plain).into();
   let resolution = Resolution::new(opt.segment, opt.segmenter.as_deref(), multi)?;
-  match prepare_output(input, style, resolution, multi) {
+  match prepare_output(input, style, resolution, multi)? {
     PinyinOutput::Direct(tokens) => to_js(env, input, &tokens, style, multi),
     PinyinOutput::Json(json) => parse_array(env, json),
   }
@@ -392,19 +413,19 @@ pub fn pinyin_string(
   let text = input_str(input)?;
   let input = text.as_ref();
   let style = opt.style.unwrap_or(PinyinStyle::Plain).into();
-  let separator = opt.separator.map(|s| string_input(&s));
+  let separator = opt.separator.map(|s| string_input(&s)).transpose()?;
   let separator = separator.as_deref().unwrap_or(" ");
   if style == Style::Tone {
     // This check already establishes the core's whole-ASCII shortcut. Avoid
     // scanning it again in the generic writer (significant for large buffers).
     if input.is_ascii() {
-      return Ok(engine_string(input.to_owned()));
+      return engine_string(input.to_owned());
     }
     return Ok(Either::B(
-      resolution.pinyin_utf16(input, style, separator).into(),
+      resolution.pinyin_utf16(input, style, separator)?.into(),
     ));
   }
-  Ok(engine_string(resolution.pinyin(input, style, separator)))
+  engine_string(resolution.pinyin(input, style, separator)?)
 }
 
 pub enum PinyinOutput {
@@ -438,12 +459,7 @@ impl<'task> ScopedTask<'task> for AsyncPinyinTask {
   fn compute(&mut self) -> Result<Self::Output> {
     // Formatting and UTF-16 preparation belong on the worker too. Only the
     // unavoidable JS array allocation remains on the environment's thread.
-    Ok(prepare_output(
-      self.input()?,
-      self.style,
-      self.resolution,
-      self.multi,
-    ))
+    prepare_output(self.input()?, self.style, self.resolution, self.multi)
   }
 
   fn resolve(&mut self, env: &'task Env, output: Self::Output) -> Result<Self::JsValue> {
@@ -463,7 +479,7 @@ pub fn async_pinyin(
   let opt = opt.unwrap_or_default();
   let task = AsyncPinyinTask {
     input: match input {
-      Either::A(input) => Either::A(string_input(&input)),
+      Either::A(input) => Either::A(string_input(&input)?),
       Either::B(input) => Either::B(input.as_ref().to_vec()),
     },
     style: opt.style.unwrap_or(PinyinStyle::Plain).into(),

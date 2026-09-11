@@ -12,7 +12,7 @@ fn long_spans_keep_byte_ranges_choices_and_separator_boundaries() {
         "银行长大".repeat(64)
       );
       for phrases in [false, true] {
-        let tokens: Vec<_> = tokens(&input, phrases).collect();
+        let tokens: Vec<_> = tokens(&input, phrases).unwrap().collect();
         assert_eq!(
           tokens.iter().map(|t| &input[t.range()]).collect::<String>(),
           input
@@ -33,10 +33,10 @@ fn long_spans_keep_byte_ranges_choices_and_separator_boundaries() {
               .map(|t| t.text(&input, style))
               .collect::<Vec<_>>()
               .join(separator);
-            assert_eq!(pinyin(&input, style, phrases, separator), expected);
+            assert_eq!(pinyin(&input, style, phrases, separator).unwrap(), expected);
             #[cfg(feature = "utf16")]
             assert_eq!(
-              pinyin_core::utf16::pinyin(&input, style, phrases, separator),
+              pinyin_core::utf16::pinyin(&input, style, phrases, separator).unwrap(),
               expected.encode_utf16().collect::<Vec<_>>()
             );
           }
@@ -94,10 +94,14 @@ fn every_dictionary_phrase_has_its_declared_reading() {
     .filter(|s| !s.starts_with('#') && !s.is_empty())
   {
     let (word, expected) = line.split_once('\t').unwrap();
-    assert_eq!(pinyin(word, Style::Tone, true, " "), expected, "{word}");
+    assert_eq!(
+      pinyin(word, Style::Tone, true, " ").unwrap(),
+      expected,
+      "{word}"
+    );
     #[cfg(feature = "utf16")]
     assert_eq!(
-      pinyin_core::utf16::pinyin(word, Style::Tone, true, " "),
+      pinyin_core::utf16::pinyin(word, Style::Tone, true, " ").unwrap(),
       expected.encode_utf16().collect::<Vec<_>>(),
       "{word}"
     );
@@ -117,7 +121,7 @@ fn mixed_unicode_and_non_han_runs_are_lossless() {
       "𠮷野家𠀀\u{10ffff}",
       "\u{feff}重庆 / 银行！",
     ] {
-      let list: Vec<_> = tokens(input, phrase).collect();
+      let list: Vec<_> = tokens(input, phrase).unwrap().collect();
       let original: String = list.iter().map(|token| &input[token.range()]).collect();
       assert_eq!(original, input);
       for token in list {
@@ -126,25 +130,28 @@ fn mixed_unicode_and_non_han_runs_are_lossless() {
       }
     }
     assert_eq!(
-      convert("abc🙂\0中文 xyz", Style::Plain, phrase),
+      convert("abc🙂\0中文 xyz", Style::Plain, phrase).unwrap(),
       ["abc🙂\0", "zhong", "wen", " xyz"]
     );
-    assert_eq!(convert("", Style::Plain, phrase), Vec::<&str>::new());
+    assert_eq!(
+      convert("", Style::Plain, phrase).unwrap(),
+      Vec::<&str>::new()
+    );
   }
 }
 
 #[test]
 fn phrases_resolve_polyphones_without_changing_character_mode() {
   assert_eq!(
-    convert("重庆银行音乐", Style::Plain, false),
+    convert("重庆银行音乐", Style::Plain, false).unwrap(),
     ["zhong", "qing", "yin", "xing", "yin", "le"]
   );
   assert_eq!(
-    convert("重庆银行音乐", Style::Plain, true),
+    convert("重庆银行音乐", Style::Plain, true).unwrap(),
     ["chong", "qing", "yin", "hang", "yin", "yue"]
   );
   assert_eq!(
-    convert("重庆银行音乐", Style::ToneNumberEnd, true),
+    convert("重庆银行音乐", Style::ToneNumberEnd, true).unwrap(),
     ["chong2", "qing4", "yin2", "hang2", "yin1", "yue4"]
   );
 }
@@ -154,8 +161,8 @@ fn phrase_probabilities_do_not_underflow_on_long_inputs() {
   let unit = "重庆银行，音乐快乐！";
   let repeated = unit.repeat(20_000);
   assert_eq!(
-    pinyin(&repeated, Style::Tone, true, ""),
-    pinyin(unit, Style::Tone, true, "").repeat(20_000)
+    pinyin(&repeated, Style::Tone, true, "").unwrap(),
+    pinyin(unit, Style::Tone, true, "").unwrap().repeat(20_000)
   );
 }
 
@@ -226,16 +233,20 @@ fn rolling_trie_solver_matches_independent_full_dictionary_search() {
         i += 1;
       }
     }
-    assert_eq!(pinyin(&input, Style::Tone, true, ""), expected, "{input}");
+    assert_eq!(
+      pinyin(&input, Style::Tone, true, "").unwrap(),
+      expected,
+      "{input}"
+    );
   }
 }
 
 #[test]
 fn reusable_output_appends_and_separators_do_not_change_non_han_text() {
   let mut output = String::from("prefix:");
-  write_pinyin("中 文\0🙂", Style::Plain, false, "|", &mut output);
+  write_pinyin("中 文\0🙂", Style::Plain, false, "|", &mut output).unwrap();
   assert_eq!(output, "prefix:zhong| |wen|\0🙂");
-  write_pinyin("", Style::Tone, true, "!", &mut output);
+  write_pinyin("", Style::Tone, true, "!", &mut output).unwrap();
   assert_eq!(output, "prefix:zhong| |wen|\0🙂");
 }
 
@@ -251,15 +262,15 @@ fn utf16_output_matches_token_oracle_and_preserves_reused_buffer() {
     for (style, _) in STYLES {
       for phrases in [false, true] {
         for separator in ["", " ", "|🙂\0"] {
-          let expected = convert(input, style, phrases).join(separator);
+          let expected = convert(input, style, phrases).unwrap().join(separator);
           let units: Vec<_> = expected.encode_utf16().collect();
           assert_eq!(
-            pinyin_core::utf16::pinyin(input, style, phrases, separator),
+            pinyin_core::utf16::pinyin(input, style, phrases, separator).unwrap(),
             units
           );
           let mut output = vec![0xfeed];
           let separator: Vec<_> = separator.encode_utf16().collect();
-          pinyin_core::utf16::write_pinyin(input, style, phrases, &separator, &mut output);
+          pinyin_core::utf16::write_pinyin(input, style, phrases, &separator, &mut output).unwrap();
           assert_eq!(output[0], 0xfeed);
           assert_eq!(&output[1..], units);
         }

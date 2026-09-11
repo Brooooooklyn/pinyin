@@ -1,6 +1,7 @@
 //! Stream precomputed syllables straight into V8's UTF-16 representation.
 
-use crate::encoding::append_utf16;
+use crate::{encoding::append_utf16, error::PinyinError};
+use napi::Result;
 use pinyin_core::{Style, Token};
 
 // Keep the escape kernel's control flow and register pressure out of the
@@ -43,7 +44,7 @@ pub fn json_utf16(
   tokens: impl Iterator<Item = Token>,
   style: Style,
   multi: bool,
-) -> Vec<u16> {
+) -> Result<Vec<u16>> {
   let mut output = Vec::with_capacity(input.len().saturating_mul(2));
   output.push(b'[' as u16);
   for (i, token) in tokens.enumerate() {
@@ -66,7 +67,7 @@ pub fn json_utf16(
         output.extend_from_slice(syllable.utf16(style));
       }
     } else {
-      json_text(token.text(input, style), &mut output);
+      json_text(token.text(input, style), &mut output)?;
     }
     output.push(b'"' as u16);
     if multi {
@@ -74,17 +75,17 @@ pub fn json_utf16(
     }
   }
   output.push(b']' as u16);
-  output
+  Ok(output)
 }
 
-fn json_text(input: &str, output: &mut Vec<u16>) {
+fn json_text(input: &str, output: &mut Vec<u16>) -> Result<()> {
   let mut start = 0;
   while let Some(relative) = crate::encoding::json_escape(&input.as_bytes()[start..]) {
     let i = start + relative;
     let byte = input.as_bytes()[i];
     // ASCII escape bytes always lie on UTF-8 boundaries. Copy intervening
     // runs in bulk so the transcoder can vectorize long unchanged text.
-    append_utf16(&input[start..i], output);
+    append_utf16(&input[start..i], output).map_err(PinyinError::from)?;
     output.push(b'\\' as u16);
     let escaped = match byte {
       b'"' | b'\\' => byte,
@@ -101,5 +102,6 @@ fn json_text(input: &str, output: &mut Vec<u16>) {
     output.push(escaped as u16);
     start = i + 1;
   }
-  append_utf16(&input[start..], output);
+  append_utf16(&input[start..], output).map_err(PinyinError::from)?;
+  Ok(())
 }

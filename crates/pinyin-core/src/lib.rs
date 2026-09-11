@@ -5,6 +5,10 @@
 //! Phrase conversion uses a precompiled trie and a bounded dynamic program.
 //! No dictionary construction, hashing, locks, or worker threads run at startup.
 #![forbid(unsafe_code)]
+#![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used))]
+
+mod error;
+pub use error::{Error, Result};
 
 use std::{cmp::Ordering, str::CharIndices};
 
@@ -218,13 +222,13 @@ impl CharacterCursor for DecodedChars {
 }
 
 /// Construct a token stream. Contextual modes retain compact phrase choices.
-pub fn tokens(input: &str, phrases: bool) -> Tokens<'_> {
+pub fn tokens(input: &str, phrases: bool) -> Result<Tokens<'_>> {
   let prepared = if phrases && !input.is_ascii() {
-    phrase_readings(input)
+    phrase_readings(input)?
   } else {
     Prepared::default()
   };
-  tokens_with_overrides(input, prepared)
+  Ok(tokens_with_overrides(input, prepared))
 }
 
 #[inline]
@@ -246,14 +250,19 @@ fn ascii_prefix(input: &[u8]) -> usize {
   }
 }
 
-fn decode(input: &str) -> Vec<char> {
+fn decode(input: &str) -> Result<Vec<char>> {
   #[cfg(feature = "simd")]
   {
-    napi_pinyin_kernels::decode(input)
+    Ok(napi_pinyin_kernels::decode(input)?)
   }
   #[cfg(not(feature = "simd"))]
   {
-    input.chars().collect()
+    let mut chars = Vec::new();
+    chars
+      .try_reserve(input.chars().count())
+      .map_err(Error::Allocation)?;
+    chars.extend(input.chars());
+    Ok(chars)
   }
 }
 
@@ -354,11 +363,11 @@ fn child(state: usize, ch: char) -> Option<usize> {
   }
 }
 
-fn phrase_readings(input: &str) -> Prepared {
-  let chars = decode(input);
+fn phrase_readings(input: &str) -> Result<Prepared> {
+  let chars = decode(input)?;
   let mut choices = vec![0u16; chars.len()];
   resolve_phrase_readings::<false>(&chars, &mut choices, &[]);
-  Prepared::new(chars, choices)
+  Ok(Prepared::new(chars, choices))
 }
 
 // The caller supplies zeroed choices. A boundary at index i lies before chars[i].
@@ -422,10 +431,12 @@ fn resolve_phrase_readings<const JIEBA: bool>(
 
 /// Return borrowed syllables and unchanged input runs. Character mode allocates
 /// only the result vector; phrase mode also allocates disambiguation scratch space.
-pub fn convert(input: &str, style: Style, phrases: bool) -> Vec<&str> {
-  tokens(input, phrases)
-    .map(|token| token.text(input, style))
-    .collect()
+pub fn convert(input: &str, style: Style, phrases: bool) -> Result<Vec<&str>> {
+  Ok(
+    tokens(input, phrases)?
+      .map(|token| token.text(input, style))
+      .collect(),
+  )
 }
 
 /// Append delimited output into a reusable caller-owned buffer. Existing contents
@@ -436,13 +447,13 @@ pub fn write_pinyin(
   phrases: bool,
   separator: &str,
   output: &mut String,
-) {
+) -> Result<()> {
   if input.is_ascii() {
     output.push_str(input);
-    return;
+    return Ok(());
   }
   let overrides = if phrases {
-    phrase_readings(input)
+    phrase_readings(input)?
   } else {
     Prepared::default()
   };
@@ -451,6 +462,7 @@ pub fn write_pinyin(
   } else {
     write_characters::<true>(input, style, separator, overrides, output);
   }
+  Ok(())
 }
 
 #[inline]
@@ -538,10 +550,10 @@ fn write_characters<const SEPARATED: bool>(
 }
 
 /// Build delimited output with reserved capacity and amortized growth.
-pub fn pinyin(input: &str, style: Style, phrases: bool, separator: &str) -> String {
+pub fn pinyin(input: &str, style: Style, phrases: bool, separator: &str) -> Result<String> {
   let mut output = String::with_capacity(input.len().saturating_mul(2));
-  write_pinyin(input, style, phrases, separator, &mut output);
-  output
+  write_pinyin(input, style, phrases, separator, &mut output)?;
+  Ok(output)
 }
 
 // Preserve the existing comparator's exact replacement semantics for non-Han

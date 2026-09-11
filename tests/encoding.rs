@@ -34,13 +34,13 @@ fn every_unicode_scalar_and_transcoder_tail_matches_std() {
   let scalars: String = (0..=0x10ffff).filter_map(char::from_u32).collect();
   let expected: Vec<_> = scalars.encode_utf16().collect();
   let mut actual = vec![0xfeed];
-  encoding::append_utf16(&scalars, &mut actual);
+  encoding::append_utf16(&scalars, &mut actual).unwrap();
   assert_eq!(&actual[1..], expected);
   for n in 0..260 {
     for prefix in 0..17 {
       let text = format!("{}é中🙂\0{}", "a".repeat(n), "𐀀".repeat(n % 7));
       let mut output = vec![0xbeef; prefix];
-      encoding::append_utf16(&text, &mut output);
+      encoding::append_utf16(&text, &mut output).unwrap();
       assert_eq!(&output[..prefix], vec![0xbeef; prefix]);
       assert_eq!(&output[prefix..], text.encode_utf16().collect::<Vec<_>>());
     }
@@ -49,7 +49,7 @@ fn every_unicode_scalar_and_transcoder_tail_matches_std() {
     not(target_family = "wasm"),
     any(target_arch = "aarch64", target_arch = "x86_64")
   ))]
-  assert_eq!(encoding::from_utf16_lossy(&expected), scalars);
+  assert_eq!(encoding::from_utf16_lossy(&expected).unwrap(), scalars);
 }
 
 #[cfg(all(
@@ -64,7 +64,7 @@ fn malformed_utf16_and_unaligned_input_match_lossy_std() {
       let mut backing = vec![0; offset];
       backing.extend_from_slice(&valid);
       assert_eq!(
-        encoding::from_utf16_lossy(&backing[offset..]),
+        encoding::from_utf16_lossy(&backing[offset..]).unwrap(),
         String::from_utf16_lossy(&valid)
       );
       for malformed in [
@@ -77,7 +77,7 @@ fn malformed_utf16_and_unaligned_input_match_lossy_std() {
           let mut input = valid.clone();
           input.splice(position..position, malformed.iter().copied());
           assert_eq!(
-            encoding::from_utf16_lossy(&input),
+            encoding::from_utf16_lossy(&input).unwrap(),
             String::from_utf16_lossy(&input)
           );
         }

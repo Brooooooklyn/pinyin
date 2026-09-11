@@ -183,7 +183,7 @@ impl<'t, F: Fn(char) -> bool> Iterator for SplitByCharacterClass<'t, F> {
         }
 
         let remaining = &self.text[self.pos..];
-        let first_char = remaining.chars().next().unwrap();
+        let first_char = remaining.chars().next()?;
 
         if (self.classify)(first_char) {
             // Matched run: consume while classify is true
@@ -198,7 +198,7 @@ impl<'t, F: Fn(char) -> bool> Iterator for SplitByCharacterClass<'t, F> {
                         rest = &rest[n..];
                         continue;
                     }
-                    let c = rest.chars().next().unwrap();
+                    let c = rest.chars().next()?;
                     if !(self.classify)(c) {
                         break;
                     }
@@ -365,6 +365,15 @@ impl Jieba {
         instance
     }
 
+    /// Create an instance with the embedded dictionary, reporting invalid data.
+    /// Unlike `new`, this does not panic when dictionary parsing fails.
+    #[cfg(feature = "default-dict")]
+    pub fn try_new() -> Result<Self, Error> {
+        let mut instance = Self::empty();
+        instance.try_load_default_dict()?;
+        Ok(instance)
+    }
+
     /// Create a new instance with dict
     pub fn with_dict<R: BufRead>(dict: &mut R) -> Result<Self, Error> {
         let mut instance = Self::empty();
@@ -401,6 +410,17 @@ impl Jieba {
             self.load_unique_dict(&mut default_dict).unwrap();
         } else {
             self.load_dict(&mut default_dict).unwrap();
+        }
+    }
+
+    /// Load the embedded dictionary, returning any parsing or I/O failure.
+    #[cfg(feature = "default-dict")]
+    pub fn try_load_default_dict(&mut self) -> Result<(), Error> {
+        let mut dict = std::io::BufReader::new(DEFAULT_DICT.as_bytes());
+        if self.records.is_empty() {
+            self.load_unique_dict(&mut dict)
+        } else {
+            self.load_dict(&mut dict)
         }
     }
 

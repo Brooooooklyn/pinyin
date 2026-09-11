@@ -57,8 +57,8 @@ jobs:
           cargo test -p napi-pinyin-core --features jieba,utf16,simd
           cargo test -p napi-pinyin-kernels
           cargo test -p napi-pinyin-kernels --features simd
-          cargo test --test encoding
-          cargo test --test encoding --no-default-features
+          cargo test --lib --test encoding
+          cargo test --lib --test encoding --no-default-features
   build:
     strategy:
       fail-fast: false

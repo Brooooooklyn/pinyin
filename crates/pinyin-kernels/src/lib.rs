@@ -1,5 +1,10 @@
 //! Safe interfaces to bounded text kernels. SIMD is optional; every kernel has a portable fallback.
 
+#![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used))]
+
+mod error;
+pub use error::{Error, Result};
+
 #[cfg(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128"))]
 mod wasm;
 #[cfg(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128"))]
@@ -82,7 +87,7 @@ pub fn ascii_prefix(input: &[u8]) -> usize {
 
 /// Decode phrase scratch data. Sample both ends to avoid the measured mixed
 /// text regression of unconditional count+transcode. All output is owned.
-pub fn decode(input: &str) -> Vec<char> {
+pub fn decode(input: &str) -> Result<Vec<char>> {
   #[cfg(all(
     feature = "simd",
     not(target_family = "wasm"),
@@ -100,7 +105,7 @@ pub fn decode(input: &str) -> Vec<char> {
   {
     return native::decode(input);
   }
-  input.chars().collect()
+  Ok(input.chars().collect())
 }
 
 /// Compare four packed trie labels. Zero padding cannot match a nonzero label.
@@ -228,17 +233,19 @@ pub fn json_escape(input: &[u8]) -> Option<usize> {
 
 /// Append valid UTF-8 without an intermediate allocation.
 #[cfg(not(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128")))]
-pub fn append_utf16(input: &str, output: &mut Vec<u16>) {
+pub fn append_utf16(input: &str, output: &mut Vec<u16>) -> Result<()> {
   #[cfg(all(feature = "simd", any(target_arch = "aarch64", target_arch = "x86_64")))]
   if input.len() >= 64 {
     return native::append_utf16(input, output);
   }
+  error::reserve(output, input.len(), "UTF-8 to UTF-16")?;
   output.extend(input.encode_utf16());
+  Ok(())
 }
 
 /// Match N-API's UTF-8 extraction, including replacement of lone JS surrogates.
 #[cfg(not(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128")))]
-pub fn from_utf16_lossy(input: &[u16]) -> String {
+pub fn from_utf16_lossy(input: &[u16]) -> Result<String> {
   #[cfg(all(feature = "simd", any(target_arch = "aarch64", target_arch = "x86_64")))]
   if input.len() >= 32 {
     return native::from_utf16_lossy(input);
@@ -246,11 +253,16 @@ pub fn from_utf16_lossy(input: &[u16]) -> String {
   scalar_from_utf16_lossy(input)
 }
 
-#[cfg(not(all(feature = "simd", target_arch = "wasm32", target_feature = "simd128")))]
-fn scalar_from_utf16_lossy(input: &[u16]) -> String {
-  let mut output = String::with_capacity(input.len().checked_mul(3).expect("input too large"));
+fn scalar_from_utf16_lossy(input: &[u16]) -> Result<String> {
+  let mut output = String::new();
+  output
+    .try_reserve(error::utf8_capacity(input.len())?)
+    .map_err(|source| Error::Allocation {
+      operation: "UTF-16 to UTF-8",
+      source,
+    })?;
   output.extend(
     char::decode_utf16(input.iter().copied()).map(|c| c.unwrap_or(char::REPLACEMENT_CHARACTER)),
   );
-  output
+  Ok(output)
 }

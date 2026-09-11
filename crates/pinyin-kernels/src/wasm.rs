@@ -1,4 +1,9 @@
-//! wasm SIMD128: ASCII and three-byte BMP blocks, with scalar Unicode tails.
+//! WASM SIMD128: ASCII and three-byte BMP blocks, with scalar Unicode tails.
+
+use crate::{
+  error::{next_utf8, reserve, utf8_capacity},
+  Error, Result,
+};
 use std::arch::wasm32::*;
 
 // Failed block probes cost more than scalar decoding on mixed input. Sample
@@ -31,12 +36,12 @@ fn dense_utf8(input: &str) -> bool {
   input.len() >= 512 && dense(input.chars()) && dense(input.chars().rev())
 }
 
-pub fn append_utf16(input: &str, output: &mut Vec<u16>) {
+pub fn append_utf16(input: &str, output: &mut Vec<u16>) -> Result<()> {
+  reserve(output, input.len(), "UTF-8 to UTF-16")?;
   if !dense_utf8(input) {
     output.extend(input.encode_utf16());
-    return;
+    return Ok(());
   }
-  output.reserve(input.len());
   let mut i = 0;
   while i < input.len() {
     if input.len() - i >= 16 {
@@ -82,21 +87,19 @@ pub fn append_utf16(input: &str, output: &mut Vec<u16>) {
         }
       }
     }
-    let ch = input[i..].chars().next().unwrap();
+    let ch = next_utf8(input, i)?;
     output.extend_from_slice(ch.encode_utf16(&mut [0; 2]));
     i += ch.len_utf8();
   }
+  Ok(())
 }
 
-pub fn from_utf16_lossy(input: &[u16]) -> String {
+pub fn from_utf16_lossy(input: &[u16]) -> Result<String> {
   if !dense_utf16(input) {
-    let mut output = String::with_capacity(input.len().checked_mul(3).expect("input too large"));
-    output.extend(
-      char::decode_utf16(input.iter().copied()).map(|c| c.unwrap_or(char::REPLACEMENT_CHARACTER)),
-    );
-    return output;
+    return super::scalar_from_utf16_lossy(input);
   }
-  let mut output = Vec::<u8>::with_capacity(input.len().checked_mul(3).expect("input too large"));
+  let mut output = Vec::<u8>::new();
+  reserve(&mut output, utf8_capacity(input.len())?, "UTF-16 to UTF-8")?;
   let mut i = 0;
   while i < input.len() {
     if input.len() - i >= 8 {
@@ -170,7 +173,11 @@ pub fn from_utf16_lossy(input: &[u16]) -> String {
     }
     let decoded = char::decode_utf16(input[i..].iter().copied())
       .next()
-      .unwrap();
+      .ok_or(Error::InvalidCursor {
+        encoding: "UTF-16",
+        offset: i,
+        input_len: input.len(),
+      })?;
     let valid = decoded.is_ok();
     let ch = decoded.unwrap_or(char::REPLACEMENT_CHARACTER);
     i += if valid { ch.len_utf16() } else { 1 };
@@ -178,5 +185,5 @@ pub fn from_utf16_lossy(input: &[u16]) -> String {
   }
   // SAFETY: SIMD emits valid ASCII or non-surrogate BMP encodings; the scalar
   // tail uses standard lossy decoding and char::encode_utf8.
-  unsafe { String::from_utf8_unchecked(output) }
+  Ok(unsafe { String::from_utf8_unchecked(output) })
 }

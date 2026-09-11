@@ -14,6 +14,38 @@ The archived research build at `5267ab2` was **1.93–7.75× faster than pinyin-
 - [Validation and reproduction](#validation-and-reproduction)
 - [Historical stage measurements](#historical-stage-measurements) and [sources](#sources)
 
+## Fallible conversion follow-up (September 12, 2026)
+
+The owned Rust production sources and dictionary generator no longer call
+panic-causing `unwrap()` or `expect()`. Clippy rejects their reintroduction.
+Kernel conversion and core preparation APIs return typed `Result`s, with errors
+for size overflow, failed reservations, and invalid decoder positions. Errors
+implement `Display` and `std::error::Error` and retain underlying sources.
+Dictionary build errors identify the input file, line, or exceeded table limit.
+
+The Node boundary translates errors into exceptions or async task failures.
+Existing TypeScript declarations, successful outputs, UTF-8 diagnostics, and
+lossy UTF-16 replacement behavior are unchanged. The Rust signature changes
+apply to the new, unpublished core/kernel crates; token iteration after successful
+preparation, character lookup, and comparison remain infallible.
+
+The vendored Jieba patch adds fallible dictionary initialization, and the binding
+caches `Result<Jieba, Error>` instead of panicking during lazy initialization.
+Its classifier uses iterator exhaustion without unwrapping. Upstream constructors
+remain available for Rust compatibility; unused upstream HMM/POS/keyword paths
+and dependency-internal failures are not covered by the Node binding's error
+contract. This change does not promise recovery from every allocator failure.
+
+Validation passed all 220 binding tests in each fresh native SIMD, native scalar,
+standard WASI, and explicit SIMD WASI release build. Generated declarations match
+the checked-in files exactly for all four builds. The complete Rust suite passed,
+including new overflow/diagnostic/malformed-dictionary tests, every Unicode scalar,
+all dictionary readings and phrases, and Jieba compatibility. Default/scalar
+Clippy, formatting, lint, focused TypeScript checks, and x64 kernel tests under
+Rosetta passed. CI runs the binding's new error unit tests in both feature modes.
+Performance tables below predate this error-handling refactor; no new speedup
+claim is made for it.
+
 ## Compatibility and CI follow-up (September 12, 2026)
 
 The first PR revision unintentionally changed existing `segment: true` outputs. The binding now keeps the original behavior unless a new contextual `segmenter` is explicitly supplied. Regression tests cover mixed Jieba dictionary words, every style, heteronyms, sync/async calls, byte input, and direct versus bulk output. A freshly built `f4409a3` native binding matched the new binding in **6,705 comparisons** across 76 fixtures, including all 64 mixed Latin/CJK words in the default Jieba dictionary. Core tests separately compare legacy segmentation with the original pinyin 0.11.0 pipeline.
@@ -1006,13 +1038,13 @@ The large-run fixtures deliberately force the bulk-array route with 32 initial C
 
 ### Where the gain comes from
 
-The prototype baseline UTF-8 array writer iterates through non-dictionary text as Unicode characters, checks each character for JSON escaping and appends it individually. Known syllables are already JSON-safe and appended directly. The crate combines scanning, copying unchanged bytes and table-based escape emission. Its ARM64 kernel processes four 16-byte vectors together, combining their masks before extracting a bitmask. [Published NEON implementation](https://github.com/napi-rs/json-escape-simd/blob/a860920ee22a75d3b4983c987ce5c2e0fe1837ae/src/simd/neon.rs).
+The prototype baseline UTF-8 array writer iterates through non-dictionary text as Unicode characters, checks each character for JSON escaping and appends it individually. Known syllables are already JSON-safe and appended directly. The crate combines scanning, copying unchanged bytes and table-based escape emission. Its ARM64 kernel processes four 16-byte vectors together, combining their masks before extracting a bitmask. [Published NEON implementation](https://github.com/napi-rs/escape-simd/blob/a860920ee22a75d3b4983c987ce5c2e0fe1837ae/src/simd/neon.rs).
 
 This is useful even for short mixed-text runs. Every unmapped run in the mixed fixtures is shorter than 64 bytes; restricting the crate to long runs loses their improvement. The literature fixture has 12,410 unmapped runs, mostly short punctuation, and only five escapable bytes. Its total call cost barely changes.
 
 Reusing our existing SIMD finder and copying UTF-8 spans in bulk is a competitive dependency-free alternative: it takes 0.172 ms for the long ASCII case and 0.328 ms for the long Unicode case. The crate is better on short mixed runs: 0.794 versus 0.813 ms without controls, and 0.827 versus 0.873 ms with NUL. The improvement is therefore not exclusively a consequence of wider SIMD; avoiding character decoding and general-purpose control-character formatting also matters.
 
-The public escape_into API appends quoted UTF-8 JSON into a byte vector. It reserves six times the input length plus 35 bytes of spare capacity for worst-case escaping and speculative stores. It exposes neither a UTF-16 sink nor a public escape-finder API. Default backends include NEON, AVX2 and SSE2; AVX-512 is opt-in, and other architectures use the portable implementation. [Published API and dispatch](https://github.com/napi-rs/json-escape-simd/blob/a860920ee22a75d3b4983c987ce5c2e0fe1837ae/src/lib.rs).
+The public escape_into API appends quoted UTF-8 JSON into a byte vector. It reserves six times the input length plus 35 bytes of spare capacity for worst-case escaping and speculative stores. It exposes neither a UTF-16 sink nor a public escape-finder API. Default backends include NEON, AVX2 and SSE2; AVX-512 is opt-in, and other architectures use the portable implementation. [Published API and dispatch](https://github.com/napi-rs/escape-simd/blob/a860920ee22a75d3b4983c987ce5c2e0fe1837ae/src/lib.rs).
 
 ### Decision carried into production
 
