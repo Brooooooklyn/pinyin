@@ -1,8 +1,12 @@
 # Pinned Jieba SIMD patch
 
 Source: jieba-rs 0.10.3, commit c62e0df1f9dcc2cc1e014711c5aa4561ae260538.
-All dictionary data and other Rust modules are unchanged from the published crate.
+All dictionary data and other library modules are unchanged from the published crate.
 The MIT license is retained.
+
+The unused upstream WebAssembly test target and its wasm-bindgen-test development
+dependency are omitted. This project builds WebAssembly through NAPI-RS for
+wasm32-wasip1-threads and tests it through the generated NAPI-RS WASI loader.
 
 The default cut classifier skips ASCII and common-CJK prefixes with bounded
 NEON loads on ARM64 when the pinyin-simd feature is enabled. Other characters use the original Unicode predicate.

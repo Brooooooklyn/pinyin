@@ -47,10 +47,6 @@ tfidf = [
 name = "jieba_rs"
 path = "src/lib.rs"
 
-[[test]]
-name = "test_wasm"
-path = "tests/test_wasm.rs"
-
 [[bench]]
 name = "jieba_benchmark"
 path = "benches/jieba_benchmark.rs"
@@ -95,9 +91,6 @@ version = "1.5"
 
 [dev-dependencies.rayon]
 version = "1.11"
-
-[dev-dependencies.wasm-bindgen-test]
-version = "0.3.50"
 
 [target."cfg(unix)".dev-dependencies.tikv-jemallocator]
 version = "0.7.0"
