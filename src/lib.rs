@@ -51,7 +51,11 @@ impl TryFrom<u32> for PinyinStyle {
 
 pub struct AsyncPinyinTask {
   style: PinyinStyle,
-  input: Either<String, Buffer>,
+  // Owned snapshot of the input bytes: a `Buffer` aliases JS-owned memory,
+  // so holding it across the worker thread would let JS mutate the bytes
+  // during `compute` — a data race, and the UTF-8 check in
+  // `get_chars_buffer` could be invalidated between validation and use.
+  input: Either<String, Vec<u8>>,
   option: PinyinOption,
 }
 
@@ -376,10 +380,10 @@ fn get_chars<'a>(input: &'a Either<String, &'a [u8]>) -> Result<&'a str> {
   }
 }
 
-fn get_chars_buffer(input: &Either<String, Buffer>) -> Result<&str> {
+fn get_chars_buffer(input: &Either<String, Vec<u8>>) -> Result<&str> {
   match input {
     Either::A(input) => Ok(input.as_str()),
-    Either::B(input) => std::str::from_utf8(input.as_ref()).map_err(|err| {
+    Either::B(input) => std::str::from_utf8(input).map_err(|err| {
       Error::new(
         Status::InvalidArg,
         format!("Input buffer must contain valid UTF-8: {err}"),
@@ -403,7 +407,10 @@ pub fn async_pinyin(
 
   let task = AsyncPinyinTask {
     style: opt.style.unwrap_or(PinyinStyle::Plain),
-    input,
+    input: match input {
+      Either::A(input) => Either::A(input),
+      Either::B(input) => Either::B(input.as_ref().to_vec()),
+    },
     option,
   };
   Ok(AsyncTask::with_optional_signal(task, signal))
