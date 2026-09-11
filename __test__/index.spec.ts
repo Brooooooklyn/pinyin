@@ -142,3 +142,11 @@ test('reject invalid UTF-8 Buffer in asyncPinyin', async (t) => {
   const invalid = Buffer.from([0xff, 0xfe, 0xff])
   await t.throwsAsync(() => asyncPinyin(invalid), { message: /valid UTF-8/ })
 })
+
+test('accept valid UTF-8 Uint8Array', (t) => {
+  t.deepEqual(pinyin(new TextEncoder().encode('中国')), pinyin('中国'))
+})
+
+test('accept valid UTF-8 Buffer in asyncPinyin', async (t) => {
+  t.deepEqual(await asyncPinyin(Buffer.from('中国')), await asyncPinyin('中国'))
+})
