@@ -1,7 +1,7 @@
 {
   "name": "@napi-rs/pinyin",
   "version": "1.7.7",
-  "description": "Fastest Chinese words to pinyin library",
+  "description": "Fast Chinese words to pinyin conversion powered by Rust",
   "main": "index.js",
   "repository": "git@github.com:Brooooooklyn/pinyin.git",
   "license": "MIT",
@@ -19,7 +19,21 @@
     "汉字",
     "中文"
   ],
-  "files": ["index.d.ts", "index.js", "src/**", "build.rs", "Cargo.toml", "postinstall.mjs"],
+  "files": [
+    "index.d.ts",
+    "index.js",
+    "src/**",
+    "build.rs",
+    "benches/**",
+    "tests/**",
+    "Cargo.toml",
+    "Cargo.lock",
+    "scripts/build-wasm-simd.mjs",
+    "postinstall.mjs",
+    "crates/pinyin-core/**",
+    "crates/pinyin-kernels/**",
+    "vendor/jieba-rs/**"
+  ],
   "napi": {
     "binaryName": "pinyin",
     "targets": [
@@ -52,9 +66,10 @@
   },
   "scripts": {
     "artifacts": "napi artifacts",
-    "bench": "node --import @oxc-node/core/register benchmark/bench.ts",
+    "bench": "node --import @oxc-node/core/register benchmark/compare.ts",
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
+    "build:wasm:simd": "node scripts/build-wasm-simd.mjs",
     "format": "run-p format:md format:json format:yaml format:source format:rs",
     "format:md": "prettier --parser markdown --write \"./**/*.md\"",
     "format:json": "prettier --parser json --write \"./**/*.json\"",
@@ -66,7 +81,8 @@
     "prepublishOnly": "napi prepublish -t npm",
     "test": "ava",
     "version": "napi version && conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-    "postpublish": "pinst --enable"
+    "postpublish": "pinst --enable",
+    "test:core": "cargo test -p napi-pinyin-core"
   },
   "devDependencies": {
     "@emnapi/core": "^2.0.0-alpha.5",

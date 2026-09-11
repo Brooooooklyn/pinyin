@@ -1,0 +1,1249 @@
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -280,6 +280,8 @@
+ [[package]]
+ name = "jieba-rs"
+ version = "0.10.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "bb5bdea4dc241d589e179f39d2a778f31490f3370aa2f626223dbd930ebc5c9d"
+ dependencies = [
+  "bytecount",
+  "cedarwood",
+@@ -299,12 +301,6 @@
+  "getrandom",
+  "libc",
+ ]
+-
+-[[package]]
+-name = "json-escape-simd"
+-version = "3.1.1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c22a2041e3874a055a4eb03ea2395aaccdefa84ce75b31d542d72a741c3c6ad3"
+ 
+ [[package]]
+ name = "libc"
+@@ -425,14 +421,11 @@
+ name = "napi-pinyin"
+ version = "0.1.0"
+ dependencies = [
+- "jieba-rs",
+- "json-escape-simd",
+  "mimalloc-safe",
+  "napi",
+  "napi-build",
+  "napi-derive",
+  "napi-pinyin-core",
+- "napi-pinyin-kernels",
+  "simdutf8",
+ ]
+ 
+@@ -441,15 +434,7 @@
+ version = "0.1.0"
+ dependencies = [
+  "jieba-rs",
+- "napi-pinyin-kernels",
+  "pinyin",
+-]
+-
+-[[package]]
+-name = "napi-pinyin-kernels"
+-version = "0.1.0"
+-dependencies = [
+- "simdutf",
+ ]
+ 
+ [[package]]
+@@ -662,16 +647,6 @@
+ checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
+ 
+ [[package]]
+-name = "simdutf"
+-version = "0.7.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5f542752c7335a9174e7bb81112c3ca1415a7a6b6ec2c3e840aca347a30f9141"
+-dependencies = [
+- "bitflags",
+- "cc",
+-]
+-
+-[[package]]
+ name = "simdutf8"
+ version = "0.1.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -8,25 +8,14 @@
+ crate-type = ["cdylib"]
+ 
+ [workspace]
+-members = ["crates/pinyin-core", "crates/pinyin-kernels"]
++members = ["crates/pinyin-core"]
+ resolver = "2"
+-exclude = ["vendor/jieba-rs"]
+-
+-[patch.crates-io]
+-jieba-rs = { path = "vendor/jieba-rs" }
+-
+-[features]
+-default = ["simd"]
+-simd = ["napi-pinyin-core/simd", "napi-pinyin-kernels/simd", "dep:json-escape-simd", "dep:jieba-rs"]
+ 
+ [dependencies]
+ napi = "3.12.3"
+ napi-derive = "3.6.4"
+-napi-pinyin-core = { path = "crates/pinyin-core", version = "0.1.0", features = ["jieba", "utf16"] }
++napi-pinyin-core = { path = "crates/pinyin-core", version = "0.1.0", features = ["jieba"] }
+ simdutf8 = "0.1.5"
+-json-escape-simd = { version = "=3.1.1", optional = true }
+-jieba-rs = { version = "=0.10.3", features = ["pinyin-simd"], optional = true }
+-napi-pinyin-kernels = { path = "crates/pinyin-kernels", version = "0.1.0" }
+ 
+ [[bench]]
+ name = "utf8"
+--- a/crates/pinyin-core/Cargo.toml
++++ b/crates/pinyin-core/Cargo.toml
+@@ -13,11 +13,8 @@
+ [features]
+ default = []
+ jieba = ["dep:jieba-rs"]
+-utf16 = []
+-simd = ["dep:napi-pinyin-kernels", "napi-pinyin-kernels/simd"]
+ 
+ [dependencies]
+-napi-pinyin-kernels = { path = "../pinyin-kernels", version = "0.1.0", optional = true }
+ jieba-rs = { version = "0.10.3", optional = true }
+ 
+ [dev-dependencies]
+--- a/crates/pinyin-core/build.rs
++++ b/crates/pinyin-core/build.rs
+@@ -132,10 +132,6 @@
+     entries[code as usize] = u32::from(list[0]) | (u32::from(multi) << 16);
+   }
+ 
+-  assert!(
+-    entries[..128].iter().all(|&entry| entry == 0),
+-    "ASCII run fast path requires unmapped ASCII"
+-  );
+   let mut nodes = vec![Node::default()];
+   let mut phrases: Vec<Vec<u16>> = vec![vec![]];
+   for line in include_str!("data/phrases.tsv")
+@@ -177,63 +173,6 @@
+     writeln!(output, "{strings:?},").unwrap();
+   }
+   writeln!(output, "];").unwrap();
+-  // Preserve the comparator's legacy mapping, which intentionally differs
+-  // from ToneNumber for a few uncommon accents. No runtime normalization.
+-  let replacements = [
+-    ("ā", "a1"),
+-    ("á", "a2"),
+-    ("ǎ", "a3"),
+-    ("à", "a4"),
+-    ("ē", "e1"),
+-    ("é", "e2"),
+-    ("ě", "e3"),
+-    ("è", "e4"),
+-    ("ī", "i1"),
+-    ("í", "i2"),
+-    ("ǐ", "i3"),
+-    ("ì", "i4"),
+-    ("ō", "o1"),
+-    ("ó", "o2"),
+-    ("ǒ", "o3"),
+-    ("ò", "o4"),
+-    ("ū", "u1"),
+-    ("ú", "u2"),
+-    ("ǔ", "u3"),
+-    ("ù", "u4"),
+-    ("ǖ", "ü1"),
+-    ("ǘ", "ü2"),
+-    ("ǚ", "ü3"),
+-    ("ǜ", "ü4"),
+-  ];
+-  let sort_keys: Vec<_> = values
+-    .iter()
+-    .map(|styles| {
+-      let mut key = styles[1].clone();
+-      for (from, to) in replacements {
+-        key = key.replace(from, to);
+-      }
+-      assert!(key.len() <= 16);
+-      key
+-    })
+-    .collect();
+-  writeln!(output, "static SORT_KEYS: &[&str] = &{sort_keys:?};").unwrap();
+-  // Optional engine-facing representation: no runtime cache or transcoding.
+-  if env::var_os("CARGO_FEATURE_UTF16").is_some() {
+-    writeln!(
+-      output,
+-      "static STYLES_UTF16: [[&[u16]; SYLLABLE_COUNT]; 5] = ["
+-    )
+-    .unwrap();
+-    for style in 0..5 {
+-      writeln!(output, "[").unwrap();
+-      for syllable in &values {
+-        let units: Vec<_> = syllable[style].encode_utf16().collect();
+-        writeln!(output, "&{units:?},").unwrap();
+-      }
+-      writeln!(output, "],").unwrap();
+-    }
+-    writeln!(output, "];").unwrap();
+-  }
+   writeln!(
+     output,
+     "static COMMON: &[u32] = &{:?};",
+@@ -253,22 +192,9 @@
+   }
+   pages("ROOT", &roots, &mut output);
+   let mut edges = Vec::<(u32, u32)>::new();
+-  let mut small_labels = vec![[0u32; 4]];
+   writeln!(output, "static NODES: &[Node] = &[").unwrap();
+   for node in nodes {
+-    let mut start = edges.len();
+-    if env::var_os("CARGO_FEATURE_SIMD").is_some() {
+-      assert!(start <= u16::MAX as usize);
+-      if (2..=4).contains(&node.children.len()) {
+-        let mut labels = [0; 4];
+-        for (slot, ch) in labels.iter_mut().zip(node.children.keys()) {
+-          *slot = *ch as u32;
+-        }
+-        assert!(small_labels.len() <= u16::MAX as usize);
+-        start |= small_labels.len() << 16;
+-        small_labels.push(labels);
+-      }
+-    }
++    let start = edges.len();
+     let len = node.children.len();
+     assert!(len <= u16::MAX as usize);
+     edges.extend(
+@@ -285,13 +211,6 @@
+     .unwrap();
+   }
+   writeln!(output, "];").unwrap();
+-  if env::var_os("CARGO_FEATURE_SIMD").is_some() {
+-    writeln!(
+-      output,
+-      "static SMALL_LABELS: &[[u32; 4]] = &{small_labels:?};"
+-    )
+-    .unwrap();
+-  }
+   writeln!(output, "static EDGES: &[(u32, u32)] = &{edges:?};").unwrap();
+   writeln!(
+     output,
+--- a/crates/pinyin-core/src/jieba.rs
++++ b/crates/pinyin-core/src/jieba.rs
+@@ -6,8 +6,8 @@
+ use super::{Style, Tokens};
+ pub use jieba_rs::Jieba;
+ 
+-fn phrase_readings(input: &str, segmenter: &Jieba, hmm: bool) -> super::Prepared {
+-  let chars = super::decode(input);
++fn phrase_readings(input: &str, segmenter: &Jieba, hmm: bool) -> Vec<u16> {
++  let chars: Vec<_> = input.chars().collect();
+   let mut choices = vec![0u16; chars.len()];
+   let mut boundaries = vec![0u8; chars.len()];
+   for word in segmenter.cut(input, hmm) {
+@@ -17,7 +17,7 @@
+     }
+   }
+   super::resolve_phrase_readings::<true>(&chars, &mut choices, &boundaries);
+-  super::Prepared::new(chars, choices)
++  choices
+ }
+ 
+ /// Prefer phrase matches inside Jieba words, retaining cross-boundary fallback.
+@@ -57,22 +57,3 @@
+   output
+ }
+ 
+-/// Direct UTF-16 output using the same Jieba boundaries and phrase decisions.
+-#[cfg(feature = "utf16")]
+-pub fn pinyin_utf16(
+-  input: &str,
+-  style: Style,
+-  segmenter: &Jieba,
+-  hmm: bool,
+-  separator: &str,
+-) -> Vec<u16> {
+-  let mut output = Vec::with_capacity(input.len().saturating_mul(2));
+-  let separator: Vec<_> = separator.encode_utf16().collect();
+-  let overrides = if input.is_ascii() {
+-    super::Prepared::default()
+-  } else {
+-    phrase_readings(input, segmenter, hmm)
+-  };
+-  super::utf16::write_with_overrides(input, style, &separator, overrides, &mut output);
+-  output
+-}
+--- a/crates/pinyin-core/src/lib.rs
++++ b/crates/pinyin-core/src/lib.rs
+@@ -11,9 +11,6 @@
+ /// Optional Jieba word boundaries combined with the core pronunciation dictionary.
+ #[cfg(feature = "jieba")]
+ pub mod jieba;
+-
+-#[cfg(feature = "utf16")]
+-pub mod utf16;
+ 
+ struct Node {
+   start: u32,
+@@ -45,13 +42,6 @@
+     STYLES[style as usize][self.0 as usize]
+   }
+ 
+-  /// Precomputed UTF-16 for engines using two-byte strings. Enabled by `utf16`.
+-  #[cfg(feature = "utf16")]
+-  #[inline]
+-  pub fn utf16(self, style: Style) -> &'static [u16] {
+-    STYLES_UTF16[style as usize][self.0 as usize]
+-  }
+-
+   /// Index for a call-local cache; valid only for this build of the dictionary.
+   #[inline]
+   pub fn cache_index(self) -> usize {
+@@ -121,30 +111,6 @@
+   }
+ }
+ 
+-#[derive(Default)]
+-struct Prepared {
+-  chars: Vec<char>,
+-  choices: Vec<u16>,
+-}
+-
+-impl Prepared {
+-  fn new(chars: Vec<char>, choices: Vec<u16>) -> Self {
+-    // Reuse pays on dense BMP text. ASCII-heavy output is better served by
+-    // the byte cursor, which can skip whole spans instead of walking u32s.
+-    let reuse = chars.len() >= 128
+-      && chars[..32].iter().filter(|c| c.len_utf8() == 3).count() >= 28
+-      && chars[chars.len() - 32..]
+-        .iter()
+-        .filter(|c| c.len_utf8() == 3)
+-        .count()
+-        >= 28;
+-    Self {
+-      chars: if reuse { chars } else { Vec::new() },
+-      choices,
+-    }
+-  }
+-}
+-
+ /// A lazy stream. Character mode does not allocate; phrase mode stores O(n)
+ /// compact choices and uses O(maximum phrase length) probability scratch space.
+ pub struct Tokens<'a> {
+@@ -154,124 +120,36 @@
+   ascii: Option<Token>,
+ }
+ 
+-trait CharacterCursor: Iterator<Item = (usize, char)> {
+-  /// Skip ASCII immediately following a character already consumed.
+-  fn skip_ascii(&mut self) -> usize;
+-}
+-
+-struct RawChars<'a> {
+-  chars: CharIndices<'a>,
+-  base: usize,
+-}
+-impl Iterator for RawChars<'_> {
+-  type Item = (usize, char);
+-  #[inline]
+-  fn next(&mut self) -> Option<Self::Item> {
+-    self.chars.next().map(|(i, c)| (self.base + i, c))
+-  }
+-}
+-impl CharacterCursor for RawChars<'_> {
+-  #[inline]
+-  fn skip_ascii(&mut self) -> usize {
+-    let rest = self.chars.as_str();
+-    let count = ascii_prefix(rest.as_bytes());
+-    if count != 0 {
+-      self.base += self.chars.offset() + count;
+-      self.chars = rest[count..].char_indices();
+-    }
+-    count
+-  }
+-}
+-
+-struct DecodedChars {
+-  chars: std::vec::IntoIter<char>,
+-  position: usize,
+-}
+-impl Iterator for DecodedChars {
+-  type Item = (usize, char);
+-  #[inline]
+-  fn next(&mut self) -> Option<Self::Item> {
+-    let ch = self.chars.next()?;
+-    let start = self.position;
+-    self.position += ch.len_utf8();
+-    Some((start, ch))
+-  }
+-}
+-impl CharacterCursor for DecodedChars {
+-  #[inline]
+-  fn skip_ascii(&mut self) -> usize {
+-    let chars = self.chars.as_slice();
+-    let mut count = 0;
+-    while chars.len() - count >= 16 && chars[count..count + 16].iter().all(char::is_ascii) {
+-      count += 16;
+-    }
+-    count += chars[count..]
+-      .iter()
+-      .position(|c| !c.is_ascii())
+-      .unwrap_or(chars.len() - count);
+-    if count != 0 {
+-      self.chars.nth(count - 1);
+-      self.position += count;
+-    }
+-    count
+-  }
+-}
+-
+-/// Construct a token stream. Contextual modes retain compact phrase choices.
++/// Construct a token stream. `phrases` enables contextual pronunciation.
+ pub fn tokens(input: &str, phrases: bool) -> Tokens<'_> {
+-  let prepared = if phrases && !input.is_ascii() {
+-    phrase_readings(input)
+-  } else {
+-    Prepared::default()
+-  };
+-  tokens_with_overrides(input, prepared)
+-}
+-
+-#[inline]
+-fn ascii_prefix(input: &[u8]) -> usize {
+-  #[cfg(feature = "simd")]
+-  {
+-    napi_pinyin_kernels::ascii_prefix(input)
+-  }
+-  #[cfg(not(feature = "simd"))]
+-  {
+-    let mut i = 0;
+-    while input.len() - i >= 32 && input[i..i + 32].is_ascii() {
+-      i += 32;
+-    }
+-    i + input[i..]
+-      .iter()
+-      .position(|b| !b.is_ascii())
+-      .unwrap_or(input.len() - i)
+-  }
+-}
+-
+-fn decode(input: &str) -> Vec<char> {
+-  #[cfg(feature = "simd")]
+-  {
+-    napi_pinyin_kernels::decode(input)
+-  }
+-  #[cfg(not(feature = "simd"))]
+-  {
+-    input.chars().collect()
+-  }
+-}
+-
+-fn tokens_with_overrides(input: &str, prepared: Prepared) -> Tokens<'_> {
+-  let ascii = input.is_ascii();
++  if input.is_ascii() {
++    return Tokens {
++      chars: "".char_indices(),
++      pending: None,
++      overrides: Vec::new().into_iter(),
++      ascii: (!input.is_empty()).then_some(Token {
++        start: 0,
++        end: input.len(),
++        entry: 0,
++      }),
++    };
++  }
++  tokens_with_overrides(
++    input,
++    if phrases {
++      phrase_readings(input)
++    } else {
++      Vec::new()
++    },
++  )
++}
++
++fn tokens_with_overrides(input: &str, overrides: Vec<u16>) -> Tokens<'_> {
+   Tokens {
+-    chars: if ascii {
+-      "".char_indices()
+-    } else {
+-      input.char_indices()
+-    },
++    chars: input.char_indices(),
+     pending: None,
+-    overrides: prepared.choices.into_iter(),
+-    ascii: (ascii && !input.is_empty()).then_some(Token {
+-      start: 0,
+-      end: input.len(),
+-      entry: 0,
+-    }),
++    overrides: overrides.into_iter(),
++    ascii: None,
+   }
+ }
+ 
+@@ -325,19 +203,7 @@
+ #[inline]
+ fn child(state: usize, ch: char) -> Option<usize> {
+   let node = &NODES[state];
+-  // SIMD builds pack a side-table index above the 16-bit edge offset, keeping
+-  // Node at eight bytes. Only nodes with 2-4 children get a padded label block.
+-  #[cfg(feature = "simd")]
+-  let start = (node.start & 0xffff) as usize;
+-  #[cfg(not(feature = "simd"))]
+-  let start = node.start as usize;
+-  let edges = &EDGES[start..start + usize::from(node.len)];
+-  #[cfg(feature = "simd")]
+-  if (2..=4).contains(&node.len) {
+-    return napi_pinyin_kernels::find4(&SMALL_LABELS[(node.start >> 16) as usize], ch as u32)
+-      .filter(|&lane| lane < usize::from(node.len))
+-      .map(|lane| edges[lane].1 as usize);
+-  }
++  let edges = &EDGES[node.start as usize..node.start as usize + usize::from(node.len)];
+   let code = ch as u32;
+   // Almost every non-root node has few edges. A short linear scan avoids the
+   // branch/dependency chain of binary search; large fanouts stay logarithmic.
+@@ -354,11 +220,11 @@
+   }
+ }
+ 
+-fn phrase_readings(input: &str) -> Prepared {
+-  let chars = decode(input);
++fn phrase_readings(input: &str) -> Vec<u16> {
++  let chars: Vec<_> = input.chars().collect();
+   let mut choices = vec![0u16; chars.len()];
+   resolve_phrase_readings::<false>(&chars, &mut choices, &[]);
+-  Prepared::new(chars, choices)
++  choices
+ }
+ 
+ // The caller supplies zeroed choices. A boundary at index i lies before chars[i].
+@@ -444,7 +310,7 @@
+   let overrides = if phrases {
+     phrase_readings(input)
+   } else {
+-    Prepared::default()
++    Vec::new()
+   };
+   if separator.is_empty() {
+     write_characters::<false>(input, style, separator, overrides, output);
+@@ -458,82 +324,31 @@
+   input: &str,
+   style: Style,
+   separator: &str,
+-  overrides: Prepared,
++  overrides: Vec<u16>,
+   output: &mut String,
+ ) {
+-  fn run<const SEPARATED: bool>(
+-    input: &str,
+-    style: Style,
+-    separator: &str,
+-    mut cursor: impl CharacterCursor,
+-    mut choices: std::vec::IntoIter<u16>,
+-    output: &mut String,
+-  ) {
+-    let table = &STYLES[style as usize];
+-    let mut first = true;
+-    let mut unchanged = None;
+-    while let Some((i, ch)) = cursor.next() {
+-      let selected = choices.next().unwrap_or(0);
+-      let id = if selected != 0 {
+-        selected
+-      } else {
+-        entry(ch) as u16
+-      };
+-      if id != 0 {
+-        if let Some(start) = unchanged.take() {
+-          if SEPARATED && !first {
+-            output.push_str(separator);
+-          }
+-          output.push_str(&input[start..i]);
+-          first = false;
+-        }
+-        if SEPARATED && !first {
+-          output.push_str(separator);
+-        }
+-        output.push_str(table[id as usize]);
+-        first = false;
+-      } else {
+-        unchanged.get_or_insert(i);
+-        if ch.is_ascii() {
+-          let skipped = cursor.skip_ascii();
+-          if skipped != 0 {
+-            choices.nth(skipped - 1);
+-          }
+-        }
+-      }
+-    }
+-    if let Some(start) = unchanged {
+-      if SEPARATED && !first {
+-        output.push_str(separator);
+-      }
+-      output.push_str(&input[start..]);
+-    }
+-  }
+-  let choices = overrides.choices.into_iter();
+-  if overrides.chars.is_empty() {
+-    run::<SEPARATED>(
+-      input,
+-      style,
+-      separator,
+-      RawChars {
+-        chars: input.char_indices(),
+-        base: 0,
+-      },
+-      choices,
+-      output,
+-    );
+-  } else {
+-    run::<SEPARATED>(
+-      input,
+-      style,
+-      separator,
+-      DecodedChars {
+-        chars: overrides.chars.into_iter(),
+-        position: 0,
+-      },
+-      choices,
+-      output,
+-    );
++  let table = &STYLES[style as usize];
++  let mut overrides = overrides.into_iter();
++  let mut first = true;
++  let mut previous_han = false;
++  for ch in input.chars() {
++    let selected = overrides.next().unwrap_or(0);
++    let id = if selected != 0 {
++      selected
++    } else {
++      entry(ch) as u16
++    };
++    let han = id != 0;
++    if SEPARATED && !first && (han || previous_han) {
++      output.push_str(separator);
++    }
++    if han {
++      output.push_str(table[usize::from(id)]);
++    } else {
++      output.push(ch);
++    }
++    first = false;
++    previous_han = han;
+   }
+ }
+ 
+@@ -550,13 +365,10 @@
+   input.chars().flat_map(|ch| {
+     let mut bytes = [0; 16];
+     let mut len = 0;
+-    if let Some(syllable) = lookup(ch) {
+-      let key = SORT_KEYS[syllable.0 as usize].as_bytes();
+-      bytes[..key.len()].copy_from_slice(key);
+-      return bytes.into_iter().take(key.len());
+-    }
+     let mut buf = [0; 4];
+-    let tone = ch.encode_utf8(&mut buf);
++    let tone = lookup(ch)
++      .map(|s| s.text(Style::Tone))
++      .unwrap_or_else(|| ch.encode_utf8(&mut buf));
+     for c in tone.chars() {
+       let replacement = match c {
+         'ā' => "a1",
+--- a/crates/pinyin-core/src/utf16.rs
++++ b/crates/pinyin-core/src/utf16.rs
+@@ -14,7 +14,7 @@
+   let overrides = if phrases && !input.is_ascii() {
+     super::phrase_readings(input)
+   } else {
+-    super::Prepared::default()
++    Vec::new()
+   };
+   write_with_overrides(input, style, separator, overrides, output);
+ }
+@@ -31,7 +31,7 @@
+   input: &str,
+   style: Style,
+   separator: &[u16],
+-  overrides: super::Prepared,
++  overrides: Vec<u16>,
+   output: &mut Vec<u16>,
+ ) {
+   if input.is_ascii() {
+@@ -48,87 +48,30 @@
+   input: &str,
+   style: Style,
+   separator: &[u16],
+-  overrides: super::Prepared,
++  overrides: Vec<u16>,
+   output: &mut Vec<u16>,
+ ) {
+-  fn append(input: &str, output: &mut Vec<u16>) {
+-    #[cfg(feature = "simd")]
+-    napi_pinyin_kernels::append_utf16(input, output);
+-    #[cfg(not(feature = "simd"))]
+-    output.extend(input.encode_utf16());
+-  }
+-  fn run<const SEPARATED: bool>(
+-    input: &str,
+-    style: Style,
+-    separator: &[u16],
+-    mut cursor: impl super::CharacterCursor,
+-    mut choices: std::vec::IntoIter<u16>,
+-    output: &mut Vec<u16>,
+-  ) {
+-    let table = &super::STYLES_UTF16[style as usize];
+-    let mut first = true;
+-    let mut unchanged = None;
+-    while let Some((i, ch)) = cursor.next() {
+-      let selected = choices.next().unwrap_or(0);
+-      let id = if selected != 0 {
+-        selected
+-      } else {
+-        super::entry(ch) as u16
+-      };
+-      if id != 0 {
+-        if let Some(start) = unchanged.take() {
+-          if SEPARATED && !first {
+-            output.extend_from_slice(separator);
+-          }
+-          append(&input[start..i], output);
+-          first = false;
+-        }
+-        if SEPARATED && !first {
+-          output.extend_from_slice(separator);
+-        }
+-        output.extend_from_slice(table[id as usize]);
+-        first = false;
+-      } else {
+-        unchanged.get_or_insert(i);
+-        if ch.is_ascii() {
+-          let skipped = cursor.skip_ascii();
+-          if skipped != 0 {
+-            choices.nth(skipped - 1);
+-          }
+-        }
+-      }
++  let table = &super::STYLES_UTF16[style as usize];
++  let mut overrides = overrides.into_iter();
++  let mut first = true;
++  let mut previous_han = false;
++  for ch in input.chars() {
++    let selected = overrides.next().unwrap_or(0);
++    let id = if selected != 0 {
++      selected
++    } else {
++      super::entry(ch) as u16
++    };
++    let han = id != 0;
++    if SEPARATED && !first && (han || previous_han) {
++      output.extend_from_slice(separator);
+     }
+-    if let Some(start) = unchanged {
+-      if SEPARATED && !first {
+-        output.extend_from_slice(separator);
+-      }
+-      append(&input[start..], output);
++    if han {
++      output.extend_from_slice(table[usize::from(id)]);
++    } else {
++      output.extend_from_slice(ch.encode_utf16(&mut [0; 2]));
+     }
+-  }
+-  let choices = overrides.choices.into_iter();
+-  if overrides.chars.is_empty() {
+-    run::<SEPARATED>(
+-      input,
+-      style,
+-      separator,
+-      super::RawChars {
+-        chars: input.char_indices(),
+-        base: 0,
+-      },
+-      choices,
+-      output,
+-    );
+-  } else {
+-    run::<SEPARATED>(
+-      input,
+-      style,
+-      separator,
+-      super::DecodedChars {
+-        chars: overrides.chars.into_iter(),
+-        position: 0,
+-      },
+-      choices,
+-      output,
+-    );
++    first = false;
++    previous_han = han;
+   }
+ }
+--- a/crates/pinyin-core/tests/correctness.rs
++++ b/crates/pinyin-core/tests/correctness.rs
+@@ -1,50 +1,5 @@
+ use pinyin::{Pinyin, ToPinyin, ToPinyinMulti};
+ use pinyin_core::{compare, convert, lookup, pinyin, readings, tokens, write_pinyin, Style};
+-
+-#[test]
+-fn long_spans_keep_byte_ranges_choices_and_separator_boundaries() {
+-  for length in [0, 1, 15, 16, 31, 32, 63, 64, 127, 128, 1024] {
+-    for span in ["a", "\0", "é🙂", "\"\\\r\n", "\u{7f}", "é\u{301}"] {
+-      let input = format!(
+-        "{}{}{}",
+-        "音乐重庆".repeat(64),
+-        span.repeat(length),
+-        "银行长大".repeat(64)
+-      );
+-      for phrases in [false, true] {
+-        let tokens: Vec<_> = tokens(&input, phrases).collect();
+-        assert_eq!(
+-          tokens.iter().map(|t| &input[t.range()]).collect::<String>(),
+-          input
+-        );
+-        assert!(!tokens
+-          .windows(2)
+-          .any(|w| w[0].syllable().is_none() && w[1].syllable().is_none()));
+-        for style in [
+-          Style::Plain,
+-          Style::Tone,
+-          Style::ToneNumber,
+-          Style::ToneNumberEnd,
+-          Style::FirstLetter,
+-        ] {
+-          for separator in ["", " ", "🙂\0"] {
+-            let expected = tokens
+-              .iter()
+-              .map(|t| t.text(&input, style))
+-              .collect::<Vec<_>>()
+-              .join(separator);
+-            assert_eq!(pinyin(&input, style, phrases, separator), expected);
+-            #[cfg(feature = "utf16")]
+-            assert_eq!(
+-              pinyin_core::utf16::pinyin(&input, style, phrases, separator),
+-              expected.encode_utf16().collect::<Vec<_>>()
+-            );
+-          }
+-        }
+-      }
+-    }
+-  }
+-}
+ 
+ type RenderLegacy = fn(Pinyin) -> &'static str;
+ const STYLES: [(Style, RenderLegacy); 5] = [
+--- a/src/encoding.rs
++++ b/src/encoding.rs
+@@ -1,2 +1,123 @@
+-//! Shared encoding kernels for the JS boundary.
+-pub use napi_pinyin_kernels::{append_utf16, from_utf16_lossy, json_escape};
++//! Encoding at the JS boundary. The dictionary core remains entirely safe Rust.
++
++/// Locate an ASCII byte that must be escaped inside a JSON string.
++#[inline]
++pub fn json_escape(input: &[u8]) -> Option<usize> {
++  #[allow(unused_mut)] // Only SIMD backends advance the block cursor.
++  let mut start = 0;
++  #[cfg(all(feature = "simd", target_arch = "aarch64"))]
++  if input.len() >= 64 {
++    use std::arch::aarch64::*;
++    // SAFETY: NEON is part of the supported aarch64 baseline. Each unaligned
++    // load is guarded by a full 16-byte block; no bytes past the slice are read.
++    unsafe {
++      while input.len() - start >= 16 {
++        let bytes = vld1q_u8(input.as_ptr().add(start));
++        let escapes = vorrq_u8(
++          vcltq_u8(bytes, vdupq_n_u8(32)),
++          vorrq_u8(
++            vceqq_u8(bytes, vdupq_n_u8(b'"')),
++            vceqq_u8(bytes, vdupq_n_u8(b'\\')),
++          ),
++        );
++        if vmaxvq_u8(escapes) != 0 {
++          break;
++        }
++        start += 16;
++      }
++    }
++  }
++  #[cfg(all(feature = "simd", target_arch = "x86_64"))]
++  if input.len() >= 64 {
++    use std::arch::x86_64::*;
++    // SAFETY: SSE2 is baseline on x86_64. Loads stay within the slice and do
++    // not require alignment. Masking the high bits makes the control check
++    // unsigned, so non-ASCII UTF-8 bytes are never mistaken for controls.
++    unsafe {
++      while input.len() - start >= 16 {
++        let bytes = _mm_loadu_si128(input.as_ptr().add(start).cast());
++        let escapes = _mm_or_si128(
++          _mm_cmpeq_epi8(
++            _mm_and_si128(bytes, _mm_set1_epi8(-32)),
++            _mm_setzero_si128(),
++          ),
++          _mm_or_si128(
++            _mm_cmpeq_epi8(bytes, _mm_set1_epi8(b'"' as i8)),
++            _mm_cmpeq_epi8(bytes, _mm_set1_epi8(b'\\' as i8)),
++          ),
++        );
++        let mask = _mm_movemask_epi8(escapes) as u32;
++        if mask != 0 {
++          return Some(start + mask.trailing_zeros() as usize);
++        }
++        start += 16;
++      }
++    }
++  }
++  input[start..]
++    .iter()
++    .position(|&byte| byte < 32 || byte == b'"' || byte == b'\\')
++    .map(|i| start + i)
++}
++
++/// Append valid UTF-8 without an intermediate allocation. Small runs avoid FFI.
++pub fn append_utf16(input: &str, output: &mut Vec<u16>) {
++  #[cfg(all(
++    feature = "simd",
++    not(target_family = "wasm"),
++    any(target_arch = "aarch64", target_arch = "x86_64")
++  ))]
++  if input.len() >= 64 {
++    let start = output.len();
++    output.reserve(input.len());
++    // SAFETY: &str is valid UTF-8. Its byte count bounds the number of UTF-16
++    // units. reserve provides that much uninitialized, non-overlapping space;
++    // simdutf initializes exactly the returned number of units before set_len.
++    unsafe {
++      let written = simdutf::convert_valid_utf8_to_utf16(
++        input.as_ptr(),
++        input.len(),
++        output.as_mut_ptr().add(start),
++      );
++      debug_assert!(written <= input.len());
++      output.set_len(start + written);
++    }
++    return;
++  }
++  output.extend(input.encode_utf16());
++}
++
++/// Match N-API's UTF-8 extraction, including replacement of lone JS surrogates.
++pub fn from_utf16_lossy(input: &[u16]) -> String {
++  // This bound also avoids reallocating for short CJK strings in the fallback.
++  let capacity = input.len().checked_mul(3).expect("input too large");
++  #[allow(unused_mut)] // The SIMD backend writes through the spare capacity.
++  let mut output = Vec::with_capacity(capacity);
++  #[cfg(all(
++    feature = "simd",
++    not(target_family = "wasm"),
++    any(target_arch = "aarch64", target_arch = "x86_64")
++  ))]
++  if input.len() >= 32 {
++    // SAFETY: input is readable for its length; the output is separate and has
++    // capacity for every possible valid result. This validating API returns 0
++    // for malformed UTF-16. Never expose a partial result on that path.
++    let written =
++      unsafe { simdutf::convert_utf16_to_utf8(input.as_ptr(), input.len(), output.as_mut_ptr()) };
++    if written != 0 {
++      debug_assert!(written <= capacity);
++      // SAFETY: successful validation initialized `written` bytes of valid UTF-8.
++      unsafe {
++        output.set_len(written);
++        return String::from_utf8_unchecked(output);
++      }
++    }
++  }
++  // The length is still zero even if validation wrote a partial result. Reuse
++  // that allocation and overwrite it with standard lossy decoding.
++  let mut output = String::from_utf8(output).expect("empty output is valid UTF-8");
++  output.extend(
++    char::decode_utf16(input.iter().copied()).map(|c| c.unwrap_or(char::REPLACEMENT_CHARACTER)),
++  );
++  output
++}
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -1,12 +1,9 @@
+ #![deny(clippy::all)]
+-
+-mod encoding;
+-mod output;
+ 
+ use napi::{bindgen_prelude::*, ScopedTask};
+ use napi_derive::napi;
+ use pinyin_core::{Style, Token};
+-use std::{borrow::Cow, cell::RefCell, collections::HashMap, sync::LazyLock};
++use std::{cell::RefCell, collections::HashMap, sync::LazyLock};
+ 
+ static JIEBA: LazyLock<pinyin_core::jieba::Jieba> = LazyLock::new(pinyin_core::jieba::Jieba::new);
+ 
+@@ -53,25 +50,9 @@
+       Self::Jieba => pinyin_core::jieba::pinyin(input, style, &JIEBA, false, separator),
+     }
+   }
+-
+-  fn pinyin_utf16(self, input: &str, style: Style, separator: &str) -> Vec<u16> {
+-    match self {
+-      Self::Character => pinyin_core::utf16::pinyin(input, style, false, separator),
+-      Self::Phrase => pinyin_core::utf16::pinyin(input, style, true, separator),
+-      Self::Jieba => pinyin_core::jieba::pinyin_utf16(input, style, &JIEBA, false, separator),
+-    }
+-  }
+ }
+ 
+ type EngineString = Either<Latin1String, Utf16String>;
+-
+-// Copy JS's native representation, then transcode with consistent replacement
+-// semantics. This also avoids the WASI helper's malformed-surrogate UTF-8 bug.
+-type InputString = Utf16String;
+-
+-fn string_input(input: &InputString) -> String {
+-  encoding::from_utf16_lossy(input)
+-}
+ 
+ fn engine_string(value: String) -> EngineString {
+   // ASCII already has V8's one-byte representation. Other output is encoded in
+@@ -81,9 +62,7 @@
+   if value.is_ascii() && (!cfg!(target_family = "wasm") || !value.as_bytes().contains(&0)) {
+     Either::A(value.into())
+   } else {
+-    let mut units = Vec::with_capacity(value.len());
+-    encoding::append_utf16(&value, &mut units);
+-    Either::B(units.into())
++    Either::B(value.into())
+   }
+ }
+ 
+@@ -172,8 +151,7 @@
+   #[napi(ts_type = "'phrase' | 'jieba'")]
+   pub segmenter: Option<String>,
+   /// Separator between syllables and unchanged non-Han runs. Defaults to a space.
+-  #[napi(ts_type = "string")]
+-  pub separator: Option<Utf16String>,
++  pub separator: Option<String>,
+ }
+ 
+ fn utf8(input: &[u8]) -> Result<&str> {
+@@ -186,12 +164,10 @@
+   })
+ }
+ 
+-fn input_str(input: Either<InputString, &[u8]>) -> Result<Cow<'_, str>> {
++fn input_str<'a>(input: &'a Either<String, &[u8]>) -> Result<&'a str> {
+   match input {
+-    // Consume the temporary UTF-16 copy so it is freed before dictionary work
+-    // and output allocation. Byte input continues to borrow without copying.
+-    Either::A(input) => Ok(Cow::Owned(string_input(&input))),
+-    Either::B(input) => utf8(input).map(Cow::Borrowed),
++    Either::A(input) => Ok(input),
++    Either::B(input) => utf8(input),
+   }
+ }
+ 
+@@ -201,42 +177,50 @@
+   style: Style,
+   multi: bool,
+ ) -> EngineString {
+-  if style == Style::Tone {
+-    return Either::B(output::json_utf16(input, tokens, style, multi).into());
+-  }
+-  let mut joined = Vec::with_capacity(input.len().saturating_mul(2));
+-  joined.push(b'[');
++  let mut joined = String::with_capacity(input.len().saturating_mul(2));
++  joined.push('[');
+   for (index, token) in tokens.enumerate() {
+     if index != 0 {
+-      joined.push(b',');
++      joined.push(',');
+     }
+     if multi {
+-      joined.push(b'[');
+-    }
++      joined.push('[');
++    }
++    joined.push('"');
+     if token.syllable().is_some() {
+-      joined.push(b'"');
+       if multi {
+         for (index, syllable) in token.readings().enumerate() {
+           if index != 0 {
+-            joined.extend_from_slice(b"\",\"");
++            joined.push_str("\",\"");
+           }
+-          joined.extend_from_slice(syllable.text(style).as_bytes());
++          joined.push_str(syllable.text(style));
+         }
+       } else {
+-        joined.extend_from_slice(token.text(input, style).as_bytes());
++        joined.push_str(token.text(input, style));
+       }
+-      joined.push(b'"');
+     } else {
+-      output::json_utf8_text(token.text(input, style), &mut joined);
+-    }
++      for ch in token.text(input, style).chars() {
++        match ch {
++          '"' => joined.push_str("\\\""),
++          '\\' => joined.push_str("\\\\"),
++          '\n' => joined.push_str("\\n"),
++          '\r' => joined.push_str("\\r"),
++          '\t' => joined.push_str("\\t"),
++          '\u{0}'..='\u{1f}' => {
++            use std::fmt::Write;
++            write!(joined, "\\u{:04x}", ch as u32).unwrap();
++          }
++          _ => joined.push(ch),
++        }
++      }
++    }
++    joined.push('"');
+     if multi {
+-      joined.push(b']');
+-    }
+-  }
+-  joined.push(b']');
+-  // SAFETY: dictionary syllables are valid UTF-8; escape_into preserves UTF-8,
+-  // and every delimiter written above is ASCII.
+-  engine_string(unsafe { String::from_utf8_unchecked(joined) })
++      joined.push(']');
++    }
++  }
++  joined.push(']');
++  engine_string(joined)
+ }
+ 
+ fn prepare_output(input: &str, style: Style, resolution: Resolution, multi: bool) -> PinyinOutput {
+@@ -279,20 +263,12 @@
+         inner.set(0, token.text(input, style))?;
+       } else {
+         for (j, syllable) in readings.enumerate() {
+-          if style == Style::Tone {
+-            inner.set(j as u32, env.create_string_utf16(syllable.utf16(style))?)?;
+-          } else {
+-            inner.set(j as u32, syllable.text(style))?;
+-          }
++          inner.set(j as u32, syllable.text(style))?;
+         }
+       }
+       output.set(i as u32, inner)?;
+     } else if let Some(syllable) = token.syllable() {
+-      if style == Style::Tone {
+-        output.set(i as u32, env.create_string_utf16(syllable.utf16(style))?)?;
+-      } else {
+-        output.set(i as u32, syllable.text(style))?;
+-      }
++      output.set(i as u32, syllable.text(style))?;
+     } else {
+       output.set(i as u32, token.text(input, style))?;
+     }
+@@ -303,13 +279,12 @@
+ #[napi(js_name = "pinyin", ts_return_type = "string[] | string[][]")]
+ pub fn to_pinyin<'env>(
+   env: &'env Env,
+-  #[napi(ts_arg_type = "string | Uint8Array")] input: Either<InputString, &'env [u8]>,
++  input: Either<String, &'env [u8]>,
+   opt: Option<PinyinConvertOptions>,
+ ) -> Result<Array<'env>> {
+   let opt = opt.unwrap_or_default();
+   let multi = opt.heteronym.unwrap_or(false);
+-  let text = input_str(input)?;
+-  let input = text.as_ref();
++  let input = input_str(&input)?;
+   let style = opt.style.unwrap_or(PinyinStyle::Plain).into();
+   let resolution = Resolution::new(opt.segment, opt.segmenter.as_deref(), multi)?;
+   match prepare_output(input, style, resolution, multi) {
+@@ -321,27 +296,16 @@
+ /// Convert directly to one string, avoiding a JS allocation for each syllable.
+ #[napi(ts_return_type = "string")]
+ pub fn pinyin_string(
+-  #[napi(ts_arg_type = "string | Uint8Array")] input: Either<InputString, &[u8]>,
++  input: Either<String, &[u8]>,
+   opt: Option<PinyinStringOptions>,
+ ) -> Result<EngineString> {
+   let opt = opt.unwrap_or_default();
+   let resolution = Resolution::new(opt.segment, opt.segmenter.as_deref(), false)?;
+-  let text = input_str(input)?;
+-  let input = text.as_ref();
+-  let style = opt.style.unwrap_or(PinyinStyle::Plain).into();
+-  let separator = opt.separator.map(|s| string_input(&s));
+-  let separator = separator.as_deref().unwrap_or(" ");
+-  if style == Style::Tone {
+-    // This check already establishes the core's whole-ASCII shortcut. Avoid
+-    // scanning it again in the generic writer (significant for large buffers).
+-    if input.is_ascii() {
+-      return Ok(engine_string(input.to_owned()));
+-    }
+-    return Ok(Either::B(
+-      resolution.pinyin_utf16(input, style, separator).into(),
+-    ));
+-  }
+-  Ok(engine_string(resolution.pinyin(input, style, separator)))
++  Ok(engine_string(resolution.pinyin(
++    input_str(&input)?,
++    opt.style.unwrap_or(PinyinStyle::Plain).into(),
++    opt.separator.as_deref().unwrap_or(" "),
++  )))
+ }
+ 
+ pub enum PinyinOutput {
+@@ -393,14 +357,14 @@
+ 
+ #[napi(ts_return_type = "Promise<string[] | string[][]>")]
+ pub fn async_pinyin(
+-  #[napi(ts_arg_type = "string | Buffer")] input: Either<InputString, Buffer>,
++  input: Either<String, Buffer>,
+   opt: Option<PinyinConvertOptions>,
+   signal: Option<AbortSignal>,
+ ) -> Result<AsyncTask<AsyncPinyinTask>> {
+   let opt = opt.unwrap_or_default();
+   let task = AsyncPinyinTask {
+     input: match input {
+-      Either::A(input) => Either::A(string_input(&input)),
++      Either::A(input) => Either::A(input),
+       Either::B(input) => Either::B(input.as_ref().to_vec()),
+     },
+     style: opt.style.unwrap_or(PinyinStyle::Plain).into(),
+--- a/src/output.rs
++++ b/src/output.rs
+@@ -2,41 +2,6 @@
+ 
+ use crate::encoding::append_utf16;
+ use pinyin_core::{Style, Token};
+-
+-// Keep the escape kernel's control flow and register pressure out of the
+-// common dictionary-only JSON loop. Each call handles one unchanged token.
+-#[cfg(feature = "simd")]
+-#[inline(never)]
+-pub fn json_utf8_text(input: &str, output: &mut Vec<u8>) {
+-  json_escape_simd::escape_into(input, output);
+-}
+-
+-#[cfg(not(feature = "simd"))]
+-pub fn json_utf8_text(input: &str, output: &mut Vec<u8>) {
+-  output.push(b'"');
+-  let mut start = 0;
+-  while let Some(relative) = crate::encoding::json_escape(&input.as_bytes()[start..]) {
+-    let i = start + relative;
+-    let byte = input.as_bytes()[i];
+-    output.extend_from_slice(&input.as_bytes()[start..i]);
+-    output.push(b'\\');
+-    match byte {
+-      b'"' | b'\\' => output.push(byte),
+-      b'\n' => output.push(b'n'),
+-      b'\r' => output.push(b'r'),
+-      b'\t' => output.push(b't'),
+-      _ => {
+-        const HEX: &[u8] = b"0123456789abcdef";
+-        output.extend_from_slice(b"u00");
+-        output.push(HEX[(byte >> 4) as usize]);
+-        output.push(HEX[(byte & 15) as usize]);
+-      }
+-    }
+-    start = i + 1;
+-  }
+-  output.extend_from_slice(&input.as_bytes()[start..]);
+-  output.push(b'"');
+-}
+ 
+ pub fn json_utf16(
+   input: &str,

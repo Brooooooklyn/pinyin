@@ -1,0 +1,140 @@
+{
+  "recorded_at": "2026-09-11T10:22:08.837935+00:00",
+  "production_unchanged": true,
+  "production_native": {
+    "bytes": 4131808,
+    "sha256": "730baad95f607fdef427d675863e37e8ee705347ab1bcbeb2fe2a9ffe6939d5f"
+  },
+  "kernel_binary": {
+    "bytes": 3926848,
+    "sha256": "f890bb713e92b884236a426fff26e0053e0598c742bc25d345de1a66034b611a"
+  },
+  "node_environment": {
+    "node": "v24.13.1",
+    "v8": "13.6.233.17-node.40",
+    "cpu": "Apple M5 Max",
+    "arch": "arm64",
+    "platform": "darwin",
+    "totalmem": 137438953472,
+    "loadavg": [
+      4.44775390625,
+      3.95654296875,
+      3.90283203125
+    ]
+  },
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8",
+  "simdutf_rust": "0.7.0",
+  "simdutf_cpp_bundled": "7.7.1",
+  "encoding_rs": "0.8.41",
+  "encoding_rs_features": [
+    "alloc"
+  ],
+  "node_probe_comparison": "one binary, atomic selector set outside timing",
+  "sources": {
+    "benchmark/simd-research/analyze.py": {
+      "bytes": 6232,
+      "sha256": "763ac959bed2da9031f9d9fbbb4bb62b8c10cc3c628b8c36f3d19d8587a517fb"
+    },
+    "benchmark/simd-research/build-probe.py": {
+      "bytes": 2932,
+      "sha256": "f04e66593ce5f735333734de31aa6b996e3636400b6aad4b8166f7cb36ea5f8f"
+    },
+    "benchmark/simd-research/src/main.rs": {
+      "bytes": 12919,
+      "sha256": "4491c775e79597c80716001f2aecee51b19be1077afd383a6d36700f8def8aa9"
+    },
+    "benchmark/simd-research/node.ts": {
+      "bytes": 7309,
+      "sha256": "a01ec78a750216f5fb02791d84a946a4a4bc5b46908f193eac5c593682dc93d5"
+    },
+    "benchmark/simd-research/Cargo.toml": {
+      "bytes": 410,
+      "sha256": "c145387b647b2dfd129e1ba9cd3070612a2c3530cddf45fc5ce472d580f8c768"
+    },
+    "benchmark/simd-research/Cargo.lock": {
+      "bytes": 15306,
+      "sha256": "770b5dbbb3f7f2f1596ad526d7eb884733cd56a2edcb3b56514f44da62d334b5"
+    },
+    "src/lib.rs": {
+      "bytes": 11854,
+      "sha256": "bcdb97deae40742c77d14a53b1e710715ad5ba2522cd1373f6f53d88e87f9066"
+    },
+    "crates/pinyin-core/src/lib.rs": {
+      "bytes": 11482,
+      "sha256": "53a80359ccc2ba68c1a794b7bff4965197ef7babd51db7ce57e09fd4bf243a16"
+    },
+    "crates/pinyin-core/src/jieba.rs": {
+      "bytes": 2080,
+      "sha256": "35c305684df35d5d37bb7cb4f5c317cda4dcccff85b9e467c0d5d1cb77901a67"
+    },
+    "benchmark/long.txt": {
+      "bytes": 58061,
+      "sha256": "5e1ad14fecba7935aa0578edb6666eaf25396774ddefe48c3ecbc4103965d0e8"
+    }
+  },
+  "samples": {
+    "kernels.jsonl": {
+      "bytes": 164061,
+      "sha256": "5f2117328ba96230bdd21ec4c97137b19e933fe654c1a5a359a48b729ed59673"
+    },
+    "node.json": {
+      "bytes": 117689,
+      "sha256": "98829a167fbad061d2d97f9e54986ccbfce0a2c109c7aadcd0dcfcf88d5edfa0"
+    },
+    "trie.json": {
+      "bytes": 1304,
+      "sha256": "79bc8418714788f34a9be4a4c5f3b315596aad472c0376bb126d57d850a4688d"
+    }
+  },
+  "validation": {
+    "unicode_transcoding": "all Unicode scalars and unaligned valid slices matched std",
+    "json_escaping": "ASCII controls and Unicode slice boundaries matched scalar reference",
+    "node_parity": "all 5 styles, 3 resolvers, both modes, strings and buffers, array/heteronym/string/async, including unpaired JS surrogates",
+    "clippy": "passed",
+    "focused_types": "passed",
+    "lint": "passed",
+    "new_production_changes": false,
+    "new_wasm_simd_tests": "not run",
+    "other_cpus": "not run",
+    "remote_ci": "not run",
+    "rustfmt": "passed; function signature formatting applied after timing",
+    "production_tests": "not rerun: production code and addon unchanged from the simdutf8 stage"
+  },
+  "dependency_sources": {
+    "napi-3.12.3/src/bindgen_runtime/js_values/string.rs": {
+      "bytes": 7567,
+      "sha256": "03a821ec13e1fa70b94f1230c83e570389309e5a95c980a7013cd9f9f1eb08fa"
+    },
+    "jieba-rs-0.10.3/src/lib.rs": {
+      "bytes": 69585,
+      "sha256": "dc253b16d9cc87d675b51429e1b823fe8df7f8d3177d6153a86de5c426cfc5eb"
+    },
+    "simdutf-0.7.0/cpp/simdutf.h": {
+      "bytes": 277362,
+      "sha256": "1f4c287f5b15a0b9d18bd6f61006d1e961a7e4f0506c9bc9e09d42a07cbd2189"
+    },
+    "simdutf-0.7.0/src/generated.rs": {
+      "bytes": 80746,
+      "sha256": "e0a655130fb2784fc517c4e3df94d4ff65cb11aee2e022cc1da4906333576ece"
+    },
+    "encoding_rs-0.8.41/README.md": {
+      "bytes": 38133,
+      "sha256": "f26f848dc13b923e46ead1b4ae790da6367a87cf4a1415c9329e6146f2c543f6"
+    },
+    "encoding_rs-0.8.41/src/mem.rs": {
+      "bytes": 124145,
+      "sha256": "db5dca6f98f4a7b2f60e1b5c928db31873b366d084fd2a3a70c2feb6681c501d"
+    }
+  },
+  "post_measurement_formatting": {
+    "note": "Rust function signature reformatted; benchmark semantics unchanged. sources retains the measured Rust source hash.",
+    "current_rust_source": {
+      "bytes": 12908,
+      "sha256": "1c603d576c9139cb6065c425d35ac462ecb9a922e4eb803c94d6cf12d73b7500"
+    }
+  },
+  "analysis_script_current": {
+    "bytes": 6217,
+    "sha256": "4ba85aba47fb11ebea19f6cbe50cb49c5d23fb45102a40cafe21e746e2bc6c92"
+  }
+}

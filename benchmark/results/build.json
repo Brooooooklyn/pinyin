@@ -1,0 +1,88 @@
+{
+  "baseline_commit": "f4409a36802672f6677a8033d63109b16a8a2f40",
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8",
+  "files": {
+    "Cargo.toml": {
+      "sha256": "127d9c65f86f6ba7589dc34becf936d69f6c05e956935f90c0353b183ce82ba5",
+      "bytes": 683
+    },
+    "Cargo.lock": {
+      "sha256": "7fec37c605447d23ca9be0cab9cadf54a11a4ed866cfbd35326ee313c927c575",
+      "bytes": 9414
+    },
+    "src/lib.rs": {
+      "sha256": "ca7045cee44f0056018dc0a64be9c4b216df36dd0758032f3b10ee884757742c",
+      "bytes": 9782
+    },
+    "crates/pinyin-core/Cargo.toml": {
+      "sha256": "9a0724846da063da1d83a0b148af113995d8d2e0b6dc90258df02c6467376e45",
+      "bytes": 388
+    },
+    "crates/pinyin-core/src/lib.rs": {
+      "sha256": "726a32894822f0b82e72c873e03e8b229519afe2da61c8d05c1d87b839387006",
+      "bytes": 10516
+    },
+    "crates/pinyin-core/build.rs": {
+      "sha256": "0554a67b51efbcc2e1d30cbecc9f208bbdbed066808822b7cc87f3ab1670a050",
+      "bytes": 7746
+    },
+    "crates/pinyin-core/data/characters.txt": {
+      "sha256": "6170ab4ff7c9740fe765b1d35e6d3ad43554dd02874199388db513c44dcddf9d",
+      "bytes": 929764
+    },
+    "crates/pinyin-core/data/phrases.tsv": {
+      "sha256": "d4b85d5933c2949600bd10a15694e47b8dc88fc66c0cb878fa2599b84cf5ef31",
+      "bytes": 98628
+    },
+    "benchmark/long.txt": {
+      "sha256": "5e1ad14fecba7935aa0578edb6666eaf25396774ddefe48c3ecbc4103965d0e8",
+      "bytes": 58061
+    },
+    "benchmark/compare.ts": {
+      "sha256": "ec5233ec22a444d6735c7826c5c8f15becaa6fa90397c671a5d096dc28b56b96",
+      "bytes": 6610
+    },
+    "benchmark/runtime.ts": {
+      "sha256": "0d151fa90ee5eeac3d6c698c92711feaa56b2b8659ab564c1e6e5d879eadc645",
+      "bytes": 4150
+    },
+    "benchmark/scaling.ts": {
+      "sha256": "14ea698e2fefed15d3003f3e1372f21ff12cc92b121f34253dd16a7b304cd74b",
+      "bytes": 2993
+    },
+    "crates/pinyin-core/benches/throughput.rs": {
+      "sha256": "978534cf8fee05154eb8ced8c25a3a5f67a282f7421530de65852c67bac4d33c",
+      "bytes": 2481
+    },
+    "pinyin.darwin-arm64.node": {
+      "sha256": "8d6118762ce7e8003bf4690521f06c99b08d178bef0281b02090f6aa83e3696b",
+      "bytes": 1746032
+    },
+    "pinyin.wasm32-wasi.wasm": {
+      "sha256": "7969615af74b1f84728819ef0d8ded3879adadba139acae14b944262bee1572e",
+      "bytes": 1048635
+    }
+  },
+  "baseline_native": {
+    "sha256": "d9b6bfb4767e7259d6806f45a51329f27330cb68b0f1ffe3167741d010d49f5e",
+    "bytes": 3768512
+  },
+  "pinyin_pro_distribution": {
+    "path": "node_modules/pinyin-pro/dist/index.js",
+    "sha256": "b57bcbfea4b3fb2bdfc581e6c36f429488e17aa3621da2342a5bda61e8a5e367",
+    "bytes": 324448
+  },
+  "characters": 41923,
+  "phrases": 4083,
+  "validation": {
+    "native_binding_tests": 200,
+    "strict_wasi_binding_tests": 200,
+    "core_tests": 8,
+    "cargo_package": "passed",
+    "core_cross_compile": [
+      "i686-unknown-linux-gnu",
+      "wasm32-unknown-unknown"
+    ],
+    "full_remote_ci": "not run"
+  }
+}

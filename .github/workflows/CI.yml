@@ -46,10 +46,19 @@ jobs:
         run: yarn lint
 
       - name: Cargo fmt
-        run: cargo fmt -- --check
+        run: cargo fmt --all -- --check
 
       - name: Clippy
-        run: cargo clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Core correctness
+        run: |
+          cargo test -p napi-pinyin-core --no-default-features
+          cargo test -p napi-pinyin-core --features jieba,utf16,simd
+          cargo test -p napi-pinyin-kernels
+          cargo test -p napi-pinyin-kernels --features simd
+          cargo test --test encoding
+          cargo test --test encoding --no-default-features
   build:
     strategy:
       fail-fast: false
@@ -370,7 +379,21 @@ jobs:
       - name: Test WASM
         run: yarn test
         env:
-          NAPI_RS_FORCE_WASI: 'true'
+          PINYIN_TEST_WASI: 'true'
+      - name: Install Rust for SIMD WASM
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1-threads
+      - name: Build SIMD WASM
+        run: |
+          wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-33/wasi-sdk-33.0-x86_64-linux.tar.gz
+          tar -xvf wasi-sdk-33.0-x86_64-linux.tar.gz
+          export WASI_SDK_PATH="$(pwd)/wasi-sdk-33.0-x86_64-linux"
+          yarn build:wasm:simd
+      - name: Test SIMD WASM
+        run: yarn test
+        env:
+          PINYIN_TEST_BINDING: target/wasi-simd/pinyin.wasi.cjs
   publish:
     name: Publish
     runs-on: ubuntu-latest

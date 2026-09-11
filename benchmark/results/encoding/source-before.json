@@ -1,0 +1,27 @@
+{
+  "stage": "encoding",
+  "files": {
+    "Cargo.lock": "ab0f055c779da1b851da10b99dac2aadf80fab74cc76902a2c4c79accab6a0fa",
+    "Cargo.toml": "8aa7792c960c4e3b43fee680133dd0d7e3606d32256c62c1ce30f5dd5dfda370",
+    "benches/utf8.rs": "2442dc22c554c7a84530dfa50747a0dadf28a53606ae9e0b68451ed34ee67f82",
+    "build.rs": "71b61de74caafb5f27db3d24d197b64282f49f807b969e140ca8ce181e5464fc",
+    "crates/pinyin-core/Cargo.toml": "f445a424b669754ff791aa8571aae4f52d969584165a4e509e6c414392e77d56",
+    "crates/pinyin-core/benches/throughput.rs": "978534cf8fee05154eb8ced8c25a3a5f67a282f7421530de65852c67bac4d33c",
+    "crates/pinyin-core/build.rs": "0554a67b51efbcc2e1d30cbecc9f208bbdbed066808822b7cc87f3ab1670a050",
+    "crates/pinyin-core/data/LICENSE.pinyin-data": "9c048697be2502a16e8bcb282d5d465a07295b2def0ffb05a269c5d39dbe1586",
+    "crates/pinyin-core/data/LICENSE.pinyin-pro": "824f6069c5a59b0c1650d0fb9f8d091866c6019eb761c8e658dfc03f001eabd2",
+    "crates/pinyin-core/data/LICENSE.rust-pinyin": "dbee1336f5286b3b26fb6b4a71ab1e8d89f80b4073d9c8d2b2b33c06abc3bcbe",
+    "crates/pinyin-core/data/characters.txt": "6170ab4ff7c9740fe765b1d35e6d3ad43554dd02874199388db513c44dcddf9d",
+    "crates/pinyin-core/data/phrases.tsv": "d4b85d5933c2949600bd10a15694e47b8dc88fc66c0cb878fa2599b84cf5ef31",
+    "crates/pinyin-core/data/sources.json": "8a1507e83f1d233bed669d50e6db2bb75969ba61c306b2d6e356927e21bc0f1f",
+    "crates/pinyin-core/src/jieba.rs": "ce78bef5d8376b3baffbaa2c0bec90548fa1a388fd3cbd3e073f9e4f1e6a5b45",
+    "crates/pinyin-core/src/lib.rs": "53a80359ccc2ba68c1a794b7bff4965197ef7babd51db7ce57e09fd4bf243a16",
+    "crates/pinyin-core/src/utf16.rs": "9859b9ee92df6850262684bec2020c7b7e6ff88b29264222c4fbb7429c034196",
+    "crates/pinyin-core/tests/correctness.rs": "8b975f85d150028a281faef64c238de35b43006c3f3784c2f67615cc68d630f3",
+    "crates/pinyin-core/tests/jieba.rs": "c688a896538bb29d5e191b65ddb2ca7c4176bfaa8577d47c5d714df4711c1257",
+    "src/encoding.rs": "9745dc173115d802b573726f52ab9ace6b5178b60f7d21121b94e335d0c934c2",
+    "src/lib.rs": "bcdb97deae40742c77d14a53b1e710715ad5ba2522cd1373f6f53d88e87f9066",
+    "src/output.rs": "24877bff6b77cf6e9841640dc021de278faed1c5613783893fc8086c845c47e3"
+  },
+  "patchSha256": "5e2ba879ae2f2693f2ba3ade126311ca052a37b526c09082763f8dad9f58dc8f"
+}

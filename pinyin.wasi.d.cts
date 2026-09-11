@@ -24,5 +24,20 @@ export declare const enum PINYIN_STYLE {
 export interface PinyinConvertOptions {
   style?: PINYIN_STYLE
   heteronym?: boolean
+  /** Resolve dictionary phrases. With heteronym, all character readings are returned. */
   segment?: boolean
+  /** Resolver used when segment is true. Defaults to phrase. Jieba uses HMM=false. */
+  segmenter?: 'phrase' | 'jieba'
+}
+
+/** Convert directly to one string, avoiding a JS allocation for each syllable. */
+export declare function pinyinString(input: string | Uint8Array, opt?: PinyinStringOptions | undefined | null): string
+
+export interface PinyinStringOptions {
+  style?: PINYIN_STYLE
+  segment?: boolean
+  /** Resolver used when segment is true. Defaults to phrase. Jieba uses HMM=false. */
+  segmenter?: 'phrase' | 'jieba'
+  /** Separator between syllables and unchanged non-Han runs. Defaults to a space. */
+  separator?: string
 }

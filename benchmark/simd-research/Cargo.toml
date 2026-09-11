@@ -1,0 +1,18 @@
+[package]
+name = "pinyin-simd-research"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# Keep experimental dependencies out of the shipping workspace and lockfile.
+[workspace]
+
+[dependencies]
+pinyin-core = { package = "napi-pinyin-core", path = "../../crates/pinyin-core", features = ["jieba"] }
+simdutf = "=0.7.0"
+encoding_rs = "=0.8.41"
+serde_json = "1"
+
+[profile.release]
+lto = true
+codegen-units = 1

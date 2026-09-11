@@ -1,0 +1,302 @@
+{
+  "timestamp": "2026-09-11T14:49:52.003846+00:00",
+  "git_base": "f4409a36802672f6677a8033d63109b16a8a2f40",
+  "branch": "codex/rust-pinyin-performance",
+  "rust": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "artifacts": [
+    {
+      "path": "target/remaining-simd-baseline/pinyin.darwin-arm64.node",
+      "bytes": 4481808,
+      "sha256": "f9d231da88159d27ff2d30a79a8cedb5c003d3e0d2620f8ed65c3f113626daf4"
+    },
+    {
+      "path": "pinyin.darwin-arm64.node",
+      "bytes": 4531392,
+      "sha256": "97ea1a39389f759ee9cc5fd8ee9d84d82986afd16fb190b73e6192fca9a6838e"
+    },
+    {
+      "path": "target/remaining-simd-baseline/pinyin.wasm32-wasi.wasm",
+      "bytes": 3541152,
+      "sha256": "98a03a47c59b886f8285057088c51d531eee392614dc7feac05a8f9bd13c8314"
+    },
+    {
+      "path": "pinyin.wasm32-wasi.wasm",
+      "bytes": 3576432,
+      "sha256": "a7a2e68ff762b12faba792007d9ffcc45720be1dea30f58e01671664fd1c1f35"
+    },
+    {
+      "path": "target/wasi-simd/pinyin.wasm32-wasi.wasm",
+      "bytes": 3583398,
+      "sha256": "b53a3f4a65ba8b63500d817e9c9bfd5c8ad5044b5ada49a65cc1d242973d37b7"
+    },
+    {
+      "path": "target/remaining-simd-scalar/pinyin.darwin-arm64.node",
+      "bytes": 4331280,
+      "sha256": "1c63ecdebc6d8d6847196744e1f7b3d9bd9c447b02de64253182fc96d1b164f8"
+    }
+  ],
+  "sources": [
+    {
+      "path": "Cargo.toml",
+      "bytes": 1235,
+      "sha256": "124626626c8bcedd97d6eed0bf1472a1a0b6188d8fc0feb867bc8150ff67cf2d"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 19623,
+      "sha256": "e87252c99ae76dc91b8115d03d91b0ea063f754dc017948e3e100a0fb46075d4"
+    },
+    {
+      "path": "src/lib.rs",
+      "bytes": 13801,
+      "sha256": "01a8cbee9748c33bd1ea5bb2af692576f7d58ef3f57485b4a5097d407863971f"
+    },
+    {
+      "path": "src/encoding.rs",
+      "bytes": 125,
+      "sha256": "71210a8c8f3e90c065d60ad097b9b3dc905d21edc36061521e519fc928f628c0"
+    },
+    {
+      "path": "src/output.rs",
+      "bytes": 3187,
+      "sha256": "ee788b23119830785aef769cb79ad3d03751f3a0f3632c2ad91fab5bb637af98"
+    },
+    {
+      "path": "package.json",
+      "bytes": 4081,
+      "sha256": "f9f5bc80439cab556618064876fb679169542672bd21c9ae16c138d3c1de4980"
+    },
+    {
+      "path": "scripts/build-wasm-simd.mjs",
+      "bytes": 1051,
+      "sha256": "9313187fd0ba74fa0bf362061ffd4379295e5e8e2356d77785d742b4b85219a2"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "bytes": 14776,
+      "sha256": "48b5eacbb303a218dd8b9d24cfd82747a396264843de9e17fe5f3e25da82dff1"
+    },
+    {
+      "path": "vendor/jieba-rs/Cargo.toml",
+      "bytes": 2060,
+      "sha256": "22252933879e9a64b7fefa060975527ffd3d4ea4572a70a8a2528e9c0c4d6766"
+    },
+    {
+      "path": "vendor/jieba-rs/src/lib.rs",
+      "bytes": 70489,
+      "sha256": "4c6ad3ab04b7cb8645debde73e3c18778c724d9c78d7be418ed085a3d9c7786f"
+    },
+    {
+      "path": "vendor/jieba-rs/src/simd_classifier.rs",
+      "bytes": 2481,
+      "sha256": "8ad092822d0cd454ed565aabc3c5ffb765e17972cc459e8b7e02ae172e68a1fd"
+    },
+    {
+      "path": "crates/pinyin-core/build.rs",
+      "bytes": 10009,
+      "sha256": "c86c6d2df4dfc6d78fadb1c524b7e04c9255c7edbcbfb7aad62056af0e7ce488"
+    },
+    {
+      "path": "crates/pinyin-core/Cargo.toml",
+      "bytes": 668,
+      "sha256": "d71d2961a7ff9ea2dc6f973dac415e499a147ef3b48512bb2c67dd004f1fe743"
+    },
+    {
+      "path": "crates/pinyin-core/src/lib.rs",
+      "bytes": 16285,
+      "sha256": "1993d7f694fae47b67e4451b558ac2e87712d3afb23768b918d34fd06b4c9483"
+    },
+    {
+      "path": "crates/pinyin-core/src/utf16.rs",
+      "bytes": 3555,
+      "sha256": "ae6e56b65dad3fa558900adae06b83c4adf2bb71324dc9f000bcd0bbd7d32de6"
+    },
+    {
+      "path": "crates/pinyin-core/src/jieba.rs",
+      "bytes": 2693,
+      "sha256": "4e15c9ea2c5319eaa6b23397af2616af3ca63c15f65d6c4794ab6635af374568"
+    },
+    {
+      "path": "crates/pinyin-kernels/Cargo.toml",
+      "bytes": 417,
+      "sha256": "c5678e7d10f1cd3e886692af8343ed641ebdcf77f5d6c7f094c3bda859b19c79"
+    },
+    {
+      "path": "crates/pinyin-kernels/src/lib.rs",
+      "bytes": 10253,
+      "sha256": "b8da399238452b837040612f1748b9d694a89623c4fa56f547246e2d0e20f8a5"
+    },
+    {
+      "path": "crates/pinyin-kernels/src/wasm.rs",
+      "bytes": 6551,
+      "sha256": "c2d3a54bc3c3332693e717ff20343f9bb868ce22b4a262984b995f6274d69e66"
+    },
+    {
+      "path": "crates/pinyin-kernels/tests/unicode.rs",
+      "bytes": 4999,
+      "sha256": "45f6faaa67d056386767d9214a6308f05ed723afba6fd72b4085010c42a37c73"
+    }
+  ],
+  "wasm_disassembly": {
+    "before": {
+      "vector_instruction_count": 792,
+      "operators": [
+        "(i16x8.add",
+        "(i16x8.extadd_pairwise_i8x16_u",
+        "(i32x4.extadd_pairwise_i16x8_u",
+        "(i32x4.extract_lane",
+        "(i8x16.all_true",
+        "(i8x16.eq",
+        "(i8x16.gt_s",
+        "(i8x16.ne",
+        "(i8x16.sub",
+        "(v128.and",
+        "(v128.any_true",
+        "(v128.const",
+        "(v128.load",
+        "(v128.store"
+      ]
+    },
+    "portable": {
+      "vector_instruction_count": 796,
+      "operators": [
+        "(i16x8.add",
+        "(i16x8.extadd_pairwise_i8x16_u",
+        "(i32x4.extadd_pairwise_i16x8_u",
+        "(i32x4.extract_lane",
+        "(i8x16.all_true",
+        "(i8x16.eq",
+        "(i8x16.gt_s",
+        "(i8x16.ne",
+        "(i8x16.sub",
+        "(v128.and",
+        "(v128.any_true",
+        "(v128.const",
+        "(v128.load",
+        "(v128.store"
+      ]
+    },
+    "simd": {
+      "vector_instruction_count": 1885,
+      "operators": [
+        "(i16x8.add",
+        "(i16x8.all_true",
+        "(i16x8.bitmask",
+        "(i16x8.extadd_pairwise_i8x16_u",
+        "(i16x8.extend_high_i8x16_u",
+        "(i16x8.extend_low_i8x16_s",
+        "(i16x8.extend_low_i8x16_u",
+        "(i16x8.extract_lane_u",
+        "(i16x8.gt_u",
+        "(i16x8.lt_u",
+        "(i16x8.narrow_i32x4_u",
+        "(i16x8.ne",
+        "(i16x8.shl",
+        "(i16x8.shr_s",
+        "(i16x8.shr_u",
+        "(i32x4.add",
+        "(i32x4.bitmask",
+        "(i32x4.eq",
+        "(i32x4.extadd_pairwise_i16x8_u",
+        "(i32x4.extend_low_i16x8_s",
+        "(i32x4.extract_lane",
+        "(i32x4.lt_u",
+        "(i32x4.neg",
+        "(i32x4.replace_lane",
+        "(i32x4.splat",
+        "(i32x4.sub",
+        "(i64x2.add",
+        "(i64x2.extend_low_i32x4_s",
+        "(i64x2.shr_u",
+        "(i8x16.all_true",
+        "(i8x16.bitmask",
+        "(i8x16.eq",
+        "(i8x16.extract_lane_u",
+        "(i8x16.gt_s",
+        "(i8x16.gt_u",
+        "(i8x16.lt_s",
+        "(i8x16.lt_u",
+        "(i8x16.max_s",
+        "(i8x16.max_u",
+        "(i8x16.narrow_i16x8_u",
+        "(i8x16.ne",
+        "(i8x16.shr_u",
+        "(i8x16.shuffle",
+        "(i8x16.splat",
+        "(i8x16.sub",
+        "(i8x16.sub_sat_u",
+        "(i8x16.swizzle",
+        "(v128.and",
+        "(v128.any_true",
+        "(v128.const",
+        "(v128.load",
+        "(v128.load16_lane",
+        "(v128.load16_splat",
+        "(v128.load32_lane",
+        "(v128.load32_zero",
+        "(v128.load64_zero",
+        "(v128.load8x8_u",
+        "(v128.not",
+        "(v128.or",
+        "(v128.store",
+        "(v128.store64_lane",
+        "(v128.xor"
+      ]
+    }
+  },
+  "wasm_simd_disabled_baseline": {
+    "exitCode": 1,
+    "stderr": "Error: failed to compile: wasm[0]::function[84]\n\nCaused by:\n    0: WebAssembly translation error\n    1: Invalid input WebAssembly code at offset 4913: SIMD support is not enabled\n\n"
+  },
+  "npm_pack": {
+    "name": "@napi-rs/pinyin",
+    "version": "1.7.7",
+    "size": 5329022,
+    "unpackedSize": 15178417,
+    "entryCount": 54
+  },
+  "validation": {
+    "path": "benchmark/results/remaining-simd/validation.json",
+    "bytes": 10449,
+    "sha256": "0d094d840600717c7d07813be054cb66ed8cfd30bcee7d5b83e54c14112b6ab4"
+  },
+  "results": [
+    {
+      "path": "benchmark/results/remaining-simd/conversion.json",
+      "bytes": 346760,
+      "sha256": "053feb914f300071a912adef17e2ceae9543a19736f3e5dd1719f7d101066f8f"
+    },
+    {
+      "path": "benchmark/results/remaining-simd/buffer.json",
+      "bytes": 20759,
+      "sha256": "1e9340828e7e81ea4b656ccef07b42a30fc6954fe03e02a4a9d6c8ad4244d79a"
+    },
+    {
+      "path": "benchmark/results/remaining-simd/wasm.json",
+      "bytes": 30057,
+      "sha256": "cf040f19515d0414023dfa3be301f2067af920659f18aa0337fd27b6401e1330"
+    },
+    {
+      "path": "benchmark/results/remaining-simd/final-controls.json",
+      "bytes": 14021,
+      "sha256": "468dc15d8a4c0013aab9df8a22b47259e509380bb607ca749c1f3694451ec3cb"
+    },
+    {
+      "path": "benchmark/results/remaining-simd/jieba-parity.json",
+      "bytes": 1190,
+      "sha256": "27ba7ddefbaae99479c3c56f46193cb562ccf63d7235d21aa6f8b1b2059c39c4"
+    }
+  ],
+  "report": {
+    "path": "docs/performance-research.md",
+    "sha256": "35e6733005795f2d39067338ab6e525a02f134ac7b11d7f091a5b72b94d2fd9e"
+  },
+  "originalReport": {
+    "path": "docs/remaining-simd-optimization.md",
+    "sha256": "c125755188d7b32eb254eba2299df3f768982b509aca0b4296f0846115c2c6e7"
+  },
+  "documentationConsolidation": {
+    "note": "Research reports consolidated after measurement. Original source and artifact hashes remain historical; documentation and benchmark restoration scripts changed afterward. Production Rust implementation is unchanged by cleanup.",
+    "validation": "benchmark/results/cleanup-validation.json"
+  }
+}

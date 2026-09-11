@@ -1,0 +1,23 @@
+{
+  "source": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-jieba-classifier-5h7cw0n6",
+  "baseline_source": {
+    "path": "/Users/brooklyn/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/jieba-rs-0.10.3/src/lib.rs",
+    "sha256": "dc253b16d9cc87d675b51429e1b823fe8df7f8d3177d6153a86de5c426cfc5eb"
+  },
+  "probe_source": {
+    "path": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-jieba-classifier-5h7cw0n6/jieba/src/lib.rs",
+    "sha256": "c2ae657b0f3127d77b6fc46e3161d1947bd7e046824e5bd049cdccd719ce63e8"
+  },
+  "artifact": {
+    "path": "/Users/brooklyn/workspace/github/pinyin/target/jieba-classifier-probe/release/pinyin-jieba-classifier-probe",
+    "sha256": "06451fb946ba86e35448e9d6fdeccf4c3022ba4a026d8d318e9d5e86ebecdc55"
+  },
+  "lockfile": {
+    "path": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-jieba-classifier-5h7cw0n6/Cargo.lock",
+    "sha256": "bb29b15bdfc8ebcfaeaa0a47342dfe07420e93241480083335172eb8e384209b"
+  },
+  "builder": {
+    "path": "/Users/brooklyn/workspace/github/pinyin/benchmark/remaining-simd/jieba-probe.py",
+    "sha256": "70294ef04b8bafbbcded33eb36c91cb4ed4d6aafbcd2e0e2c3f7c85e7a723350"
+  }
+}

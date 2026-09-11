@@ -1,0 +1,566 @@
+{
+  "timestamp": "2026-09-11T11:00:10.781Z",
+  "node": "v24.13.1",
+  "v8": "13.6.233.17-node.40",
+  "platform": "darwin",
+  "arch": "arm64",
+  "cpu": "Apple M5 Max",
+  "totalmem": 137438953472,
+  "freemem": 63242584064,
+  "loadavg": [
+    3.72998046875,
+    3.20751953125,
+    3.0712890625
+  ],
+  "rounds": 3,
+  "durationMs": 70,
+  "pinyinPro": "3.29.3",
+  "pinyinProSha256": "b57bcbfea4b3fb2bdfc581e6c36f429488e17aa3621da2342a5bda61e8a5e367",
+  "artifacts": [
+    {
+      "path": "/tmp/pinyin-before-utf16-optimization/pinyin.darwin-arm64.node",
+      "bytes": 4131808,
+      "sha256": "730baad95f607fdef427d675863e37e8ee705347ab1bcbeb2fe2a9ffe6939d5f"
+    },
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/pinyin.darwin-arm64.node",
+      "bytes": 4481888,
+      "sha256": "acd16d8cf18f7112c8fa62f9a7435b3e78aad298de9393384f9dcb69bf898f21"
+    }
+  ],
+  "sources": [
+    {
+      "path": "Cargo.toml",
+      "bytes": 995,
+      "sha256": "cf79db9f15be56269ad382a1efcd10ef404881036bff7d4184d4dffbc058dcd0"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 19405,
+      "sha256": "a847e925dd89bef974ce5e9df05ba139983191d40489ddf1a21b342ee97ca760"
+    },
+    {
+      "path": "src/lib.rs",
+      "bytes": 13855,
+      "sha256": "12cc9ae4c09131f6c7360b44e2693dfff20bc4ac5bc88c5271547810791ed2eb"
+    },
+    {
+      "path": "src/encoding.rs",
+      "bytes": 4564,
+      "sha256": "9745dc173115d802b573726f52ab9ace6b5178b60f7d21121b94e335d0c934c2"
+    },
+    {
+      "path": "src/output.rs",
+      "bytes": 2041,
+      "sha256": "24877bff6b77cf6e9841640dc021de278faed1c5613783893fc8086c845c47e3"
+    },
+    {
+      "path": "crates/pinyin-core/build.rs",
+      "bytes": 8295,
+      "sha256": "c562b43e6f72b855ce5ca1a4d6cc76cedefa28dd0c15a7733439d5ea7c43e3f4"
+    },
+    {
+      "path": "crates/pinyin-core/src/lib.rs",
+      "bytes": 11755,
+      "sha256": "02921a94767a89c620c1efb774c0b8e38bec8036b014acde77322800935f7a7e"
+    },
+    {
+      "path": "crates/pinyin-core/src/utf16.rs",
+      "bytes": 2149,
+      "sha256": "9859b9ee92df6850262684bec2020c7b7e6ff88b29264222c4fbb7429c034196"
+    },
+    {
+      "path": "crates/pinyin-core/src/jieba.rs",
+      "bytes": 2652,
+      "sha256": "651aa2feac3661291ed81568ecf3a07f341c6e55ea4e7a15a50b5c3f9fa9288a"
+    },
+    {
+      "path": "benchmark/encoding.ts",
+      "bytes": 10577,
+      "sha256": "beb065d7cdba0de0fb7e8f2f372de8518f518e178a3627be89040c03bf6350dd"
+    }
+  ],
+  "rows": [
+    {
+      "fixture": "short",
+      "resolver": "character",
+      "style": 0,
+      "api": "pinyinString",
+      "inputType": "string",
+      "inputBytes": 24,
+      "inputCharacters": 8,
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "ba4276073639312bffafa2312a89c3b0c41feb883c6732db00d78ab05f1b2543",
+      "matchesPro": null,
+      "result": [
+        {
+          "implementation": "before",
+          "medianNs": 291.6767333333333,
+          "minNs": 289.6602679753707,
+          "maxNs": 292.1857970482169,
+          "samples": [
+            {
+              "ns": 292.1857970482169,
+              "iterations": 239584,
+              "elapsedMs": 70.003042
+            },
+            {
+              "ns": 291.6767333333333,
+              "iterations": 240000,
+              "elapsedMs": 70.00241599999998
+            },
+            {
+              "ns": 289.6602679753707,
+              "iterations": 241664,
+              "elapsedMs": 70.00045899999998
+            }
+          ]
+        },
+        {
+          "implementation": "after",
+          "medianNs": 283.9814479748148,
+          "minNs": 283.34871446149856,
+          "maxNs": 284.35093185363297,
+          "samples": [
+            {
+              "ns": 284.35093185363297,
+              "iterations": 246176,
+              "elapsedMs": 70.00037499999996
+            },
+            {
+              "ns": 283.34871446149856,
+              "iterations": 247056,
+              "elapsedMs": 70.00299999999999
+            },
+            {
+              "ns": 283.9814479748148,
+              "iterations": 246496,
+              "elapsedMs": 70.00029099999995
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "short",
+      "resolver": "character",
+      "style": 0,
+      "api": "pinyinString",
+      "inputType": "buffer",
+      "inputBytes": 24,
+      "inputCharacters": 8,
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "ba4276073639312bffafa2312a89c3b0c41feb883c6732db00d78ab05f1b2543",
+      "matchesPro": null,
+      "result": [
+        {
+          "implementation": "before",
+          "medianNs": 346.6139041828407,
+          "minNs": 342.86371072016306,
+          "maxNs": 346.78227548351305,
+          "samples": [
+            {
+              "ns": 346.6139041828407,
+              "iterations": 201968,
+              "elapsedMs": 70.00491699999998
+            },
+            {
+              "ns": 346.78227548351305,
+              "iterations": 201856,
+              "elapsedMs": 70.00008300000002
+            },
+            {
+              "ns": 342.86371072016306,
+              "iterations": 204176,
+              "elapsedMs": 70.00454100000002
+            }
+          ]
+        },
+        {
+          "implementation": "after",
+          "medianNs": 343.214708650302,
+          "minNs": 339.8943297467373,
+          "maxNs": 343.2455525262823,
+          "samples": [
+            {
+              "ns": 343.214708650302,
+              "iterations": 204016,
+              "elapsedMs": 70.02129200000002
+            },
+            {
+              "ns": 343.2455525262823,
+              "iterations": 203936,
+              "elapsedMs": 70.00012499999991
+            },
+            {
+              "ns": 339.8943297467373,
+              "iterations": 205952,
+              "elapsedMs": 70.00191700000005
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "short",
+      "resolver": "character",
+      "style": 1,
+      "api": "pinyinString",
+      "inputType": "string",
+      "inputBytes": 24,
+      "inputCharacters": 8,
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "fcc5096ad6e28bc2320b9c0943ae12013c5ecc70a78eee7b07cd07f0a51651b9",
+      "matchesPro": null,
+      "result": [
+        {
+          "implementation": "before",
+          "medianNs": 344.5810723005435,
+          "minNs": 340.41718701369336,
+          "maxNs": 346.1289804193038,
+          "samples": [
+            {
+              "ns": 340.41718701369336,
+              "iterations": 205632,
+              "elapsedMs": 70.0006669999998
+            },
+            {
+              "ns": 346.1289804193038,
+              "iterations": 202240,
+              "elapsedMs": 70.001125
+            },
+            {
+              "ns": 344.5810723005435,
+              "iterations": 203152,
+              "elapsedMs": 70.00233400000002
+            }
+          ]
+        },
+        {
+          "implementation": "after",
+          "medianNs": 294.5966391152119,
+          "minNs": 294.5415250100985,
+          "maxNs": 296.5299559471364,
+          "samples": [
+            {
+              "ns": 296.5299559471364,
+              "iterations": 236080,
+              "elapsedMs": 70.00479199999995
+            },
+            {
+              "ns": 294.5415250100985,
+              "iterations": 237664,
+              "elapsedMs": 70.00191700000005
+            },
+            {
+              "ns": 294.5966391152119,
+              "iterations": 237616,
+              "elapsedMs": 70.00087500000018
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "short",
+      "resolver": "character",
+      "style": 1,
+      "api": "pinyinString",
+      "inputType": "buffer",
+      "inputBytes": 24,
+      "inputCharacters": 8,
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "fcc5096ad6e28bc2320b9c0943ae12013c5ecc70a78eee7b07cd07f0a51651b9",
+      "matchesPro": null,
+      "result": [
+        {
+          "implementation": "before",
+          "medianNs": 396.78940685652094,
+          "minNs": 395.9499886877829,
+          "maxNs": 399.5399449821937,
+          "samples": [
+            {
+              "ns": 399.5399449821937,
+              "iterations": 175216,
+              "elapsedMs": 70.00579100000004
+            },
+            {
+              "ns": 396.78940685652094,
+              "iterations": 176416,
+              "elapsedMs": 70
+            },
+            {
+              "ns": 395.9499886877829,
+              "iterations": 176800,
+              "elapsedMs": 70.00395800000001
+            }
+          ]
+        },
+        {
+          "implementation": "after",
+          "medianNs": 351.46291572943346,
+          "minNs": 350.85538291900497,
+          "maxNs": 355.5156211911923,
+          "samples": [
+            {
+              "ns": 355.5156211911923,
+              "iterations": 196912,
+              "elapsedMs": 70.00529200000005
+            },
+            {
+              "ns": 351.46291572943346,
+              "iterations": 199168,
+              "elapsedMs": 70.00016599999981
+            },
+            {
+              "ns": 350.85538291900497,
+              "iterations": 199520,
+              "elapsedMs": 70.00266599999986
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "ascii-300kb",
+      "resolver": "character",
+      "style": 0,
+      "api": "pinyinString",
+      "inputType": "string",
+      "inputBytes": 300000,
+      "inputCharacters": 300000,
+      "inputHash": "149e21784f352c5ecddcfb00cdeea9ad1936192fa097dacf211fd581a613e0ec",
+      "outputHash": "98c603a687c231079d4d99a539bcf23bdedc0659bc61fbb55103e5402b5e30dd",
+      "matchesPro": null,
+      "result": [
+        {
+          "implementation": "before",
+          "medianNs": 172924.07932692283,
+          "minNs": 170801.78365384642,
+          "maxNs": 181284.68750000026,
+          "samples": [
+            {
+              "ns": 181284.68750000026,
+              "iterations": 400,
+              "elapsedMs": 72.5138750000001
+            },
+            {
+              "ns": 170801.78365384642,
+              "iterations": 416,
+              "elapsedMs": 71.0535420000001
+            },
+            {
+              "ns": 172924.07932692283,
+              "iterations": 416,
+              "elapsedMs": 71.93641699999989
+            }
+          ]
+        },
+        {
+          "implementation": "after",
+          "medianNs": 62915.439285714565,
+          "minNs": 61811.472711267736,
+          "maxNs": 64296.044384058,
+          "samples": [
+            {
+              "ns": 64296.044384058,
+              "iterations": 1104,
+              "elapsedMs": 70.98283300000003
+            },
+            {
+              "ns": 62915.439285714565,
+              "iterations": 1120,
+              "elapsedMs": 70.46529200000032
+            },
+            {
+              "ns": 61811.472711267736,
+              "iterations": 1136,
+              "elapsedMs": 70.21783300000016
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "ascii-300kb",
+      "resolver": "character",
+      "style": 0,
+      "api": "pinyinString",
+      "inputType": "buffer",
+      "inputBytes": 300000,
+      "inputCharacters": 300000,
+      "inputHash": "149e21784f352c5ecddcfb00cdeea9ad1936192fa097dacf211fd581a613e0ec",
+      "outputHash": "98c603a687c231079d4d99a539bcf23bdedc0659bc61fbb55103e5402b5e30dd",
+      "matchesPro": null,
+      "result": [
+        {
+          "implementation": "before",
+          "medianNs": 44446.12752525278,
+          "minNs": 44292.24558080792,
+          "maxNs": 45158.21619897953,
+          "samples": [
+            {
+              "ns": 44446.12752525278,
+              "iterations": 1584,
+              "elapsedMs": 70.40266600000041
+            },
+            {
+              "ns": 45158.21619897953,
+              "iterations": 1568,
+              "elapsedMs": 70.8080829999999
+            },
+            {
+              "ns": 44292.24558080792,
+              "iterations": 1584,
+              "elapsedMs": 70.15891699999975
+            }
+          ]
+        },
+        {
+          "implementation": "after",
+          "medianNs": 45173.083118556606,
+          "minNs": 44787.44132653071,
+          "maxNs": 46066.84049479171,
+          "samples": [
+            {
+              "ns": 45173.083118556606,
+              "iterations": 1552,
+              "elapsedMs": 70.10862499999985
+            },
+            {
+              "ns": 46066.84049479171,
+              "iterations": 1536,
+              "elapsedMs": 70.75866700000006
+            },
+            {
+              "ns": 44787.44132653071,
+              "iterations": 1568,
+              "elapsedMs": 70.22670800000014
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "ascii-300kb",
+      "resolver": "character",
+      "style": 1,
+      "api": "pinyinString",
+      "inputType": "string",
+      "inputBytes": 300000,
+      "inputCharacters": 300000,
+      "inputHash": "149e21784f352c5ecddcfb00cdeea9ad1936192fa097dacf211fd581a613e0ec",
+      "outputHash": "98c603a687c231079d4d99a539bcf23bdedc0659bc61fbb55103e5402b5e30dd",
+      "matchesPro": null,
+      "result": [
+        {
+          "implementation": "before",
+          "medianNs": 177160.31250000015,
+          "minNs": 172574.51923076963,
+          "maxNs": 180911.25000000035,
+          "samples": [
+            {
+              "ns": 172574.51923076963,
+              "iterations": 416,
+              "elapsedMs": 71.79100000000017
+            },
+            {
+              "ns": 180911.25000000035,
+              "iterations": 400,
+              "elapsedMs": 72.36450000000013
+            },
+            {
+              "ns": 177160.31250000015,
+              "iterations": 400,
+              "elapsedMs": 70.86412500000006
+            }
+          ]
+        },
+        {
+          "implementation": "after",
+          "medianNs": 64034.00543478259,
+          "minNs": 62928.83214285732,
+          "maxNs": 65585.16044776115,
+          "samples": [
+            {
+              "ns": 62928.83214285732,
+              "iterations": 1120,
+              "elapsedMs": 70.48029200000019
+            },
+            {
+              "ns": 64034.00543478259,
+              "iterations": 1104,
+              "elapsedMs": 70.69354199999998
+            },
+            {
+              "ns": 65585.16044776115,
+              "iterations": 1072,
+              "elapsedMs": 70.30729199999996
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "fixture": "ascii-300kb",
+      "resolver": "character",
+      "style": 1,
+      "api": "pinyinString",
+      "inputType": "buffer",
+      "inputBytes": 300000,
+      "inputCharacters": 300000,
+      "inputHash": "149e21784f352c5ecddcfb00cdeea9ad1936192fa097dacf211fd581a613e0ec",
+      "outputHash": "98c603a687c231079d4d99a539bcf23bdedc0659bc61fbb55103e5402b5e30dd",
+      "matchesPro": null,
+      "result": [
+        {
+          "implementation": "before",
+          "medianNs": 48262.56318681329,
+          "minNs": 48120.85027472509,
+          "maxNs": 49192.32794943831,
+          "samples": [
+            {
+              "ns": 49192.32794943831,
+              "iterations": 1424,
+              "elapsedMs": 70.04987500000016
+            },
+            {
+              "ns": 48120.85027472509,
+              "iterations": 1456,
+              "elapsedMs": 70.06395799999973
+            },
+            {
+              "ns": 48262.56318681329,
+              "iterations": 1456,
+              "elapsedMs": 70.27029200000015
+            }
+          ]
+        },
+        {
+          "implementation": "after",
+          "medianNs": 48408.73969780233,
+          "minNs": 48131.667582417416,
+          "maxNs": 48901.765277777704,
+          "samples": [
+            {
+              "ns": 48131.667582417416,
+              "iterations": 1456,
+              "elapsedMs": 70.07970799999975
+            },
+            {
+              "ns": 48408.73969780233,
+              "iterations": 1456,
+              "elapsedMs": 70.4831250000002
+            },
+            {
+              "ns": 48901.765277777704,
+              "iterations": 1440,
+              "elapsedMs": 70.41854199999989
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sink": 0
+}

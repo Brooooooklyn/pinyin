@@ -1,0 +1,1057 @@
+{
+  "timestamp": "2026-09-11T14:42:30.800Z",
+  "node": "v24.13.1",
+  "cpu": "Apple M5 Max",
+  "rounds": 5,
+  "durationMs": 60,
+  "artifacts": [
+    {
+      "loader": "/Users/brooklyn/workspace/github/pinyin/target/remaining-simd-wasi/before/pinyin.wasi.cjs",
+      "wasm": "/Users/brooklyn/workspace/github/pinyin/target/remaining-simd-wasi/before/pinyin.wasm32-wasi.wasm",
+      "sha256": "98a03a47c59b886f8285057088c51d531eee392614dc7feac05a8f9bd13c8314"
+    },
+    {
+      "loader": "/Users/brooklyn/workspace/github/pinyin/target/remaining-simd-wasi/portable/pinyin.wasi.cjs",
+      "wasm": "/Users/brooklyn/workspace/github/pinyin/target/remaining-simd-wasi/portable/pinyin.wasm32-wasi.wasm",
+      "sha256": "a7a2e68ff762b12faba792007d9ffcc45720be1dea30f58e01671664fd1c1f35"
+    },
+    {
+      "loader": "/Users/brooklyn/workspace/github/pinyin/target/remaining-simd-wasi/simd/pinyin.wasi.cjs",
+      "wasm": "/Users/brooklyn/workspace/github/pinyin/target/remaining-simd-wasi/simd/pinyin.wasm32-wasi.wasm",
+      "sha256": "b53a3f4a65ba8b63500d817e9c9bfd5c8ad5044b5ada49a65cc1d242973d37b7"
+    }
+  ],
+  "sources": [
+    {
+      "path": "benchmark/remaining-simd/wasm.ts",
+      "sha256": "5a9cee86bd1ef98d6de6b30f0a6228e695f51eaa1f85bc78417d340e909694dc"
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "01a8cbee9748c33bd1ea5bb2af692576f7d58ef3f57485b4a5097d407863971f"
+    },
+    {
+      "path": "crates/pinyin-core/src/lib.rs",
+      "sha256": "1993d7f694fae47b67e4451b558ac2e87712d3afb23768b918d34fd06b4c9483"
+    },
+    {
+      "path": "crates/pinyin-kernels/src/lib.rs",
+      "sha256": "b8da399238452b837040612f1748b9d694a89623c4fa56f547246e2d0e20f8a5"
+    },
+    {
+      "path": "crates/pinyin-kernels/src/wasm.rs",
+      "sha256": "c2d3a54bc3c3332693e717ff20343f9bb868ce22b4a262984b995f6274d69e66"
+    }
+  ],
+  "rows": [
+    {
+      "fixture": "short",
+      "resolver": "character",
+      "api": "pinyin",
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "85a50f0d30471fd0132e68a47cc588e5ef9113ff0931d6928972e47ac380b9a5",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            8166.451217852768,
+            6824.831323930846,
+            6535.839451040191,
+            6565.718490153175,
+            8557.472903593838
+          ],
+          "medianNs": 6824.831323930846
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            7178.086493599714,
+            7195.583573141487,
+            6621.721694990066,
+            7186.8696328190435,
+            8433.842867182011
+          ],
+          "medianNs": 7186.8696328190435
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            6929.456750202104,
+            6938.270814061053,
+            6795.182106455261,
+            8744.213348877878,
+            8429.340401628991
+          ],
+          "medianNs": 6938.270814061053
+        }
+      ]
+    },
+    {
+      "fixture": "short",
+      "resolver": "character",
+      "api": "pinyinString",
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "fcc5096ad6e28bc2320b9c0943ae12013c5ecc70a78eee7b07cd07f0a51651b9",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            5948.701427438538,
+            4671.061731278219,
+            4317.0971292898685,
+            4178.7873807368105,
+            4195.999370629379
+          ],
+          "medianNs": 4317.0971292898685
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            6094.077899654683,
+            5307.485625829279,
+            4306.5474054403185,
+            4157.344834753692,
+            4116.350483638603
+          ],
+          "medianNs": 4306.5474054403185
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            5991.923806670657,
+            4378.694446471578,
+            4361.558406629348,
+            4130.185366189419,
+            4073.52342158859
+          ],
+          "medianNs": 4361.558406629348
+        }
+      ]
+    },
+    {
+      "fixture": "short",
+      "resolver": "phrase",
+      "api": "pinyin",
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "cb4874b544bc828ca62b4456b192d1f39058f531d8f6e479168be1a5bd482082",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            6465.161728262036,
+            6421.629815924665,
+            6702.817806076835,
+            6516.921038340384,
+            6492.619671066852
+          ],
+          "medianNs": 6492.619671066852
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            6453.493546999345,
+            6467.837124070279,
+            6491.2240372133365,
+            6478.536925070198,
+            6451.801075268807
+          ],
+          "medianNs": 6467.837124070279
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            6227.616294758675,
+            6504.028506394971,
+            6400.320000000017,
+            6187.2723241905605,
+            6196.54291025511
+          ],
+          "medianNs": 6227.616294758675
+        }
+      ]
+    },
+    {
+      "fixture": "short",
+      "resolver": "phrase",
+      "api": "pinyinString",
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "1b2db40da82f3a9162253818109e067b820349845b46a10a08c328ed8e75cc3c",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            4266.501919795241,
+            4260.345711445602,
+            4249.819958920578,
+            4213.354048170777,
+            4161.257160690748
+          ],
+          "medianNs": 4249.819958920578
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            4141.065700483094,
+            4364.48632528368,
+            4083.270976522623,
+            4125.312182043191,
+            4133.927523251794
+          ],
+          "medianNs": 4133.927523251794
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            4280.389499215298,
+            4209.248193616276,
+            4273.525071225084,
+            4347.590395480225,
+            4080.3298197891736
+          ],
+          "medianNs": 4273.525071225084
+        }
+      ]
+    },
+    {
+      "fixture": "short",
+      "resolver": "jieba",
+      "api": "pinyin",
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "cb4874b544bc828ca62b4456b192d1f39058f531d8f6e479168be1a5bd482082",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            6730.6681986324575,
+            6617.243824437611,
+            6730.627257431338,
+            6700.656058068167,
+            6731.321516715348
+          ],
+          "medianNs": 6730.627257431338
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            6714.24236662565,
+            6809.237403540593,
+            6808.639623283813,
+            6856.959204662342,
+            6812.880890200962
+          ],
+          "medianNs": 6809.237403540593
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            6882.340291317718,
+            6804.07359111017,
+            6795.120838052026,
+            6858.255229169064,
+            6555.523762700789
+          ],
+          "medianNs": 6804.07359111017
+        }
+      ]
+    },
+    {
+      "fixture": "short",
+      "resolver": "jieba",
+      "api": "pinyinString",
+      "inputHash": "6653ec98ae092c509c8f916e1c51538bf5af8513f58bf0c40cf157b2d44e8561",
+      "outputHash": "1b2db40da82f3a9162253818109e067b820349845b46a10a08c328ed8e75cc3c",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            4584.578086797069,
+            4622.121013711327,
+            4348.5136976373915,
+            4667.246810827627,
+            4398.7794149988895
+          ],
+          "medianNs": 4584.578086797069
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            4618.716803941217,
+            4429.514912151205,
+            4529.089296497572,
+            4607.167050514376,
+            4568.983324449885
+          ],
+          "medianNs": 4568.983324449885
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            4502.817199459678,
+            4512.386929382568,
+            4449.524137931054,
+            4707.179414764208,
+            4635.393279258395
+          ],
+          "medianNs": 4512.386929382568
+        }
+      ]
+    },
+    {
+      "fixture": "literature-100k",
+      "resolver": "character",
+      "api": "pinyin",
+      "inputHash": "d9e335808e52ee92a4da2a96922784a25cba19035f6a86bd29b194098b7e88ff",
+      "outputHash": "a27e01d7d975160257f2f57b81eb05657bc3209f79dfe19e2508b72730e7be5e",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            4673711.538461528,
+            4875214.769230787,
+            4923868.61538461,
+            4886262.769230807,
+            4587110.071428599
+          ],
+          "medianNs": 4875214.769230787
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            4574562.500000021,
+            4447348.2142856745,
+            4728227.538461537,
+            4528985.142857112,
+            4824557.6923077
+          ],
+          "medianNs": 4574562.500000021
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            4736637.846153826,
+            4475898.857142835,
+            4447354.142857161,
+            4584586.285714262,
+            4439910.714285686
+          ],
+          "medianNs": 4475898.857142835
+        }
+      ]
+    },
+    {
+      "fixture": "literature-100k",
+      "resolver": "character",
+      "api": "pinyinString",
+      "inputHash": "d9e335808e52ee92a4da2a96922784a25cba19035f6a86bd29b194098b7e88ff",
+      "outputHash": "8c4a454a39dc25df26dcdda2a357069a1f22c1f7e99971980bfebe1213b5707b",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            2984541.6666667005,
+            3095312.5,
+            3041633.350000029,
+            3178065.789473725,
+            3052018.749999979
+          ],
+          "medianNs": 3052018.749999979
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            2937248.0476190723,
+            3068110.3999999776,
+            3082918.749999999,
+            2983978.1904762015,
+            2899928.571428583
+          ],
+          "medianNs": 2983978.1904762015
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            2963898.809523839,
+            2851738.6363636516,
+            2824602.272727258,
+            2839734.818181817,
+            2906408.714285741
+          ],
+          "medianNs": 2851738.6363636516
+        }
+      ]
+    },
+    {
+      "fixture": "literature-100k",
+      "resolver": "phrase",
+      "api": "pinyin",
+      "inputHash": "d9e335808e52ee92a4da2a96922784a25cba19035f6a86bd29b194098b7e88ff",
+      "outputHash": "d1bec11da8534938863b89a9a22e55977db634bd360504152a0579450ae0f205",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            5564984.818181818,
+            5043513.916666598,
+            4973916.692307774,
+            4887256.461538457,
+            4905333.307692322
+          ],
+          "medianNs": 4973916.692307774
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            6035950.0000000475,
+            5191128.4999999525,
+            4966746.7692306675,
+            5002722.249999958,
+            5021225.6666667
+          ],
+          "medianNs": 5021225.6666667
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            5000475.6666665645,
+            4745874.999999965,
+            4757721.153846153,
+            4818375.000000043,
+            5095899.250000003
+          ],
+          "medianNs": 4818375.000000043
+        }
+      ]
+    },
+    {
+      "fixture": "literature-100k",
+      "resolver": "phrase",
+      "api": "pinyinString",
+      "inputHash": "d9e335808e52ee92a4da2a96922784a25cba19035f6a86bd29b194098b7e88ff",
+      "outputHash": "914945b21be326f165e607c64a096a3754c213bd05230dc0d4f06713d409083b",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            3871666.624999989,
+            3372226.833333318,
+            3447282.388888905,
+            3410335.611111097,
+            3534296.5882353066
+          ],
+          "medianNs": 3447282.388888905
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            3440293.944444521,
+            3553448.5294117667,
+            3408388.88888892,
+            3402303.27777782,
+            3268346.5263157575
+          ],
+          "medianNs": 3408388.88888892
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            3310848.684210501,
+            3229412.315789504,
+            3178282.894736855,
+            3274199.578947446,
+            3582497.5882353424
+          ],
+          "medianNs": 3274199.578947446
+        }
+      ]
+    },
+    {
+      "fixture": "literature-100k",
+      "resolver": "jieba",
+      "api": "pinyin",
+      "inputHash": "d9e335808e52ee92a4da2a96922784a25cba19035f6a86bd29b194098b7e88ff",
+      "outputHash": "d1bec11da8534938863b89a9a22e55977db634bd360504152a0579450ae0f205",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            7394527.777777613,
+            6907476.888888899,
+            7082675.888888843,
+            6794907.444444309,
+            7901239.625000017
+          ],
+          "medianNs": 7082675.888888843
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            6915250.000000015,
+            7241902.777777795,
+            7026356.444444496,
+            7275981.555555619,
+            7974515.624999867
+          ],
+          "medianNs": 7241902.777777795
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            6961365.7777778525,
+            6806444.444444424,
+            6813328.666666672,
+            7898541.625000007,
+            8025692.749999962
+          ],
+          "medianNs": 6961365.7777778525
+        }
+      ]
+    },
+    {
+      "fixture": "literature-100k",
+      "resolver": "jieba",
+      "api": "pinyinString",
+      "inputHash": "d9e335808e52ee92a4da2a96922784a25cba19035f6a86bd29b194098b7e88ff",
+      "outputHash": "914945b21be326f165e607c64a096a3754c213bd05230dc0d4f06713d409083b",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            5496249.99999998,
+            5338243.083333357,
+            5508791.636363558,
+            5579034.090908946,
+            5513049.272727255
+          ],
+          "medianNs": 5508791.636363558
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            5167420.166666792,
+            5184454.91666671,
+            5319225.749999987,
+            5817306.818181929,
+            5286590.250000093
+          ],
+          "medianNs": 5286590.250000093
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            5589484.90909097,
+            5481560.545454572,
+            5239132.000000003,
+            5543159.090909037,
+            5228815.999999976
+          ],
+          "medianNs": 5481560.545454572
+        }
+      ]
+    },
+    {
+      "fixture": "mixed",
+      "resolver": "character",
+      "api": "pinyin",
+      "inputHash": "3d5c2a63e73431be17d92f785ae0066cdc12e0d0dc0f1ea46fafab77b091f4d8",
+      "outputHash": "13f9d3e01076c627c5ff1cd949fb6065b06f6c0bfa4fd9917029670dc8a8b9b4",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            2896121.0476190033,
+            3020685.4000000022,
+            3012177.100000008,
+            2842238.6363636176,
+            2926829.3333333572
+          ],
+          "medianNs": 2926829.3333333572
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            2877470.2380952,
+            2888497.9999999944,
+            2876815.4761905214,
+            3023841.6999999573,
+            2865928.571428629
+          ],
+          "medianNs": 2877470.2380952
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            2975069.4761904534,
+            3043737.499999952,
+            3107693.7499999986,
+            2948210.285714248,
+            2986648.809523796
+          ],
+          "medianNs": 2986648.809523796
+        }
+      ]
+    },
+    {
+      "fixture": "mixed",
+      "resolver": "character",
+      "api": "pinyinString",
+      "inputHash": "3d5c2a63e73431be17d92f785ae0066cdc12e0d0dc0f1ea46fafab77b091f4d8",
+      "outputHash": "5633ae6e2fc408e9c773251543b806dbbc1018422f6aabd872653533a92cc511",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            2431261.640000012,
+            2516466.9999999963,
+            2419585.000000006,
+            2431071.6800000225,
+            2435336.6400000234
+          ],
+          "medianNs": 2431261.640000012
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            2279916.6666666646,
+            2408851.6399999936,
+            2332669.8846154055,
+            2587831.6249999595,
+            2299665.148148186
+          ],
+          "medianNs": 2332669.8846154055
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            2264182.1111111413,
+            2251719.1111110826,
+            2263313.259259289,
+            2312899.0384615324,
+            2240203.703703662
+          ],
+          "medianNs": 2263313.259259289
+        }
+      ]
+    },
+    {
+      "fixture": "mixed",
+      "resolver": "phrase",
+      "api": "pinyin",
+      "inputHash": "3d5c2a63e73431be17d92f785ae0066cdc12e0d0dc0f1ea46fafab77b091f4d8",
+      "outputHash": "3b02d6521de4549f830d89ddcf83e1fb9fcbbbb92a027a291e060f4a3f91500c",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            3503407.3888888694,
+            3338993.055555572,
+            3337337.9999999693,
+            3254232.473684265,
+            3376974.4999999604
+          ],
+          "medianNs": 3338993.055555572
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            3278848.6842105873,
+            3196725.8421053356,
+            3182225.8947368506,
+            3334671.052631548,
+            3160728.0526315756
+          ],
+          "medianNs": 3196725.8421053356
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            3311592.105263117,
+            3213613.999999947,
+            3311482.4210526035,
+            3204407.8947367924,
+            3263467.1052631973
+          ],
+          "medianNs": 3263467.1052631973
+        }
+      ]
+    },
+    {
+      "fixture": "mixed",
+      "resolver": "phrase",
+      "api": "pinyinString",
+      "inputHash": "3d5c2a63e73431be17d92f785ae0066cdc12e0d0dc0f1ea46fafab77b091f4d8",
+      "outputHash": "db29bc8ce0b856569c950063767c313b9d185e81fc9228a48aa82583d9735556",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            2930916.666666668,
+            2948345.238095152,
+            2806068.181818112,
+            3030697.8999999044,
+            2854289.7727273325
+          ],
+          "medianNs": 2930916.666666668
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            2701833.3478261647,
+            2685880.4347827137,
+            2626521.7391304285,
+            2697356.913043578,
+            2680771.7391305272
+          ],
+          "medianNs": 2685880.4347827137
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            2641713.7391303107,
+            2662833.347826128,
+            2623614.1304349154,
+            2663677.5652174116,
+            2679342.3913042475
+          ],
+          "medianNs": 2662833.347826128
+        }
+      ]
+    },
+    {
+      "fixture": "mixed",
+      "resolver": "jieba",
+      "api": "pinyin",
+      "inputHash": "3d5c2a63e73431be17d92f785ae0066cdc12e0d0dc0f1ea46fafab77b091f4d8",
+      "outputHash": "3b02d6521de4549f830d89ddcf83e1fb9fcbbbb92a027a291e060f4a3f91500c",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            4350547.57142851,
+            4441895.857142819,
+            4414651.785714211,
+            4475151.785714323,
+            4418648.857142866
+          ],
+          "medianNs": 4418648.857142866
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            4622166.692307823,
+            4373392.85714292,
+            4568639.928571428,
+            4555223.214285693,
+            4378080.3571428675
+          ],
+          "medianNs": 4555223.214285693
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            4447032.714285732,
+            4505324.428571319,
+            4719580.153846227,
+            4669285.307692357,
+            4524741.071428383
+          ],
+          "medianNs": 4524741.071428383
+        }
+      ]
+    },
+    {
+      "fixture": "mixed",
+      "resolver": "jieba",
+      "api": "pinyinString",
+      "inputHash": "3d5c2a63e73431be17d92f785ae0066cdc12e0d0dc0f1ea46fafab77b091f4d8",
+      "outputHash": "db29bc8ce0b856569c950063767c313b9d185e81fc9228a48aa82583d9735556",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            4208563.866666615,
+            4119472.2000000183,
+            4187408.3333333447,
+            3991815.12500013,
+            4469764.857142894
+          ],
+          "medianNs": 4187408.3333333447
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            4061338.9333334146,
+            4189147.200000055,
+            3970710.937500144,
+            3961132.812500182,
+            4203449.999999914
+          ],
+          "medianNs": 4061338.9333334146
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            4246519.466666602,
+            4024324.9999999534,
+            4299663.714285738,
+            4194650.000000062,
+            4134836.1333332527
+          ],
+          "medianNs": 4194650.000000062
+        }
+      ]
+    },
+    {
+      "fixture": "long-ascii",
+      "resolver": "character",
+      "api": "pinyin",
+      "inputHash": "8e5dd3bf0ad6d84bbcd9aa4bd4c755038a935c16e25cacf92e0c617633e69757",
+      "outputHash": "304c3827a925ed46057d75c0c0af9ac3828341e7c9cd76d368a7213664808116",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            2332591.3461538637,
+            2352637.8076924,
+            2328847.769230868,
+            2267453.703703655,
+            2296506.185185232
+          ],
+          "medianNs": 2328847.769230868
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            2252682.111111089,
+            2223109.5555554796,
+            2433536.6399999475,
+            2200846.7142856843,
+            2245705.2592593147
+          ],
+          "medianNs": 2245705.2592593147
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            1917309.875000001,
+            1910986.9999999774,
+            1986962.3548386905,
+            1917033.843750005,
+            1937418.0322581285
+          ],
+          "medianNs": 1917309.875000001
+        }
+      ]
+    },
+    {
+      "fixture": "long-ascii",
+      "resolver": "character",
+      "api": "pinyinString",
+      "inputHash": "8e5dd3bf0ad6d84bbcd9aa4bd4c755038a935c16e25cacf92e0c617633e69757",
+      "outputHash": "169b4c055d6d6e8f8b17dc3168a840c1920636e382668a40f0843c8c936070ce",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            2299245.3703703145,
+            2446165.0000000373,
+            2383717.961538563,
+            2278496.925925908,
+            2513611.125000049
+          ],
+          "medianNs": 2383717.961538563
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            2038319.4333332845,
+            2060518.066666676,
+            2016665.3000000224,
+            2005555.533333366,
+            2158901.7857143385
+          ],
+          "medianNs": 2038319.4333332845
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            1900916.6874999437,
+            1824281.575757623,
+            1800536.7647059327,
+            1765387.2352941963,
+            1749430.9714285398
+          ],
+          "medianNs": 1800536.7647059327
+        }
+      ]
+    },
+    {
+      "fixture": "long-ascii",
+      "resolver": "phrase",
+      "api": "pinyin",
+      "inputHash": "8e5dd3bf0ad6d84bbcd9aa4bd4c755038a935c16e25cacf92e0c617633e69757",
+      "outputHash": "304c3827a925ed46057d75c0c0af9ac3828341e7c9cd76d368a7213664808116",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            2666530.782608828,
+            2776562.499999934,
+            2836927.999999964,
+            2731356.0909091886,
+            2837333.318181746
+          ],
+          "medianNs": 2776562.499999934
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            2471433.320000069,
+            2541666.6666666665,
+            2615407.6086957343,
+            2711413.0434783874,
+            2566222.208333329
+          ],
+          "medianNs": 2566222.208333329
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            2216745.535714186,
+            2309253.192307761,
+            2201976.1785715153,
+            2287763.888888919,
+            2384306.1153847184
+          ],
+          "medianNs": 2287763.888888919
+        }
+      ]
+    },
+    {
+      "fixture": "long-ascii",
+      "resolver": "phrase",
+      "api": "pinyinString",
+      "inputHash": "8e5dd3bf0ad6d84bbcd9aa4bd4c755038a935c16e25cacf92e0c617633e69757",
+      "outputHash": "169b4c055d6d6e8f8b17dc3168a840c1920636e382668a40f0843c8c936070ce",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            2771369.3181818104,
+            2846880.6818182203,
+            2795422.318181822,
+            2709141.3043477666,
+            3020258.349999858
+          ],
+          "medianNs": 2795422.318181822
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            2398684.3076923275,
+            2400473.360000033,
+            2227546.296296269,
+            2260313.296296334,
+            2242375.000000013
+          ],
+          "medianNs": 2260313.296296334
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            2275856.4814815787,
+            2062286.0999999829,
+            2063672.2333332726,
+            2031070.833333312,
+            2094466.9655172187
+          ],
+          "medianNs": 2063672.2333332726
+        }
+      ]
+    },
+    {
+      "fixture": "long-ascii",
+      "resolver": "jieba",
+      "api": "pinyin",
+      "inputHash": "8e5dd3bf0ad6d84bbcd9aa4bd4c755038a935c16e25cacf92e0c617633e69757",
+      "outputHash": "304c3827a925ed46057d75c0c0af9ac3828341e7c9cd76d368a7213664808116",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            3593433.823529374,
+            3675705.8823527857,
+            3769362.000000001,
+            3610355.4117646986,
+            3718872.5882352786
+          ],
+          "medianNs": 3675705.8823527857
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            3549818.5882354258,
+            3674112.7647058903,
+            3618953.4705881667,
+            3647965.6470587277,
+            3802638.062499909
+          ],
+          "medianNs": 3647965.6470587277
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            3336842.611111125,
+            3465738.388888995,
+            3437284.7222223044,
+            3459562.4999999725,
+            3696639.705882476
+          ],
+          "medianNs": 3459562.4999999725
+        }
+      ]
+    },
+    {
+      "fixture": "long-ascii",
+      "resolver": "jieba",
+      "api": "pinyinString",
+      "inputHash": "8e5dd3bf0ad6d84bbcd9aa4bd4c755038a935c16e25cacf92e0c617633e69757",
+      "outputHash": "169b4c055d6d6e8f8b17dc3168a840c1920636e382668a40f0843c8c936070ce",
+      "result": [
+        {
+          "implementation": "before",
+          "samplesNs": [
+            4010797.20000004,
+            3840716.1249999716,
+            3932442.687500043,
+            3743720.588235352,
+            4246469.466666652
+          ],
+          "medianNs": 3932442.687500043
+        },
+        {
+          "implementation": "portable",
+          "samplesNs": [
+            3541627.4705883763,
+            3504972.2222221238,
+            3543830.882352803,
+            3396643.5555555816,
+            3327124.999999988
+          ],
+          "medianNs": 3504972.2222221238
+        },
+        {
+          "implementation": "simd",
+          "samplesNs": [
+            3252894.7368421205,
+            3226949.526315844,
+            3210453.94736843,
+            3108324.999999968,
+            3814578.1250000256
+          ],
+          "medianNs": 3226949.526315844
+        }
+      ]
+    }
+  ],
+  "sink": 453872
+}

@@ -1,0 +1,315 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -11,18 +11,11 @@
+ members = ["crates/pinyin-core"]
+ resolver = "2"
+ 
+-[features]
+-default = ["simd"]
+-simd = ["dep:simdutf"]
+-
+ [dependencies]
+ napi = "3.12.3"
+ napi-derive = "3.6.4"
+-napi-pinyin-core = { path = "crates/pinyin-core", version = "0.1.0", features = ["jieba", "utf16"] }
++napi-pinyin-core = { path = "crates/pinyin-core", version = "0.1.0", features = ["jieba"] }
+ simdutf8 = "0.1.5"
+-
+-[target.'cfg(all(not(target_family = "wasm"), any(target_arch = "aarch64", target_arch = "x86_64")))'.dependencies]
+-simdutf = { version = "=0.7.0", optional = true }
+ 
+ [[bench]]
+ name = "utf8"
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -426,7 +426,6 @@
+  "napi-build",
+  "napi-derive",
+  "napi-pinyin-core",
+- "simdutf",
+  "simdutf8",
+ ]
+ 
+@@ -648,16 +647,6 @@
+ checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
+ 
+ [[package]]
+-name = "simdutf"
+-version = "0.7.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5f542752c7335a9174e7bb81112c3ca1415a7a6b6ec2c3e840aca347a30f9141"
+-dependencies = [
+- "bitflags",
+- "cc",
+-]
+-
+-[[package]]
+ name = "simdutf8"
+ version = "0.1.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -1,12 +1,9 @@
+ #![deny(clippy::all)]
+-
+-mod encoding;
+-mod output;
+ 
+ use napi::{bindgen_prelude::*, ScopedTask};
+ use napi_derive::napi;
+ use pinyin_core::{Style, Token};
+-use std::{borrow::Cow, cell::RefCell, collections::HashMap, sync::LazyLock};
++use std::{cell::RefCell, collections::HashMap, sync::LazyLock};
+ 
+ static JIEBA: LazyLock<pinyin_core::jieba::Jieba> = LazyLock::new(pinyin_core::jieba::Jieba::new);
+ 
+@@ -53,25 +50,9 @@
+       Self::Jieba => pinyin_core::jieba::pinyin(input, style, &JIEBA, false, separator),
+     }
+   }
+-
+-  fn pinyin_utf16(self, input: &str, style: Style, separator: &str) -> Vec<u16> {
+-    match self {
+-      Self::Character => pinyin_core::utf16::pinyin(input, style, false, separator),
+-      Self::Phrase => pinyin_core::utf16::pinyin(input, style, true, separator),
+-      Self::Jieba => pinyin_core::jieba::pinyin_utf16(input, style, &JIEBA, false, separator),
+-    }
+-  }
+ }
+ 
+ type EngineString = Either<Latin1String, Utf16String>;
+-
+-// Copy JS's native representation, then transcode with consistent replacement
+-// semantics. This also avoids the WASI helper's malformed-surrogate UTF-8 bug.
+-type InputString = Utf16String;
+-
+-fn string_input(input: &InputString) -> String {
+-  encoding::from_utf16_lossy(input)
+-}
+ 
+ fn engine_string(value: String) -> EngineString {
+   // ASCII already has V8's one-byte representation. Other output is encoded in
+@@ -81,9 +62,7 @@
+   if value.is_ascii() && (!cfg!(target_family = "wasm") || !value.as_bytes().contains(&0)) {
+     Either::A(value.into())
+   } else {
+-    let mut units = Vec::with_capacity(value.len());
+-    encoding::append_utf16(&value, &mut units);
+-    Either::B(units.into())
++    Either::B(value.into())
+   }
+ }
+ 
+@@ -172,8 +151,7 @@
+   #[napi(ts_type = "'phrase' | 'jieba'")]
+   pub segmenter: Option<String>,
+   /// Separator between syllables and unchanged non-Han runs. Defaults to a space.
+-  #[napi(ts_type = "string")]
+-  pub separator: Option<Utf16String>,
++  pub separator: Option<String>,
+ }
+ 
+ fn utf8(input: &[u8]) -> Result<&str> {
+@@ -186,12 +164,10 @@
+   })
+ }
+ 
+-fn input_str(input: Either<InputString, &[u8]>) -> Result<Cow<'_, str>> {
++fn input_str<'a>(input: &'a Either<String, &[u8]>) -> Result<&'a str> {
+   match input {
+-    // Consume the temporary UTF-16 copy so it is freed before dictionary work
+-    // and output allocation. Byte input continues to borrow without copying.
+-    Either::A(input) => Ok(Cow::Owned(string_input(&input))),
+-    Either::B(input) => utf8(input).map(Cow::Borrowed),
++    Either::A(input) => Ok(input),
++    Either::B(input) => utf8(input),
+   }
+ }
+ 
+@@ -201,9 +177,6 @@
+   style: Style,
+   multi: bool,
+ ) -> EngineString {
+-  if style == Style::Tone {
+-    return Either::B(output::json_utf16(input, tokens, style, multi).into());
+-  }
+   let mut joined = String::with_capacity(input.len().saturating_mul(2));
+   joined.push('[');
+   for (index, token) in tokens.enumerate() {
+@@ -290,20 +263,12 @@
+         inner.set(0, token.text(input, style))?;
+       } else {
+         for (j, syllable) in readings.enumerate() {
+-          if style == Style::Tone {
+-            inner.set(j as u32, env.create_string_utf16(syllable.utf16(style))?)?;
+-          } else {
+-            inner.set(j as u32, syllable.text(style))?;
+-          }
++          inner.set(j as u32, syllable.text(style))?;
+         }
+       }
+       output.set(i as u32, inner)?;
+     } else if let Some(syllable) = token.syllable() {
+-      if style == Style::Tone {
+-        output.set(i as u32, env.create_string_utf16(syllable.utf16(style))?)?;
+-      } else {
+-        output.set(i as u32, syllable.text(style))?;
+-      }
++      output.set(i as u32, syllable.text(style))?;
+     } else {
+       output.set(i as u32, token.text(input, style))?;
+     }
+@@ -314,13 +279,12 @@
+ #[napi(js_name = "pinyin", ts_return_type = "string[] | string[][]")]
+ pub fn to_pinyin<'env>(
+   env: &'env Env,
+-  #[napi(ts_arg_type = "string | Uint8Array")] input: Either<InputString, &'env [u8]>,
++  input: Either<String, &'env [u8]>,
+   opt: Option<PinyinConvertOptions>,
+ ) -> Result<Array<'env>> {
+   let opt = opt.unwrap_or_default();
+   let multi = opt.heteronym.unwrap_or(false);
+-  let text = input_str(input)?;
+-  let input = text.as_ref();
++  let input = input_str(&input)?;
+   let style = opt.style.unwrap_or(PinyinStyle::Plain).into();
+   let resolution = Resolution::new(opt.segment, opt.segmenter.as_deref(), multi)?;
+   match prepare_output(input, style, resolution, multi) {
+@@ -332,27 +296,16 @@
+ /// Convert directly to one string, avoiding a JS allocation for each syllable.
+ #[napi(ts_return_type = "string")]
+ pub fn pinyin_string(
+-  #[napi(ts_arg_type = "string | Uint8Array")] input: Either<InputString, &[u8]>,
++  input: Either<String, &[u8]>,
+   opt: Option<PinyinStringOptions>,
+ ) -> Result<EngineString> {
+   let opt = opt.unwrap_or_default();
+   let resolution = Resolution::new(opt.segment, opt.segmenter.as_deref(), false)?;
+-  let text = input_str(input)?;
+-  let input = text.as_ref();
+-  let style = opt.style.unwrap_or(PinyinStyle::Plain).into();
+-  let separator = opt.separator.map(|s| string_input(&s));
+-  let separator = separator.as_deref().unwrap_or(" ");
+-  if style == Style::Tone {
+-    // This check already establishes the core's whole-ASCII shortcut. Avoid
+-    // scanning it again in the generic writer (significant for large buffers).
+-    if input.is_ascii() {
+-      return Ok(engine_string(input.to_owned()));
+-    }
+-    return Ok(Either::B(
+-      resolution.pinyin_utf16(input, style, separator).into(),
+-    ));
+-  }
+-  Ok(engine_string(resolution.pinyin(input, style, separator)))
++  Ok(engine_string(resolution.pinyin(
++    input_str(&input)?,
++    opt.style.unwrap_or(PinyinStyle::Plain).into(),
++    opt.separator.as_deref().unwrap_or(" "),
++  )))
+ }
+ 
+ pub enum PinyinOutput {
+@@ -404,14 +357,14 @@
+ 
+ #[napi(ts_return_type = "Promise<string[] | string[][]>")]
+ pub fn async_pinyin(
+-  #[napi(ts_arg_type = "string | Buffer")] input: Either<InputString, Buffer>,
++  input: Either<String, Buffer>,
+   opt: Option<PinyinConvertOptions>,
+   signal: Option<AbortSignal>,
+ ) -> Result<AsyncTask<AsyncPinyinTask>> {
+   let opt = opt.unwrap_or_default();
+   let task = AsyncPinyinTask {
+     input: match input {
+-      Either::A(input) => Either::A(string_input(&input)),
++      Either::A(input) => Either::A(input),
+       Either::B(input) => Either::B(input.as_ref().to_vec()),
+     },
+     style: opt.style.unwrap_or(PinyinStyle::Plain).into(),
+--- a/crates/pinyin-core/Cargo.toml
++++ b/crates/pinyin-core/Cargo.toml
+@@ -13,7 +13,6 @@
+ [features]
+ default = []
+ jieba = ["dep:jieba-rs"]
+-utf16 = []
+ 
+ [dependencies]
+ jieba-rs = { version = "0.10.3", optional = true }
+--- a/crates/pinyin-core/build.rs
++++ b/crates/pinyin-core/build.rs
+@@ -173,23 +173,6 @@
+     writeln!(output, "{strings:?},").unwrap();
+   }
+   writeln!(output, "];").unwrap();
+-  // Optional engine-facing representation: no runtime cache or transcoding.
+-  if env::var_os("CARGO_FEATURE_UTF16").is_some() {
+-    writeln!(
+-      output,
+-      "static STYLES_UTF16: [[&[u16]; SYLLABLE_COUNT]; 5] = ["
+-    )
+-    .unwrap();
+-    for style in 0..5 {
+-      writeln!(output, "[").unwrap();
+-      for syllable in &values {
+-        let units: Vec<_> = syllable[style].encode_utf16().collect();
+-        writeln!(output, "&{units:?},").unwrap();
+-      }
+-      writeln!(output, "],").unwrap();
+-    }
+-    writeln!(output, "];").unwrap();
+-  }
+   writeln!(
+     output,
+     "static COMMON: &[u32] = &{:?};",
+--- a/crates/pinyin-core/src/lib.rs
++++ b/crates/pinyin-core/src/lib.rs
+@@ -11,9 +11,6 @@
+ /// Optional Jieba word boundaries combined with the core pronunciation dictionary.
+ #[cfg(feature = "jieba")]
+ pub mod jieba;
+-
+-#[cfg(feature = "utf16")]
+-pub mod utf16;
+ 
+ struct Node {
+   start: u32,
+@@ -43,13 +40,6 @@
+   #[inline]
+   pub fn text(self, style: Style) -> &'static str {
+     STYLES[style as usize][self.0 as usize]
+-  }
+-
+-  /// Precomputed UTF-16 for engines using two-byte strings. Enabled by `utf16`.
+-  #[cfg(feature = "utf16")]
+-  #[inline]
+-  pub fn utf16(self, style: Style) -> &'static [u16] {
+-    STYLES_UTF16[style as usize][self.0 as usize]
+   }
+ 
+   /// Index for a call-local cache; valid only for this build of the dictionary.
+--- a/crates/pinyin-core/src/jieba.rs
++++ b/crates/pinyin-core/src/jieba.rs
+@@ -57,22 +57,3 @@
+   output
+ }
+ 
+-/// Direct UTF-16 output using the same Jieba boundaries and phrase decisions.
+-#[cfg(feature = "utf16")]
+-pub fn pinyin_utf16(
+-  input: &str,
+-  style: Style,
+-  segmenter: &Jieba,
+-  hmm: bool,
+-  separator: &str,
+-) -> Vec<u16> {
+-  let mut output = Vec::with_capacity(input.len().saturating_mul(2));
+-  let separator: Vec<_> = separator.encode_utf16().collect();
+-  let overrides = if input.is_ascii() {
+-    Vec::new()
+-  } else {
+-    phrase_readings(input, segmenter, hmm)
+-  };
+-  super::utf16::write_with_overrides(input, style, &separator, overrides, &mut output);
+-  output
+-}

@@ -1,0 +1,147 @@
+{
+  "recorded_at": "2026-09-11T10:03:56.901917+00:00",
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8",
+  "test_node": "v24.21.0",
+  "benchmark_node": "v24.13.1",
+  "benchmark_environment": {
+    "cpu": "Apple M5 Max",
+    "totalmem": 137438953472,
+    "platform": "darwin",
+    "arch": "arm64",
+    "loadavg": [
+      3.87353515625,
+      3.978515625,
+      4.02490234375
+    ]
+  },
+  "before_native": {
+    "sha256": "eeac177f6df8dc6836b1f351b768bdee0626bdd5cb8f4b9869b087c324508587",
+    "bytes": 4131536
+  },
+  "native": {
+    "sha256": "730baad95f607fdef427d675863e37e8ee705347ab1bcbeb2fe2a9ffe6939d5f",
+    "bytes": 4131808
+  },
+  "before_wasm": {
+    "sha256": "3083a48668a2322476ef19b2c02216dc2f5bde98e1674998ebd8f2b273cda613",
+    "bytes": 3434104
+  },
+  "wasm": {
+    "sha256": "4dd1a4572e1ab8335ed39d02df7a95b3df3b9dc6f8d5df0e5c2b1d88964f3344",
+    "bytes": 3434140
+  },
+  "rust_benchmark": {
+    "sha256": "b870a6d0248bfab35ef4f0eb1b2e668a9195d07adc4c44ea95fa4e48df112c16",
+    "bytes": 3675376
+  },
+  "wasm_target_cfg": [
+    "debug_assertions",
+    "panic=\"abort\"",
+    "target_abi=\"\"",
+    "target_arch=\"wasm32\"",
+    "target_endian=\"little\"",
+    "target_env=\"p1\"",
+    "target_family=\"wasm\"",
+    "target_feature=\"bulk-memory\"",
+    "target_feature=\"crt-static\"",
+    "target_feature=\"multivalue\"",
+    "target_feature=\"mutable-globals\"",
+    "target_feature=\"nontrapping-fptoint\"",
+    "target_feature=\"reference-types\"",
+    "target_feature=\"sign-ext\"",
+    "target_has_atomic=\"16\"",
+    "target_has_atomic=\"32\"",
+    "target_has_atomic=\"64\"",
+    "target_has_atomic=\"8\"",
+    "target_has_atomic=\"ptr\"",
+    "target_has_atomic_primitive_alignment=\"16\"",
+    "target_has_atomic_primitive_alignment=\"32\"",
+    "target_has_atomic_primitive_alignment=\"64\"",
+    "target_has_atomic_primitive_alignment=\"8\"",
+    "target_has_atomic_primitive_alignment=\"ptr\"",
+    "target_os=\"wasi\"",
+    "target_pointer_width=\"32\"",
+    "target_vendor=\"unknown\""
+  ],
+  "simdutf8": "0.1.5",
+  "api": "compat::from_utf8",
+  "core_unchanged_from_jieba": true,
+  "features": {
+    "core_default": [],
+    "node_binding": [
+      "jieba",
+      "simdutf8/std"
+    ],
+    "wasm_simd128": false
+  },
+  "sources": {
+    "Cargo.toml": {
+      "sha256": "8aa7792c960c4e3b43fee680133dd0d7e3606d32256c62c1ce30f5dd5dfda370",
+      "bytes": 765
+    },
+    "Cargo.lock": {
+      "sha256": "ab0f055c779da1b851da10b99dac2aadf80fab74cc76902a2c4c79accab6a0fa",
+      "bytes": 19163
+    },
+    "src/lib.rs": {
+      "sha256": "bcdb97deae40742c77d14a53b1e710715ad5ba2522cd1373f6f53d88e87f9066",
+      "bytes": 11854
+    },
+    "benches/utf8.rs": {
+      "sha256": "2442dc22c554c7a84530dfa50747a0dadf28a53606ae9e0b68451ed34ee67f82",
+      "bytes": 6578
+    },
+    "benchmark/utf8.ts": {
+      "sha256": "d92a501e52139966b05b9f62d9096ebb56fe33cfd104a1bc739538fb47461755",
+      "bytes": 7847
+    },
+    "benchmark/long.txt": {
+      "sha256": "5e1ad14fecba7935aa0578edb6666eaf25396774ddefe48c3ecbc4103965d0e8",
+      "bytes": 58061
+    },
+    "__test__/index.spec.ts": {
+      "sha256": "b46223caf79f9af4e11866471db72e7af21758893fa07536f50408842c612950",
+      "bytes": 14089
+    },
+    "crates/pinyin-core/src/lib.rs": {
+      "sha256": "53a80359ccc2ba68c1a794b7bff4965197ef7babd51db7ce57e09fd4bf243a16",
+      "bytes": 11482
+    },
+    "crates/pinyin-core/src/jieba.rs": {
+      "sha256": "35c305684df35d5d37bb7cb4f5c317cda4dcccff85b9e467c0d5d1cb77901a67",
+      "bytes": 2080
+    },
+    "scripts/summarize-utf8-benchmarks.py": {
+      "sha256": "9e283e82eb0085a9fa3c54b38b93f1fa91cc230a3eac7c31adead493f886d678",
+      "bytes": 3403
+    }
+  },
+  "samples": {
+    "validation.jsonl": {
+      "sha256": "9c16cffef0d9fcb97d08c721c49ac6e9847d68d9196418f141b758df8aae190b",
+      "bytes": 58652
+    },
+    "core-conversion.jsonl": {
+      "sha256": "b8e568645ff697b3ba1800fda181fad7f6bace65f0ccc965a8cdbf781e7e33b5",
+      "bytes": 9096
+    },
+    "conversion.json": {
+      "sha256": "33aef270d064feeb278a2765934a1ed218169e12f5b5ad68263754f5acdaedcb",
+      "bytes": 125110
+    }
+  },
+  "validation": {
+    "native_tests": 209,
+    "strict_wasi_tests": 209,
+    "rust_core_tests": 8,
+    "rust_jieba_tests": 5,
+    "utf8_std_oracle": "passed",
+    "clippy_all_targets": "passed",
+    "fmt": "passed",
+    "lint": "passed",
+    "focused_benchmark_types": "passed",
+    "unscoped_types": "blocked by generated CMake compiler_depend.ts files in target/",
+    "npm_pack_dry_run": "passed, 25 files including root bench and lockfile",
+    "full_remote_ci": "not run"
+  }
+}

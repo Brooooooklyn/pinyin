@@ -1,0 +1,270 @@
+{
+  "node": "v24.13.1",
+  "timestamp": "2026-09-11T09:26:40.364Z",
+  "rows": [
+    {
+      "length": 1000000,
+      "round": 0,
+      "implementation": "baseline",
+      "elapsedMs": 98.32245800000001,
+      "rssBytes": 232898560,
+      "maxRssKiB": 227440,
+      "tokens": 955911,
+      "outputHash": "d658a94301600887ed3ce5690df597360957459e7e2ef476c32b963df3b8e4ad",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 0,
+      "implementation": "rust",
+      "elapsedMs": 48.714166999999996,
+      "rssBytes": 162529280,
+      "maxRssKiB": 158720,
+      "tokens": 955911,
+      "outputHash": "0b9956c868a08ef15ed641fdca90f7297aa45d2d259c55b2c5d953ff4f57f50d",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 0,
+      "implementation": "rust-jieba",
+      "elapsedMs": 63.55375000000001,
+      "rssBytes": 256180224,
+      "maxRssKiB": 250176,
+      "tokens": 955911,
+      "outputHash": "3bb288dabd204a4b8a60e583d045f41345aaeb1563374ee260a097ec505eb8ae",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 0,
+      "implementation": "pinyin-pro",
+      "elapsedMs": 180.764833,
+      "rssBytes": 374898688,
+      "maxRssKiB": 366128,
+      "tokens": 955911,
+      "outputHash": "b7b63922c6c6d74ca30295cb4d56cbda0c5fe60a588d508a43a7a6ff961a14a4",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 1,
+      "implementation": "rust",
+      "elapsedMs": 48.00125,
+      "rssBytes": 162627584,
+      "maxRssKiB": 158816,
+      "tokens": 955911,
+      "outputHash": "0b9956c868a08ef15ed641fdca90f7297aa45d2d259c55b2c5d953ff4f57f50d",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 1,
+      "implementation": "rust-jieba",
+      "elapsedMs": 64.27474999999998,
+      "rssBytes": 256229376,
+      "maxRssKiB": 250224,
+      "tokens": 955911,
+      "outputHash": "3bb288dabd204a4b8a60e583d045f41345aaeb1563374ee260a097ec505eb8ae",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 1,
+      "implementation": "pinyin-pro",
+      "elapsedMs": 176.836625,
+      "rssBytes": 375357440,
+      "maxRssKiB": 366576,
+      "tokens": 955911,
+      "outputHash": "b7b63922c6c6d74ca30295cb4d56cbda0c5fe60a588d508a43a7a6ff961a14a4",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 1,
+      "implementation": "baseline",
+      "elapsedMs": 99.26299999999999,
+      "rssBytes": 232996864,
+      "maxRssKiB": 227536,
+      "tokens": 955911,
+      "outputHash": "d658a94301600887ed3ce5690df597360957459e7e2ef476c32b963df3b8e4ad",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 2,
+      "implementation": "rust-jieba",
+      "elapsedMs": 63.423542,
+      "rssBytes": 256262144,
+      "maxRssKiB": 250256,
+      "tokens": 955911,
+      "outputHash": "3bb288dabd204a4b8a60e583d045f41345aaeb1563374ee260a097ec505eb8ae",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 2,
+      "implementation": "pinyin-pro",
+      "elapsedMs": 180.342125,
+      "rssBytes": 418414592,
+      "maxRssKiB": 408624,
+      "tokens": 955911,
+      "outputHash": "b7b63922c6c6d74ca30295cb4d56cbda0c5fe60a588d508a43a7a6ff961a14a4",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 2,
+      "implementation": "baseline",
+      "elapsedMs": 98.884666,
+      "rssBytes": 233160704,
+      "maxRssKiB": 227696,
+      "tokens": 955911,
+      "outputHash": "d658a94301600887ed3ce5690df597360957459e7e2ef476c32b963df3b8e4ad",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 1000000,
+      "round": 2,
+      "implementation": "rust",
+      "elapsedMs": 47.32875,
+      "rssBytes": 162594816,
+      "maxRssKiB": 158784,
+      "tokens": 955911,
+      "outputHash": "0b9956c868a08ef15ed641fdca90f7297aa45d2d259c55b2c5d953ff4f57f50d",
+      "inputHash": "3e5ab376ad11499841d5577400abd04a56b18d02b3fa8508370e22039c96c493"
+    },
+    {
+      "length": 10000000,
+      "round": 0,
+      "implementation": "baseline",
+      "elapsedMs": 1054.048292,
+      "rssBytes": 1603076096,
+      "maxRssKiB": 1565504,
+      "tokens": 9559101,
+      "outputHash": "e09935bc9642bd76aab35bc3ea6ed9741149f1c667196f1be320630c0b952ad9",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 0,
+      "implementation": "rust",
+      "elapsedMs": 480.327709,
+      "rssBytes": 1207828480,
+      "maxRssKiB": 1179520,
+      "tokens": 9559101,
+      "outputHash": "3853636a2406a6ead0ae3f67d3e759b42cd157a53086901d42c76d15fc49a5e5",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 0,
+      "implementation": "rust-jieba",
+      "elapsedMs": 639.0015000000001,
+      "rssBytes": 1600241664,
+      "maxRssKiB": 1562736,
+      "tokens": 9559101,
+      "outputHash": "9f51317d56e80baa7bd06caf9c342c4e5727f3916c25e4e55471d409d476aec6",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 0,
+      "implementation": "pinyin-pro",
+      "elapsedMs": 1977.703459,
+      "rssBytes": 2211627008,
+      "maxRssKiB": 2159792,
+      "tokens": 9559101,
+      "outputHash": "376aa9920175cc8c6721eda867a3d04b1392a41264423d992fb709a58ef6c35b",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 1,
+      "implementation": "rust",
+      "elapsedMs": 467.33629099999996,
+      "rssBytes": 1207877632,
+      "maxRssKiB": 1179568,
+      "tokens": 9559101,
+      "outputHash": "3853636a2406a6ead0ae3f67d3e759b42cd157a53086901d42c76d15fc49a5e5",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 1,
+      "implementation": "rust-jieba",
+      "elapsedMs": 632.071125,
+      "rssBytes": 1600274432,
+      "maxRssKiB": 1562768,
+      "tokens": 9559101,
+      "outputHash": "9f51317d56e80baa7bd06caf9c342c4e5727f3916c25e4e55471d409d476aec6",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 1,
+      "implementation": "pinyin-pro",
+      "elapsedMs": 1967.5775,
+      "rssBytes": 2211217408,
+      "maxRssKiB": 2159392,
+      "tokens": 9559101,
+      "outputHash": "376aa9920175cc8c6721eda867a3d04b1392a41264423d992fb709a58ef6c35b",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 1,
+      "implementation": "baseline",
+      "elapsedMs": 1057.67,
+      "rssBytes": 1603076096,
+      "maxRssKiB": 1565504,
+      "tokens": 9559101,
+      "outputHash": "e09935bc9642bd76aab35bc3ea6ed9741149f1c667196f1be320630c0b952ad9",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 2,
+      "implementation": "rust-jieba",
+      "elapsedMs": 636.900583,
+      "rssBytes": 1600159744,
+      "maxRssKiB": 1562656,
+      "tokens": 9559101,
+      "outputHash": "9f51317d56e80baa7bd06caf9c342c4e5727f3916c25e4e55471d409d476aec6",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 2,
+      "implementation": "pinyin-pro",
+      "elapsedMs": 1939.379416,
+      "rssBytes": 2211659776,
+      "maxRssKiB": 2159824,
+      "tokens": 9559101,
+      "outputHash": "376aa9920175cc8c6721eda867a3d04b1392a41264423d992fb709a58ef6c35b",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 2,
+      "implementation": "baseline",
+      "elapsedMs": 1063.6200000000001,
+      "rssBytes": 1603026944,
+      "maxRssKiB": 1565456,
+      "tokens": 9559101,
+      "outputHash": "e09935bc9642bd76aab35bc3ea6ed9741149f1c667196f1be320630c0b952ad9",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    },
+    {
+      "length": 10000000,
+      "round": 2,
+      "implementation": "rust",
+      "elapsedMs": 481.470875,
+      "rssBytes": 1207681024,
+      "maxRssKiB": 1179376,
+      "tokens": 9559101,
+      "outputHash": "3853636a2406a6ead0ae3f67d3e759b42cd157a53086901d42c76d15fc49a5e5",
+      "inputHash": "c90ddb6e457d2a46c2df14d3b5c73dbbe12b924a620ae1fd2df012691931274f"
+    }
+  ]
+}

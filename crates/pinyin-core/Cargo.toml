@@ -1,0 +1,28 @@
+[package]
+name = "napi-pinyin-core"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Static-table Chinese pinyin conversion with allocation-free iteration and phrase disambiguation"
+repository = "https://github.com/Brooooooklyn/pinyin"
+readme = "README.md"
+
+[lib]
+name = "pinyin_core"
+
+[features]
+default = []
+jieba = ["dep:jieba-rs"]
+utf16 = []
+simd = ["dep:napi-pinyin-kernels", "napi-pinyin-kernels/simd"]
+
+[dependencies]
+napi-pinyin-kernels = { path = "../pinyin-kernels", version = "0.1.0", optional = true }
+jieba-rs = { version = "0.10.3", optional = true }
+
+[dev-dependencies]
+pinyin = "=0.11.0"
+
+[[bench]]
+name = "throughput"
+harness = false

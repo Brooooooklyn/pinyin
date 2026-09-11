@@ -1,0 +1,1273 @@
+{
+  "timestamp": "2026-09-11T09:26:13.059Z",
+  "node": "v24.13.1",
+  "cpu": "Apple M5 Max",
+  "platform": "darwin",
+  "arch": "arm64",
+  "totalmem": 137438953472,
+  "pinyinPro": "3.29.3",
+  "jieba": "0.10.3",
+  "hmm": false,
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "1d9bab044c8ea38f94a02546e38e4bd912268591a7c991579cf1f464081eccf4",
+      "bytes": 705
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "910823273ff41b8fad02b5aaa6b54d58483ca934875dced08195834fe37fda89",
+      "bytes": 18958
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "d414c1bc3657f17078717e4f9ead888a2b2e4d17115895c2c54370938b6dbe93",
+      "bytes": 11763
+    },
+    {
+      "path": "crates/pinyin-core/src/lib.rs",
+      "sha256": "f50ad8b7f10cd75a2917acf4de3b12333d1a1de0d7dbb838bfc124f8251cc558",
+      "bytes": 11040
+    },
+    {
+      "path": "crates/pinyin-core/src/jieba.rs",
+      "sha256": "3b1e12bcc6d864a8d30d848300b43ea73806d58dff4892bec7931db2ea7c0091",
+      "bytes": 2036
+    },
+    {
+      "path": "benchmark/compare.ts",
+      "sha256": "e027b2247abea02c9ef40a31a89ec4370d68fc2b687032f05e820244f45a7af9",
+      "bytes": 7043
+    },
+    {
+      "path": "benchmark/jieba-runtime.ts",
+      "sha256": "fbfb61d13bbdbbd80956b3f3244c24acd7a5b84097dfd237df504a2d84135887",
+      "bytes": 5271
+    },
+    {
+      "path": "benchmark/scaling.ts",
+      "sha256": "3918271f58c21633c0bf3b86cdf5dacd737ce2eeb09fc88672940cc4a99a5487",
+      "bytes": 3227
+    },
+    {
+      "path": "benchmark/long.txt",
+      "sha256": "5e1ad14fecba7935aa0578edb6666eaf25396774ddefe48c3ecbc4103965d0e8",
+      "bytes": 58061
+    },
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/pinyin.darwin-arm64.node",
+      "sha256": "3ad6c8cbbe73d6f3dcbb0ec0bc33f9d95599b53134e3f4109f454f7c28f48652",
+      "bytes": 4131600
+    },
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/node_modules/pinyin-pro/dist/index.js",
+      "sha256": "b57bcbfea4b3fb2bdfc581e6c36f429488e17aa3621da2342a5bda61e8a5e367",
+      "bytes": 324448
+    }
+  ],
+  "cold": [
+    {
+      "round": 0,
+      "implementation": "baseline",
+      "loadMs": 0.8014170000000007,
+      "firstConversionMs": 68.543916,
+      "totalMs": 69.345333,
+      "rssBytes": 116998144,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 0,
+      "implementation": "rust",
+      "loadMs": 0.8314160000000008,
+      "firstConversionMs": 0.024291999999999092,
+      "totalMs": 0.8557079999999999,
+      "rssBytes": 45760512,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 0,
+      "implementation": "rust-jieba",
+      "loadMs": 0.7888750000000009,
+      "firstConversionMs": 69.136959,
+      "totalMs": 69.92583400000001,
+      "rssBytes": 117080064,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 0,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.406458,
+      "firstConversionMs": 4.709875,
+      "totalMs": 15.116333000000001,
+      "rssBytes": 74498048,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 1,
+      "implementation": "rust",
+      "loadMs": 0.8130830000000007,
+      "firstConversionMs": 0.023083999999998994,
+      "totalMs": 0.8361669999999997,
+      "rssBytes": 45826048,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 1,
+      "implementation": "rust-jieba",
+      "loadMs": 0.8253330000000005,
+      "firstConversionMs": 68.980625,
+      "totalMs": 69.805958,
+      "rssBytes": 117080064,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 1,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.239290999999998,
+      "firstConversionMs": 5.115167000000003,
+      "totalMs": 15.354458000000001,
+      "rssBytes": 74465280,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 1,
+      "implementation": "baseline",
+      "loadMs": 0.7397090000000013,
+      "firstConversionMs": 69.55175,
+      "totalMs": 70.291459,
+      "rssBytes": 116899840,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 2,
+      "implementation": "rust-jieba",
+      "loadMs": 0.8013340000000007,
+      "firstConversionMs": 69.12020799999999,
+      "totalMs": 69.921542,
+      "rssBytes": 117030912,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 2,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.055583,
+      "firstConversionMs": 5.0382500000000014,
+      "totalMs": 15.093833000000002,
+      "rssBytes": 74481664,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 2,
+      "implementation": "baseline",
+      "loadMs": 0.8003339999999994,
+      "firstConversionMs": 68.483416,
+      "totalMs": 69.28375,
+      "rssBytes": 116850688,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 2,
+      "implementation": "rust",
+      "loadMs": 0.7814169999999994,
+      "firstConversionMs": 0.023958000000000368,
+      "totalMs": 0.8053749999999997,
+      "rssBytes": 45826048,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 3,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.325375000000001,
+      "firstConversionMs": 4.626749999999998,
+      "totalMs": 14.952124999999999,
+      "rssBytes": 74498048,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 3,
+      "implementation": "baseline",
+      "loadMs": 0.8302499999999995,
+      "firstConversionMs": 69.305333,
+      "totalMs": 70.135583,
+      "rssBytes": 116899840,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 3,
+      "implementation": "rust",
+      "loadMs": 0.7897499999999997,
+      "firstConversionMs": 0.03295800000000071,
+      "totalMs": 0.8227080000000004,
+      "rssBytes": 45744128,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 3,
+      "implementation": "rust-jieba",
+      "loadMs": 0.8239999999999998,
+      "firstConversionMs": 68.760166,
+      "totalMs": 69.584166,
+      "rssBytes": 117080064,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 4,
+      "implementation": "baseline",
+      "loadMs": 0.8134999999999994,
+      "firstConversionMs": 68.987042,
+      "totalMs": 69.80054200000001,
+      "rssBytes": 116965376,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 4,
+      "implementation": "rust",
+      "loadMs": 0.8406249999999993,
+      "firstConversionMs": 0.02304200000000023,
+      "totalMs": 0.8636669999999995,
+      "rssBytes": 45826048,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 4,
+      "implementation": "rust-jieba",
+      "loadMs": 0.8734999999999999,
+      "firstConversionMs": 70.03450000000001,
+      "totalMs": 70.908,
+      "rssBytes": 117096448,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 4,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.50875,
+      "firstConversionMs": 4.578208,
+      "totalMs": 15.086958,
+      "rssBytes": 74416128,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 5,
+      "implementation": "rust",
+      "loadMs": 0.872833,
+      "firstConversionMs": 0.02304200000000023,
+      "totalMs": 0.8958750000000002,
+      "rssBytes": 45727744,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 5,
+      "implementation": "rust-jieba",
+      "loadMs": 0.7802499999999988,
+      "firstConversionMs": 68.946584,
+      "totalMs": 69.726834,
+      "rssBytes": 117063680,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 5,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.174167,
+      "firstConversionMs": 5.3217919999999985,
+      "totalMs": 15.495959,
+      "rssBytes": 74399744,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 5,
+      "implementation": "baseline",
+      "loadMs": 0.8710839999999997,
+      "firstConversionMs": 68.86254100000001,
+      "totalMs": 69.733625,
+      "rssBytes": 116899840,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 6,
+      "implementation": "rust-jieba",
+      "loadMs": 0.7900840000000002,
+      "firstConversionMs": 68.84825000000001,
+      "totalMs": 69.638334,
+      "rssBytes": 117047296,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 6,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.083749999999998,
+      "firstConversionMs": 4.664084000000003,
+      "totalMs": 14.747834000000001,
+      "rssBytes": 74432512,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 6,
+      "implementation": "baseline",
+      "loadMs": 0.7807089999999999,
+      "firstConversionMs": 69.33399999999999,
+      "totalMs": 70.11470899999999,
+      "rssBytes": 116883456,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 6,
+      "implementation": "rust",
+      "loadMs": 0.7816670000000006,
+      "firstConversionMs": 0.023417000000000243,
+      "totalMs": 0.8050840000000008,
+      "rssBytes": 45826048,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 7,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.302000000000001,
+      "firstConversionMs": 4.522874999999999,
+      "totalMs": 14.824875,
+      "rssBytes": 74432512,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 7,
+      "implementation": "baseline",
+      "loadMs": 0.8364159999999998,
+      "firstConversionMs": 68.860042,
+      "totalMs": 69.696458,
+      "rssBytes": 116883456,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 7,
+      "implementation": "rust",
+      "loadMs": 0.8821249999999985,
+      "firstConversionMs": 0.02554100000000048,
+      "totalMs": 0.907665999999999,
+      "rssBytes": 45809664,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 7,
+      "implementation": "rust-jieba",
+      "loadMs": 0.8037500000000009,
+      "firstConversionMs": 69.721875,
+      "totalMs": 70.525625,
+      "rssBytes": 117096448,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 8,
+      "implementation": "baseline",
+      "loadMs": 0.8399999999999999,
+      "firstConversionMs": 69.22333300000001,
+      "totalMs": 70.063333,
+      "rssBytes": 116834304,
+      "result": [
+        "zhòng",
+        "qìng",
+        "yín",
+        "xíng",
+        "yīn",
+        "lè"
+      ]
+    },
+    {
+      "round": 8,
+      "implementation": "rust",
+      "loadMs": 0.8417919999999999,
+      "firstConversionMs": 0.02383299999999977,
+      "totalMs": 0.8656249999999996,
+      "rssBytes": 45744128,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 8,
+      "implementation": "rust-jieba",
+      "loadMs": 0.8158750000000001,
+      "firstConversionMs": 68.87512500000001,
+      "totalMs": 69.691,
+      "rssBytes": 117080064,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    },
+    {
+      "round": 8,
+      "implementation": "pinyin-pro",
+      "loadMs": 10.181667000000001,
+      "firstConversionMs": 4.7315419999999975,
+      "totalMs": 14.913208999999998,
+      "rssBytes": 74399744,
+      "result": [
+        "chóng",
+        "qìng",
+        "yín",
+        "háng",
+        "yīn",
+        "yuè"
+      ]
+    }
+  ],
+  "asynchronous": [
+    {
+      "round": 0,
+      "implementation": "baseline",
+      "elapsedMs": 1.700749999999971
+    },
+    {
+      "round": 0,
+      "implementation": "rust",
+      "elapsedMs": 1.4595420000000559
+    },
+    {
+      "round": 0,
+      "implementation": "rust-jieba",
+      "elapsedMs": 3.4464170000001104
+    },
+    {
+      "round": 1,
+      "implementation": "rust",
+      "elapsedMs": 0.6870000000003529
+    },
+    {
+      "round": 1,
+      "implementation": "rust-jieba",
+      "elapsedMs": 1.0975829999997586
+    },
+    {
+      "round": 1,
+      "implementation": "baseline",
+      "elapsedMs": 1.6289999999999054
+    },
+    {
+      "round": 2,
+      "implementation": "rust-jieba",
+      "elapsedMs": 0.9930829999998423
+    },
+    {
+      "round": 2,
+      "implementation": "baseline",
+      "elapsedMs": 1.5382500000000618
+    },
+    {
+      "round": 2,
+      "implementation": "rust",
+      "elapsedMs": 0.6796669999998812
+    },
+    {
+      "round": 3,
+      "implementation": "baseline",
+      "elapsedMs": 1.4994160000001102
+    },
+    {
+      "round": 3,
+      "implementation": "rust",
+      "elapsedMs": 0.6172080000001188
+    },
+    {
+      "round": 3,
+      "implementation": "rust-jieba",
+      "elapsedMs": 0.9777500000000146
+    },
+    {
+      "round": 4,
+      "implementation": "rust",
+      "elapsedMs": 0.7177080000001297
+    },
+    {
+      "round": 4,
+      "implementation": "rust-jieba",
+      "elapsedMs": 0.9579589999998461
+    },
+    {
+      "round": 4,
+      "implementation": "baseline",
+      "elapsedMs": 1.5997500000003129
+    },
+    {
+      "round": 5,
+      "implementation": "rust-jieba",
+      "elapsedMs": 0.9278750000003129
+    },
+    {
+      "round": 5,
+      "implementation": "baseline",
+      "elapsedMs": 1.5275000000001455
+    },
+    {
+      "round": 5,
+      "implementation": "rust",
+      "elapsedMs": 0.6561670000000959
+    },
+    {
+      "round": 6,
+      "implementation": "baseline",
+      "elapsedMs": 2.066457999999784
+    },
+    {
+      "round": 6,
+      "implementation": "rust",
+      "elapsedMs": 0.6888749999998254
+    },
+    {
+      "round": 6,
+      "implementation": "rust-jieba",
+      "elapsedMs": 1.0459580000001552
+    }
+  ],
+  "pronunciation": [
+    {
+      "input": "重庆银行音乐",
+      "outputs": [
+        {
+          "implementation": "baseline",
+          "output": [
+            "zhòng",
+            "qìng",
+            "yín",
+            "xíng",
+            "yīn",
+            "lè"
+          ]
+        },
+        {
+          "implementation": "rust",
+          "output": [
+            "chóng",
+            "qìng",
+            "yín",
+            "háng",
+            "yīn",
+            "yuè"
+          ]
+        },
+        {
+          "implementation": "rust-jieba",
+          "output": [
+            "chóng",
+            "qìng",
+            "yín",
+            "háng",
+            "yīn",
+            "yuè"
+          ]
+        },
+        {
+          "implementation": "pinyin-pro",
+          "output": [
+            "chóng",
+            "qìng",
+            "yín",
+            "háng",
+            "yīn",
+            "yuè"
+          ]
+        }
+      ]
+    },
+    {
+      "input": "银行行长",
+      "outputs": [
+        {
+          "implementation": "baseline",
+          "output": [
+            "yín",
+            "xíng",
+            "xíng",
+            "zhǎng"
+          ]
+        },
+        {
+          "implementation": "rust",
+          "output": [
+            "yín",
+            "háng",
+            "háng",
+            "zhǎng"
+          ]
+        },
+        {
+          "implementation": "rust-jieba",
+          "output": [
+            "yín",
+            "háng",
+            "háng",
+            "zhǎng"
+          ]
+        },
+        {
+          "implementation": "pinyin-pro",
+          "output": [
+            "yín",
+            "háng",
+            "háng",
+            "zhǎng"
+          ]
+        }
+      ]
+    },
+    {
+      "input": "长大以后",
+      "outputs": [
+        {
+          "implementation": "baseline",
+          "output": [
+            "zhǎng",
+            "dà",
+            "yǐ",
+            "hòu"
+          ]
+        },
+        {
+          "implementation": "rust",
+          "output": [
+            "zhǎng",
+            "dà",
+            "yǐ",
+            "hòu"
+          ]
+        },
+        {
+          "implementation": "rust-jieba",
+          "output": [
+            "zhǎng",
+            "dà",
+            "yǐ",
+            "hòu"
+          ]
+        },
+        {
+          "implementation": "pinyin-pro",
+          "output": [
+            "zhǎng",
+            "dà",
+            "yǐ",
+            "hòu"
+          ]
+        }
+      ]
+    },
+    {
+      "input": "他穿着长大衣",
+      "outputs": [
+        {
+          "implementation": "baseline",
+          "output": [
+            "tā",
+            "chuān",
+            "zhe",
+            "zhǎng",
+            "dà",
+            "yī"
+          ]
+        },
+        {
+          "implementation": "rust",
+          "output": [
+            "tā",
+            "chuān",
+            "zhe",
+            "zhǎng",
+            "dà",
+            "yī"
+          ]
+        },
+        {
+          "implementation": "rust-jieba",
+          "output": [
+            "tā",
+            "chuān",
+            "zhe",
+            "zhǎng",
+            "dà",
+            "yī"
+          ]
+        },
+        {
+          "implementation": "pinyin-pro",
+          "output": [
+            "tā",
+            "chuān",
+            "zhe",
+            "zhǎng",
+            "dà",
+            "yī"
+          ]
+        }
+      ]
+    },
+    {
+      "input": "快乐成长",
+      "outputs": [
+        {
+          "implementation": "baseline",
+          "output": [
+            "kuài",
+            "lè",
+            "chéng",
+            "zhǎng"
+          ]
+        },
+        {
+          "implementation": "rust",
+          "output": [
+            "kuài",
+            "lè",
+            "chéng",
+            "zhǎng"
+          ]
+        },
+        {
+          "implementation": "rust-jieba",
+          "output": [
+            "kuài",
+            "lè",
+            "chéng",
+            "zhǎng"
+          ]
+        },
+        {
+          "implementation": "pinyin-pro",
+          "output": [
+            "kuài",
+            "lè",
+            "chéng",
+            "zhǎng"
+          ]
+        }
+      ]
+    },
+    {
+      "input": "重要的重复",
+      "outputs": [
+        {
+          "implementation": "baseline",
+          "output": [
+            "zhòng",
+            "yào",
+            "de",
+            "zhòng",
+            "fù"
+          ]
+        },
+        {
+          "implementation": "rust",
+          "output": [
+            "zhòng",
+            "yào",
+            "de",
+            "chóng",
+            "fù"
+          ]
+        },
+        {
+          "implementation": "rust-jieba",
+          "output": [
+            "zhòng",
+            "yào",
+            "de",
+            "chóng",
+            "fù"
+          ]
+        },
+        {
+          "implementation": "pinyin-pro",
+          "output": [
+            "zhòng",
+            "yào",
+            "de",
+            "chóng",
+            "fù"
+          ]
+        }
+      ]
+    },
+    {
+      "input": "研究生命起源",
+      "outputs": [
+        {
+          "implementation": "baseline",
+          "output": [
+            "yán",
+            "jiū",
+            "shēng",
+            "mìng",
+            "qǐ",
+            "yuán"
+          ]
+        },
+        {
+          "implementation": "rust",
+          "output": [
+            "yán",
+            "jiū",
+            "shēng",
+            "mìng",
+            "qǐ",
+            "yuán"
+          ]
+        },
+        {
+          "implementation": "rust-jieba",
+          "output": [
+            "yán",
+            "jiū",
+            "shēng",
+            "mìng",
+            "qǐ",
+            "yuán"
+          ]
+        },
+        {
+          "implementation": "pinyin-pro",
+          "output": [
+            "yán",
+            "jiū",
+            "shēng",
+            "mìng",
+            "qǐ",
+            "yuán"
+          ]
+        }
+      ]
+    }
+  ],
+  "corpusTokens": 19100,
+  "disagreements": [
+    {
+      "index": 554,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 757,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 1509,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 1712,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 2464,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 2667,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 3419,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 3622,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 4374,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 4577,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 5329,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 5532,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 6284,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 6487,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 7239,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 7442,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 8194,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 8397,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 9149,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 9352,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 10104,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 10307,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 11059,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 11262,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 12014,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 12217,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 12969,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 13172,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 13924,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 14127,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 14879,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 15082,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 15834,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 16037,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 16789,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 16992,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 17744,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 17947,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 18699,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    },
+    {
+      "index": 18902,
+      "phrase": "wéi",
+      "jieba": "wèi"
+    }
+  ]
+}

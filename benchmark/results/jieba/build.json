@@ -1,0 +1,75 @@
+{
+  "native": {
+    "sha256": "eeac177f6df8dc6836b1f351b768bdee0626bdd5cb8f4b9869b087c324508587",
+    "bytes": 4131536
+  },
+  "wasm": {
+    "sha256": "3083a48668a2322476ef19b2c02216dc2f5bde98e1674998ebd8f2b273cda613",
+    "bytes": 3434104
+  },
+  "before_jieba": {
+    "sha256": "8d6118762ce7e8003bf4690521f06c99b08d178bef0281b02090f6aa83e3696b",
+    "bytes": 1746032
+  },
+  "original": {
+    "sha256": "d9b6bfb4767e7259d6806f45a51329f27330cb68b0f1ffe3167741d010d49f5e",
+    "bytes": 3768512
+  },
+  "original_commit": "f4409a36802672f6677a8033d63109b16a8a2f40",
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8",
+  "test_node": "v24.21.0",
+  "jieba": "0.10.3",
+  "hmm": false,
+  "boundary_penalty": 1,
+  "features": {
+    "core_default": [],
+    "node_binding": [
+      "jieba"
+    ]
+  },
+  "files": {
+    "Cargo.toml": {
+      "sha256": "1d9bab044c8ea38f94a02546e38e4bd912268591a7c991579cf1f464081eccf4",
+      "bytes": 705
+    },
+    "Cargo.lock": {
+      "sha256": "910823273ff41b8fad02b5aaa6b54d58483ca934875dced08195834fe37fda89",
+      "bytes": 18958
+    },
+    "crates/pinyin-core/Cargo.toml": {
+      "sha256": "f445a424b669754ff791aa8571aae4f52d969584165a4e509e6c414392e77d56",
+      "bytes": 505
+    },
+    "crates/pinyin-core/src/jieba.rs": {
+      "sha256": "35c305684df35d5d37bb7cb4f5c317cda4dcccff85b9e467c0d5d1cb77901a67",
+      "bytes": 2080
+    },
+    "crates/pinyin-core/src/lib.rs": {
+      "sha256": "53a80359ccc2ba68c1a794b7bff4965197ef7babd51db7ce57e09fd4bf243a16",
+      "bytes": 11482
+    },
+    "src/lib.rs": {
+      "sha256": "d414c1bc3657f17078717e4f9ead888a2b2e4d17115895c2c54370938b6dbe93",
+      "bytes": 11763
+    },
+    "index.d.ts": {
+      "sha256": "e6aa8830ad64f1ed2500865fe45260f79b75d9d2ae8dac8fa7d187149147b42d",
+      "bytes": 1647
+    }
+  },
+  "validation": {
+    "native_tests": 207,
+    "strict_wasi_tests": 207,
+    "core_tests": 8,
+    "jieba_tests": 5,
+    "i686_jieba_check": "unavailable: i686-linux-gnu-gcc not installed",
+    "full_remote_ci": "not run",
+    "core_no_default_features": "passed",
+    "clippy": "passed",
+    "lint": "passed",
+    "cargo_package_default": "passed",
+    "cargo_package_jieba": "passed",
+    "npm_pack_dry_run": "passed"
+  },
+  "npm_pack_files": 24
+}

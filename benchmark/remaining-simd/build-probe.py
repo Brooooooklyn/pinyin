@@ -1,0 +1,53 @@
+"""Build a temporary addon with independent trie/decode/reuse switches."""
+from pathlib import Path
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import tempfile
+import atexit
+
+root = Path(__file__).resolve().parents[2]
+workspace = tempfile.TemporaryDirectory(prefix="pinyin-remaining-simd-")
+atexit.register(workspace.cleanup)
+probe = Path(workspace.name)
+for name in ["Cargo.toml", "Cargo.lock", "build.rs"]:
+    shutil.copy2(root / name, probe / name)
+for name in ["src", "crates", "benches", "vendor"]:
+    shutil.copytree(root / name, probe / name)
+core = probe / "crates/pinyin-core/src/lib.rs"
+s = core.read_text()
+s = s.replace('use std::{cmp::Ordering, str::CharIndices};', '''use std::{cmp::Ordering, str::CharIndices};
+pub static RESEARCH: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(7);
+fn research(bit: u8) -> bool { RESEARCH.load(std::sync::atomic::Ordering::Relaxed) & bit != 0 }
+''')
+s = s.replace('if (2..=4).contains(&node.len) {', 'if (2..=4).contains(&node.len) && research(1) {')
+s = s.replace('    napi_pinyin_kernels::decode(input)', '    if research(2) { napi_pinyin_kernels::decode(input) } else { input.chars().collect() }')
+s = s.replace('let reuse = chars.len()', 'let reuse = research(4) && chars.len()')
+core.write_text(s)
+core = probe / "crates/pinyin-core/src/jieba.rs"
+s = core.read_text().replace('super::Prepared { chars, choices }', 'super::Prepared { chars: if super::research(4) { chars } else { Vec::new() }, choices }')
+core.write_text(s)
+binding = probe / "src/lib.rs"
+binding.write_text(binding.read_text() + '''
+#[napi]
+pub fn research_set_mode(mode: u8) {
+  pinyin_core::RESEARCH.store(mode, std::sync::atomic::Ordering::Relaxed);
+}
+''')
+target = root / "target/remaining-simd-probe"
+subprocess.run(["cargo", "fmt", "--all"], cwd=probe, check=True)
+subprocess.run(["cargo", "build", "--locked", "--release"], cwd=probe,
+               env=dict(os.environ, CARGO_TARGET_DIR=str(target)), check=True)
+shutil.copy2(target / "release/libnapi_pinyin.dylib", target / "probe.node")
+def info(p):
+    return {"path": str(p), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
+folder = root / "benchmark/results/remaining-simd"
+(folder / "probe.json").write_text(json.dumps({
+    "source": str(probe), "artifact": info(target / "probe.node"),
+    "builder": info(Path(__file__)),
+    "production": [info(root / p) for p in ["Cargo.toml", "Cargo.lock", "src/lib.rs", "crates/pinyin-core/src/lib.rs", "crates/pinyin-core/build.rs", "crates/pinyin-kernels/src/lib.rs"]],
+    "probe": [info(probe / p) for p in ["src/lib.rs", "crates/pinyin-core/src/lib.rs", "crates/pinyin-core/src/jieba.rs"]],
+}, indent=2) + "\n")
+print(target / "probe.node")

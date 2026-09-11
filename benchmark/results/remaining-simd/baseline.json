@@ -1,0 +1,117 @@
+[
+  {
+    "path": "target/remaining-simd-baseline/Cargo.toml",
+    "bytes": 995,
+    "sha256": "cf79db9f15be56269ad382a1efcd10ef404881036bff7d4184d4dffbc058dcd0"
+  },
+  {
+    "path": "target/remaining-simd-baseline/pinyin.darwin-arm64.node",
+    "bytes": 4481808,
+    "sha256": "f9d231da88159d27ff2d30a79a8cedb5c003d3e0d2620f8ed65c3f113626daf4"
+  },
+  {
+    "path": "target/remaining-simd-baseline/Cargo.lock",
+    "bytes": 19405,
+    "sha256": "a847e925dd89bef974ce5e9df05ba139983191d40489ddf1a21b342ee97ca760"
+  },
+  {
+    "path": "target/remaining-simd-baseline/pinyin.wasm32-wasi.wasm",
+    "bytes": 3541152,
+    "sha256": "98a03a47c59b886f8285057088c51d531eee392614dc7feac05a8f9bd13c8314"
+  },
+  {
+    "path": "target/remaining-simd-baseline/src/encoding.rs",
+    "bytes": 4564,
+    "sha256": "9745dc173115d802b573726f52ab9ace6b5178b60f7d21121b94e335d0c934c2"
+  },
+  {
+    "path": "target/remaining-simd-baseline/src/lib.rs",
+    "bytes": 13976,
+    "sha256": "7bf3409f20d1e2751cb40f3a45012a0fc05d3e659e9662058175358ed5b16a9a"
+  },
+  {
+    "path": "target/remaining-simd-baseline/src/output.rs",
+    "bytes": 2041,
+    "sha256": "24877bff6b77cf6e9841640dc021de278faed1c5613783893fc8086c845c47e3"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/Cargo.toml",
+    "bytes": 516,
+    "sha256": "113f86b24f1e5548281b5df22bdddf88d55e39d98763c0eb23b54a0201b846d7"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/LICENSE",
+    "bytes": 1066,
+    "sha256": "7b34e99bc43641767fded49f7f03563ffd50c689b1f3b0d50700b4727bc4ae24"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/build.rs",
+    "bytes": 8295,
+    "sha256": "c562b43e6f72b855ce5ca1a4d6cc76cedefa28dd0c15a7733439d5ea7c43e3f4"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/README.md",
+    "bytes": 7289,
+    "sha256": "4a72afd26088586dbe9177ee90cbf79fbb96268cc10241baf2898937c2dd35b0"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/tests/correctness.rs",
+    "bytes": 8158,
+    "sha256": "8b975f85d150028a281faef64c238de35b43006c3f3784c2f67615cc68d630f3"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/tests/jieba.rs",
+    "bytes": 5782,
+    "sha256": "c688a896538bb29d5e191b65ddb2ca7c4176bfaa8577d47c5d714df4711c1257"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/benches/throughput.rs",
+    "bytes": 2481,
+    "sha256": "978534cf8fee05154eb8ced8c25a3a5f67a282f7421530de65852c67bac4d33c"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/data/LICENSE.pinyin-pro",
+    "bytes": 1070,
+    "sha256": "824f6069c5a59b0c1650d0fb9f8d091866c6019eb761c8e658dfc03f001eabd2"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/data/LICENSE.pinyin-data",
+    "bytes": 1076,
+    "sha256": "9c048697be2502a16e8bcb282d5d465a07295b2def0ffb05a269c5d39dbe1586"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/data/sources.json",
+    "bytes": 1559,
+    "sha256": "8a1507e83f1d233bed669d50e6db2bb75969ba61c306b2d6e356927e21bc0f1f"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/data/characters.txt",
+    "bytes": 929764,
+    "sha256": "6170ab4ff7c9740fe765b1d35e6d3ad43554dd02874199388db513c44dcddf9d"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/data/LICENSE.rust-pinyin",
+    "bytes": 1077,
+    "sha256": "dbee1336f5286b3b26fb6b4a71ab1e8d89f80b4073d9c8d2b2b33c06abc3bcbe"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/data/phrases.tsv",
+    "bytes": 98628,
+    "sha256": "d4b85d5933c2949600bd10a15694e47b8dc88fc66c0cb878fa2599b84cf5ef31"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/src/lib.rs",
+    "bytes": 11755,
+    "sha256": "02921a94767a89c620c1efb774c0b8e38bec8036b014acde77322800935f7a7e"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/src/utf16.rs",
+    "bytes": 2149,
+    "sha256": "9859b9ee92df6850262684bec2020c7b7e6ff88b29264222c4fbb7429c034196"
+  },
+  {
+    "path": "target/remaining-simd-baseline/crates/pinyin-core/src/jieba.rs",
+    "bytes": 2652,
+    "sha256": "651aa2feac3661291ed81568ecf3a07f341c6e55ea4e7a15a50b5c3f9fa9288a"
+  }
+]

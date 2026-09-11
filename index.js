@@ -704,3 +704,4 @@ module.exports.compare = nativeBinding.compare
 module.exports.pinyin = nativeBinding.pinyin
 module.exports.PINYIN_STYLE = nativeBinding.PINYIN_STYLE
 module.exports.PinyinStyle = nativeBinding.PinyinStyle
+module.exports.pinyinString = nativeBinding.pinyinString

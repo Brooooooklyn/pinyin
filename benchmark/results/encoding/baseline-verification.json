@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-09-11T11:12:04.630Z",
+  "node": "v24.13.1",
+  "checks": 480,
+  "result": "all matched",
+  "build": {
+    "source": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-before-encoding-t19wzk9z",
+    "artifact": "/Users/brooklyn/workspace/github/pinyin/target/encoding-baseline/before.node",
+    "sha256": "cad11b038ba04acb9c1d6b45fa17d373f40222316e3d9fec572a54d582c1d431",
+    "patchSha256": "b144587bb0599af63b35f1454bb328869ac537052d4c90a595c4e321a3a51188"
+  }
+}

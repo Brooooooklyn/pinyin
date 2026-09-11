@@ -1,0 +1,68 @@
+{
+  "source": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-json-escape-probe-hifnl6zh",
+  "artifact": {
+    "path": "/Users/brooklyn/workspace/github/pinyin/target/json-escape-research/probe.node",
+    "bytes": 4483296,
+    "sha256": "b5f39d4b955180515e582eeb04928074d6927366cbaef91cbc34562bd7864d61"
+  },
+  "production": [
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/src/lib.rs",
+      "bytes": 13976,
+      "sha256": "7bf3409f20d1e2751cb40f3a45012a0fc05d3e659e9662058175358ed5b16a9a"
+    },
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/src/encoding.rs",
+      "bytes": 4564,
+      "sha256": "9745dc173115d802b573726f52ab9ace6b5178b60f7d21121b94e335d0c934c2"
+    },
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/src/output.rs",
+      "bytes": 2041,
+      "sha256": "24877bff6b77cf6e9841640dc021de278faed1c5613783893fc8086c845c47e3"
+    },
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/Cargo.toml",
+      "bytes": 995,
+      "sha256": "cf79db9f15be56269ad382a1efcd10ef404881036bff7d4184d4dffbc058dcd0"
+    },
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/Cargo.lock",
+      "bytes": 19405,
+      "sha256": "a847e925dd89bef974ce5e9df05ba139983191d40489ddf1a21b342ee97ca760"
+    },
+    {
+      "path": "/Users/brooklyn/workspace/github/pinyin/pinyin.darwin-arm64.node",
+      "bytes": 4481808,
+      "sha256": "f9d231da88159d27ff2d30a79a8cedb5c003d3e0d2620f8ed65c3f113626daf4"
+    }
+  ],
+  "probe": [
+    {
+      "path": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-json-escape-probe-hifnl6zh/src/lib.rs",
+      "bytes": 17888,
+      "sha256": "4535384632f0bb33c3c10e4184d8a7aa0edd991818354f30d5484d71f9d23fa0"
+    },
+    {
+      "path": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-json-escape-probe-hifnl6zh/src/output.rs",
+      "bytes": 2879,
+      "sha256": "d46568f33623053f079cdbfe31b4bcd59fa4fb6b1bc4e40f05d98f24b997c2e3"
+    },
+    {
+      "path": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-json-escape-probe-hifnl6zh/Cargo.toml",
+      "bytes": 1023,
+      "sha256": "a09c608ead6f835032f68feaed38bc3d01586ffbc888ddfc66bb8ce27a7c5dd2"
+    },
+    {
+      "path": "/var/folders/n9/kr5mprh51zn5m0vwyt2gr6_w0000gn/T/pinyin-json-escape-probe-hifnl6zh/Cargo.lock",
+      "bytes": 19626,
+      "sha256": "1738de68ba0407c0910f426024e73489b5fb4dc9dc868d0c9792f03bc5040384"
+    }
+  ],
+  "builder": {
+    "path": "/Users/brooklyn/workspace/github/pinyin/benchmark/json-escape/build-probe.py",
+    "bytes": 5213,
+    "sha256": "bec64d98c0bed8cd7b8fcd7a97445fbed2fea497f2e5511ec515efa615b3a182"
+  },
+  "dependency": "json-escape-simd 3.1.1"
+}
