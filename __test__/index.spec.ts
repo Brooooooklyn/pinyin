@@ -137,3 +137,23 @@ test('能比较 emoji', (t) => {
   t.deepEqual(compare(middle, greater), -1)
   t.deepEqual(compare(greater, middle), 1)
 })
+
+test('reject invalid UTF-8 Uint8Array', (t) => {
+  // 0xFF 0xFE is not valid UTF-8
+  const invalid = new Uint8Array([0xff, 0xfe, 0xff])
+  t.throws(() => pinyin(invalid), { message: /valid UTF-8/ })
+})
+
+test('reject invalid UTF-8 Buffer in asyncPinyin', async (t) => {
+  // 0xFF 0xFE is not valid UTF-8
+  const invalid = Buffer.from([0xff, 0xfe, 0xff])
+  await t.throwsAsync(() => asyncPinyin(invalid), { message: /valid UTF-8/ })
+})
+
+test('accept valid UTF-8 Uint8Array', (t) => {
+  t.deepEqual(pinyin(new TextEncoder().encode('中国')), pinyin('中国'))
+})
+
+test('accept valid UTF-8 Buffer in asyncPinyin', async (t) => {
+  t.deepEqual(await asyncPinyin(Buffer.from('中国')), await asyncPinyin('中国'))
+})
