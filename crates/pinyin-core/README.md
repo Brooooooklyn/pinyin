@@ -90,17 +90,16 @@ Native ARM64/x64 transcoding uses simdutf and requires a C++ toolchain. Other na
 
 The Node workspace additionally applies a pinned Jieba 0.10.3 patch for its private ARM64 character classifier. That Cargo patch does not propagate to standalone consumers of this crate, which can use the published Jieba dependency unchanged. See the [remaining SIMD optimization report](../../docs/performance-research.md#implemented-simd-and-output-paths) for benchmarks, the patch's scope, and validation.
 
-## Validation and measurement
+## Validation
 
 ```sh
 cargo test -p napi-pinyin-core --release
 cargo test -p napi-pinyin-core --features jieba --release
 cargo test -p napi-pinyin-core --features jieba,utf16 --release
 cargo test -p napi-pinyin-core --features jieba,utf16,simd --release
-cargo bench -p napi-pinyin-core --bench throughput
 ```
 
-The benchmark reads the repository's `benchmark/long.txt`. When running from a packaged crate, set `PINYIN_BENCH_TEXT` to a UTF-8 corpus file. The legacy pinyin dependency is used only by tests and benchmarks. Tests cover every valid Unicode scalar, every style and alternate reading, all phrase entries, overlapping phrases against an independent exhaustive solver, mixed Unicode, and comparator equivalence.
+The legacy pinyin dependency is used only by tests. Tests cover every valid Unicode scalar, every style and alternate reading, all phrase entries, overlapping phrases against an independent exhaustive solver, mixed Unicode, and comparator equivalence.
 
 See the repository's [algorithm and performance report](../../docs/performance-research.md) for complete measurements, output-equivalence qualifications, and rejected optimization experiments.
 
@@ -108,4 +107,4 @@ See the repository's [algorithm and performance report](../../docs/performance-r
 
 Data is vendored and compiled during a normal Cargo build, without network access. [sources.json](data/sources.json) records upstream revisions and source hashes. The character data is the exact pinyin-data submodule used by pinyin 0.11.0; phrase entries come from pinyin-pro 3.29.3's built-in dictionaries. The implementation is maintained in this repository. The data retains its upstream MIT notices in `data/LICENSE.*`.
 
-The repository's `scripts/import-dictionaries.py` reproduces imports from the pinned source checkouts, verifies the character source against its upstream revision, and fetches its license. Dictionary updates are explicit reviewable changes, never part of ordinary compilation.
+Dictionary updates must preserve the pinned source revisions, source hashes, and upstream license notices. Updates are explicit reviewable changes, never part of ordinary compilation.

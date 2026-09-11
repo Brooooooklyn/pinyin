@@ -54,11 +54,9 @@ yarn add @napi-rs/pinyin
 
 ```sh
 yarn build
-yarn bench
-cargo bench -p napi-pinyin-core --bench throughput
 ```
 
-基准的输入哈希、运行环境和原始样本保存在 [`benchmark/results`](benchmark/results)。这些是特定硬件和运行时上的测量结果，不代表所有输入上的绝对性能上限。
+研究报告保留测量结果，并链接到历史提交中的基准源码与原始样本。这些是特定硬件和运行时上的测量结果，不代表所有输入上的绝对性能上限。
 
 ## 用法
 

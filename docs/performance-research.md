@@ -20,7 +20,7 @@ The original baseline is a release build of commit `f4409a36802672f6677a8033d631
 
 The measured JavaScript package is pinyin-pro **3.29.3**, with algorithm reference revision `14b898d6aff00c9df75be351667bcc4155da395b`. Character readings retain pinyin 0.11.0 / pinyin-data 0.15.0 compatibility. Builds use optimization level 3, LTO, and one code generation unit, without `target-cpu=native` or result memoization. Runtime and artifact hashes accompany the raw measurements.
 
-All timings were collected on an active Apple M5 Max desktop with 128 GiB RAM, macOS ARM64, Rust 1.98.0, and Node 24.13.1. Complete-call comparisons match input encoding, styles, non-Han grouping, and return shape. Output equality is checked outside timing; returning strings from the original array-only binding includes `.join(' ')`. See the [evidence index](../benchmark/results/README.md) for each stage's samples and provenance.
+All timings were collected on an active Apple M5 Max desktop with 128 GiB RAM, macOS ARM64, Rust 1.98.0, and Node 24.13.1. Complete-call comparisons match input encoding, styles, non-Han grouping, and return shape. Output equality is checked outside timing; returning strings from the original array-only binding includes `.join(' ')`. The benchmark directory, Rust benchmark targets, and Python tooling were removed after research. Historical evidence links below point to the immutable commit `5267ab2`, not files in the current checkout. See the archived [evidence index](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/README.md) for each stage's samples and provenance.
 
 ## Algorithm comparison
 
@@ -132,7 +132,7 @@ For example, the current built-in dictionaries produce `zhang da yi` for 长大�
 
 The core still does not implement all pinyin-pro surname, custom-pronunciation, numeric-context, traditional-normalization, and productive tone-sandhi policies. Natural-text timings therefore explicitly distinguish output format from pronunciation equivalence.
 
-An initial strict-boundary implementation was rejected: Jieba split 划分/为 and 统称/为, suppressing 分为 and 称为 and incorrectly reverting 为 from wéi to wèi. This affected 40 output tokens in the repeated literary corpus. The final weighted resolver allows those dictionary phrases to cross the boundary. The rejected implementation's measurements are retained under `benchmark/results/jieba/strict-boundaries/` and are not mixed into final samples.
+An initial strict-boundary implementation was rejected: Jieba split 划分/为 and 统称/为, suppressing 分为 and 称为 and incorrectly reverting 为 from wéi to wèi. This affected 40 output tokens in the repeated literary corpus. The final weighted resolver allows those dictionary phrases to cross the boundary. The rejected implementation's measurements are retained in the [archived strict-boundary results](https://github.com/Brooooooklyn/pinyin/tree/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/jieba/strict-boundaries) and are not mixed into final samples.
 
 ## UTF-8 validation
 
@@ -173,8 +173,6 @@ The phrase decoder requires at least 512 UTF-8 bytes and at least 28 three-byte 
 Small trie indices are packed into the existing node field with checked build-time bounds. Only nodes with two to four children receive a padded side-table entry, adding about 10 KB of labels. Matching a padding lane is explicitly rejected, including for NUL input. The probability recurrence, dictionary ordering, phrase scores, and Jieba boundary penalties are unchanged.
 
 ## Native measurements
-
-<!-- native-results:start -->
 
 Medians of complete synchronous calls with JavaScript string input. Times are microseconds; a negative time change means less time. All before/after outputs match. The full 112-row run also retains short inputs, ASCII-only input, heteronyms, sequential async calls, and all matched-corpus comparisons.
 
@@ -232,13 +230,9 @@ Additional tone-output Buffer-input controls:
 | literature-100k / character / asyncPinyin  | 2123.11    | 2077.05     | -2.2%       |
 | literature-100k / jieba / asyncPinyin      | 4237.72    | 4149.33     | -2.1%       |
 
-<!-- native-results:end -->
-
-The largest remaining increases in the full native run were the ASCII-only 300 KB array controls: 6.8% for plain and 7.4% for tone output. A separate nine-round recheck measured only 1.7% and 1.5%, respectively. Natural-text character-mode tone strings changed from a 4.8% increase in the full run to essentially unchanged in that recheck (650.61 versus 649.85 µs). Both runs are retained in [the control results](../benchmark/results/remaining-simd/final-controls.json). These small differences are not stable enough to attribute to SIMD; the larger gains should not be generalized to every input or API.
+The largest remaining increases in the full native run were the ASCII-only 300 KB array controls: 6.8% for plain and 7.4% for tone output. A separate nine-round recheck measured only 1.7% and 1.5%, respectively. Natural-text character-mode tone strings changed from a 4.8% increase in the full run to essentially unchanged in that recheck (650.61 versus 649.85 µs). Both runs are retained in [the control results](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/remaining-simd/final-controls.json). These small differences are not stable enough to attribute to SIMD; the larger gains should not be generalized to every input or API.
 
 ## WebAssembly measurements
-
-<!-- wasm-results:start -->
 
 Tone-output calls through the Node WASI loader, in milliseconds. The last column isolates the current SIMD build against the current standard build; it does not compare against the older baseline. All three variants produce identical outputs in these cases.
 
@@ -263,8 +257,6 @@ Tone-output calls through the Node WASI loader, in milliseconds. The last column
 | long-ascii / jieba / pinyin                | 3.676      | 3.648                | 3.460            | -5.2%            |
 | long-ascii / jieba / pinyinString          | 3.932      | 3.505                | 3.227            | -7.9%            |
 
-<!-- wasm-results:end -->
-
 SIMD is most useful here on the long ASCII fixture, with 5–15% less time than the current standard build. Mixed-text results range from roughly 3% better to 4% worse, so this build remains an explicit option rather than a universal default. The earlier unguarded transcoder had larger mixed-text regressions; the final guarded version avoids those failed probes.
 
 `yarn build:wasm:simd` writes the explicitly SIMD-dependent module and its loaders into `target/wasi-simd`. The normal build command continues to produce the standard WASM module. Both measured modules require an engine supporting SIMD128; there is no implicit deployment switch or runtime replacement of the normal module. Rust documents this target feature and host requirement in its [WASM intrinsic reference](https://doc.rust-lang.org/core/arch/wasm32/index.html).
@@ -279,13 +271,13 @@ Jieba's relevant classifier is private, so the Node workspace uses a local Cargo
 
 The fast classifier accepts only prefixes that the original default cut predicate accepts. ASCII checks cover letters, digits, and `+#&._%-`. The CJK kernel loads 48 bytes, validates the three-byte layout, reconstructs 16 code points, and accepts the leading U+4E00–U+9FFF range. Other Unicode ranges, gaps, punctuation, emoji, other classifiers, and other architectures retain the original predicate. Dictionary traversal, the sparse graph, route probabilities, HMM, token positions, and the public API are unchanged.
 
-A separate executable links both the unpatched registry dependency and the patched crate. It compared **7,128 complete segmentations**, including word strings and character/byte offsets, with default and custom dictionaries and both HMM modes. Every result matched. The parity corpus includes random Unicode, classification boundaries, CJK gaps, control bytes, emoji, long ASCII, and natural Chinese prose. See [parity evidence](../benchmark/results/remaining-simd/jieba-parity.json), [source hashes](../benchmark/results/remaining-simd/jieba-vendor.json), and the [minimal upstream patch](../benchmark/results/remaining-simd/jieba-upstream.patch).
+A separate executable links both the unpatched registry dependency and the patched crate. It compared **7,128 complete segmentations**, including word strings and character/byte offsets, with default and custom dictionaries and both HMM modes. Every result matched. The parity corpus includes random Unicode, classification boundaries, CJK gaps, control bytes, emoji, long ASCII, and natural Chinese prose. See [parity evidence](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/remaining-simd/jieba-parity.json), [source hashes](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/remaining-simd/jieba-vendor.json), and the [minimal upstream patch](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/remaining-simd/jieba-upstream.patch).
 
-The earlier same-binary classifier experiment reduced complete HMM-disabled Jieba segmentation on the prose fixture from 1.683 to 1.509 ms, about 10.4%. Its mixed-text result was about 1.8% and overlaps desktop noise; its long ASCII fixture improved about 6%. These isolate the classifier experiment and are separate from the final combined binding measurements. Raw samples and build provenance are in [the results directory](../benchmark/results/remaining-simd).
+The earlier same-binary classifier experiment reduced complete HMM-disabled Jieba segmentation on the prose fixture from 1.683 to 1.509 ms, about 10.4%. Its mixed-text result was about 1.8% and overlaps desktop noise; its long ASCII fixture improved about 6%. These isolate the classifier experiment and are separate from the final combined binding measurements. Raw samples and build provenance are in [the results directory](https://github.com/Brooooooklyn/pinyin/tree/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/remaining-simd).
 
 Vendoring preserves the entire published crate, including optional keyword/POS data. It adds about **14.0 MB of source**; the npm dry-run archive is about **5.33 MB compressed / 15.18 MB unpacked** including all project sources. This source-distribution cost is separate from the much smaller native binary increase. The patch has not been submitted upstream. Cargo patches do not propagate to downstream workspaces: a standalone consumer of `napi-pinyin-core` uses published Jieba unless it explicitly supplies its own patch. A standalone executable using the core with `jieba,utf16,simd` and published Jieba was built and run successfully.
 
-The ARM64 release addon grows from 4,481,808 to 4,531,392 bytes (**1.1%**). Standard WASM grows from 3,541,152 to 3,576,432 bytes (**1.0%**); the explicit SIMD build is 3,583,398 bytes. The native build with optional SIMD disabled is 4,331,280 bytes. Exact measured artifact identities, source hashes, package contents, WASM feature evidence, and validation results are recorded in [final-state.json](../benchmark/results/remaining-simd/final-state.json).
+The ARM64 release addon grows from 4,481,808 to 4,531,392 bytes (**1.1%**). Standard WASM grows from 3,541,152 to 3,576,432 bytes (**1.0%**); the explicit SIMD build is 3,583,398 bytes. The native build with optional SIMD disabled is 4,331,280 bytes. Exact measured artifact identities, source hashes, package contents, WASM feature evidence, and validation results are recorded in [final-state.json](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/remaining-simd/final-state.json).
 
 ## Experiments that did not become the implementation
 
@@ -319,17 +311,10 @@ WASI_SDK_PATH=/opt/wasi-sdk yarn build:wasm:simd
 
 cargo test -p napi-pinyin-core --features jieba,utf16,simd --release
 cargo test -p napi-pinyin-kernels --features simd --release
-python3 benchmark/remaining-simd/verify-jieba.py
-
-# Reconstruct the saved source baseline in an isolated temporary directory.
-python3 benchmark/build-baseline.py remaining-simd
-PINYIN_BASELINE=target/remaining-simd-baseline/before.node \
-  BENCH_ROUNDS=7 BENCH_MS=75 BENCH_FILTER='(/string$|compare)' \
-  oxnode benchmark/remaining-simd.ts
-oxnode benchmark/remaining-simd/wasm.ts
+yarn test
 ```
 
-The WASM harness expects release modules with their matching loader/worker in `target/remaining-simd-wasi/{before,portable,simd}`. Results and implementation identities are retained under [`benchmark/results/remaining-simd`](../benchmark/results/remaining-simd). The baseline native SHA-256 is `f9d231da88159d27ff2d30a79a8cedb5c003d3e0d2620f8ed65c3f113626daf4`.
+To reproduce the historical benchmarks, use the [research snapshot](https://github.com/Brooooooklyn/pinyin/tree/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4) in a separate checkout. Its WASM harness expects release modules with their matching loader/worker in `target/remaining-simd-wasi/{before,portable,simd}`. Results and implementation identities are retained under [`benchmark/results/remaining-simd`](https://github.com/Brooooooklyn/pinyin/tree/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/remaining-simd). The baseline native SHA-256 is `f9d231da88159d27ff2d30a79a8cedb5c003d3e0d2620f8ed65c3f113626daf4`.
 
 The native harness rotates implementation order over seven rounds of at least 75 ms, after warmup; the WASM harness uses five rounds of at least 60 ms. Each row retains input/output hashes and raw timing samples. Native timings include the complete N-API call, output construction, and array parsing; asynchronous rows await calls sequentially. They measure warm operation rather than first-call dictionary initialization. All results were collected on an active Apple M5 Max desktop with 128 GiB RAM, Rust 1.98.0, and Node 24.13.1. Builds/tests did not overlap the timed runs, but the machine was not isolated or thermally controlled. Small percentage differences should be treated as inconclusive rather than universal wins or a performance ceiling.
 
@@ -337,17 +322,7 @@ The native harness rotates implementation order over seven rounds of at least 75
 
 The following appendices preserve the measurements that guided the implementation. “New”, “current”, “before”, and “after” inside these tables refer to that historical stage, not the final PR build. These runs use different baselines and sampling windows. The final implementation and validation above supersede prototype recommendations and earlier test counts.
 
-Raw source and binary identities remain unchanged as historical evidence. Temporary checkouts, compiled probes, and build caches are not committed. The two intermediate source baselines can be reconstructed with `benchmark/build-baseline.py`; restored source hashes are checked before building. Rebuilt binaries may have different hashes because temporary paths, toolchains, and link environments affect binary identity.
-
-Run the summarizers to regenerate the marked table regions from persisted samples:
-
-```sh
-python3 scripts/summarize-benchmarks.py
-python3 scripts/summarize-jieba-benchmarks.py
-python3 scripts/summarize-utf8-benchmarks.py
-python3 benchmark/simd-research/analyze.py
-python3 benchmark/remaining-simd/summarize.py
-```
+Raw source and binary identities remain available in the [archived evidence](https://github.com/Brooooooklyn/pinyin/tree/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results). The benchmark builders and report generators belong to that snapshot and are no longer part of the current source tree. Use the archived checkout to reconstruct intermediate baselines or regenerate these historical tables. Rebuilt binaries may have different hashes because temporary paths, toolchains, and link environments affect binary identity.
 
 ### Initial static core
 
@@ -363,8 +338,6 @@ For the Node array, string, and all-reading comparisons, each candidate is warme
 The corpus includes short phrases, mixed text and emoji, ASCII runs, and 1k/10k/100k-character slices or repetitions of the repository's literary text. Additional deterministic randomized workloads use a restricted alphabet whose readings match across implementations. These are explicitly synthetic, low-ambiguity workloads; they complement rather than replace natural text.
 
 Cold-load measurements use fresh processes and report module loading separately from the first contextual conversion. Comparator measurements test short keys, early differences, and long shared prefixes. Asynchronous measurements include the promise round trip and output creation and are checked against each implementation's synchronous result.
-
-<!-- RESULTS -->
 
 ### Array output
 
@@ -382,7 +355,7 @@ Runtime: v24.13.1; pinyin-pro 3.29.3. Median microseconds per call, seven rounds
 | matched-100k    |      9,826.45 | 4,708.91 |  12,553.66 |               2.09× |         2.67× | Yes                  |
 | phrases         |          1.66 |     1.30 |       2.04 |               1.28× |         1.57× | Yes                  |
 
-[All styles, options, output hashes, and individual samples](../benchmark/results/arrays.json).
+[All styles, options, output hashes, and individual samples](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/arrays.json).
 
 ### String output
 
@@ -400,7 +373,7 @@ Runtime: v24.13.1; pinyin-pro 3.29.3. Median microseconds per call, seven rounds
 | matched-100k    |     11,661.05 | 2,648.84 |  15,674.74 |               4.40× |         5.92× | Yes                  |
 | phrases         |          1.89 |     0.51 |       2.28 |               3.68× |         4.43× | Yes                  |
 
-[All styles, options, output hashes, and individual samples](../benchmark/results/strings.json).
+[All styles, options, output hashes, and individual samples](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/strings.json).
 
 ### All-reading output
 
@@ -418,7 +391,7 @@ Runtime: v24.13.1; pinyin-pro 3.29.3. Median microseconds per call, seven rounds
 | matched-100k    |     17,493.43 | 7,236.78 |  11,314.61 |               2.42× |         1.56× | No                   |
 | phrases         |          3.41 |     1.57 |       1.25 |               2.17× |         0.79× | No                   |
 
-[All styles, options, output hashes, and individual samples](../benchmark/results/heteronyms.json).
+[All styles, options, output hashes, and individual samples](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/heteronyms.json).
 
 An exact-output “Yes” is a checked equality on these inputs. It is not a general pronunciation-equivalence claim. Natural-text “No” rows compare the same output format with different readings. Heteronym dictionaries also differ in reading coverage and order; very short calls can still favor JavaScript.
 
@@ -441,7 +414,7 @@ Median milliseconds in nine fresh processes per implementation. The filesystem c
 | short-sort                                         |         0.80 |    0.18 |   4.50× |
 | async literary corpus, tone marks, contextual mode |      1689.13 |  799.12 |   2.11× |
 
-[Runtime samples](../benchmark/results/runtime.json). Native comparison still pays for copying JavaScript input strings even when the Rust comparator exits early.
+[Runtime samples](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/runtime.json). Native comparison still pays for copying JavaScript input strings even when the Rust comparator exits early.
 
 ### Large natural-text scaling
 
@@ -456,15 +429,13 @@ Three fresh-process runs per size and implementation, each warmed on the origina
 | 10,000,000 | rust           |                463.16 |              1,151.7 |
 | 10,000,000 | pinyin-pro     |              1,869.11 |              2,109.5 |
 
-[Scaling samples and output hashes](../benchmark/results/scaling.json). Peak RSS includes module loading, the source and expanded input, scratch allocations, and the retained output; it is sampled before the post-timing output hashing.
+[Scaling samples and output hashes](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/scaling.json). Peak RSS includes module loading, the source and expanded input, scratch allocations, and the retained output; it is sampled before the post-timing output hashing.
 
 ### Build and core measurements
 
 The fresh native release binary falls from **3,768,512 bytes to 1,746,032 bytes**, a **53.7% reduction**. The older pre-existing artifact was not used for this size comparison.
 
-[Rust-only benchmark samples](../benchmark/results/core.txt) separate lookup and reusable output from contextual processing and owned output. These measurements do not include Node-API or JavaScript allocation.
-
-<!-- END RESULTS -->
+[Rust-only benchmark samples](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/core.txt) separate lookup and reusable output from contextual processing and owned output. These measurements do not include Node-API or JavaScript allocation.
 
 </details>
 
@@ -480,8 +451,6 @@ All timed comparisons use the same JavaScript strings, plain or tone-marked outp
 The four candidates are the original binding, the current binary's phrase resolver, that same binary's Jieba resolver, and pinyin-pro. Each is warmed, then measured in seven rounds of at least 100 ms with rotating execution order. No input-result memoization is added. Output hashes and individual timing samples are retained. The designated synthetic inputs must produce exactly equal results in all four implementations before timing; natural-text differences are recorded.
 
 Measurements use an Apple M5 Max with 128 GiB RAM and Node 24.13.1 on an active desktop. Builds retain the repository's portable release configuration. Results are workload- and runtime-specific. Fresh-process measurements expose module loading, first contextual conversion, and RSS separately. Async samples include the promise round trip and result creation with an already-created input Buffer. Large-input measurements use three warmed fresh processes per size and implementation; peak RSS includes input, library, scratch storage, and retained output, and is sampled before output hashing.
-
-<!-- jieba-results:start -->
 
 ### Arrays
 
@@ -501,7 +470,7 @@ Median microseconds per call, seven rotated rounds. Tone marks and contextual co
 
 On the exact-output 100k synthetic input with plain pinyin, Jieba takes 8.53 ms versus 43.69 ms for pinyin-pro (5.12× faster).
 
-[All options, hashes, and samples](../benchmark/results/jieba/arrays.json).
+[All options, hashes, and samples](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/jieba/arrays.json).
 
 ### Strings
 
@@ -521,11 +490,11 @@ Median microseconds per call, seven rotated rounds. Tone marks and contextual co
 
 On the exact-output 100k synthetic input with plain pinyin, Jieba takes 5.44 ms versus 40.82 ms for pinyin-pro (7.50× faster).
 
-[All options, hashes, and samples](../benchmark/results/jieba/strings.json).
+[All options, hashes, and samples](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/jieba/strings.json).
 
 An equality flag refers to the new Jieba result. The synthetic matched workloads assert equality across all four implementations. Natural-text “No” rows compare matching formats with different pronunciations, not equivalent accuracy.
 
-The final phrase and Jieba resolvers differ at **0 of 19,100 output tokens** in the supplied corpus. Its repetitions are not independent accuracy samples. [Differences and pronunciation examples](../benchmark/results/jieba/runtime.json).
+The final phrase and Jieba resolvers differ at **0 of 19,100 output tokens** in the supplied corpus. Its repetitions are not independent accuracy samples. [Differences and pronunciation examples](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/jieba/runtime.json).
 
 ### Cold initialization
 
@@ -565,13 +534,11 @@ Tone-marked arrays, three fresh-process runs per size and candidate, warmed on t
 | 10,000,000 | Jieba resolver   |                670.41 |              1,528.1 |
 | 10,000,000 | pinyin-pro       |              2,111.87 |              2,109.0 |
 
-[Scaling samples and output hashes](../benchmark/results/jieba/scaling.json).
+[Scaling samples and output hashes](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/jieba/scaling.json).
 
 ### Artifact size
 
 The native binary containing both resolvers is 4,131,536 bytes. The pre-integration binary was 1,746,032 bytes; the original binding was 3,768,512 bytes. Optional Rust consumers can disable Jieba entirely; the shipped Node binary includes its dictionary even when callers select the phrase resolver.
-
-<!-- jieba-results:end -->
 
 </details>
 
@@ -585,8 +552,6 @@ The native binary containing both resolvers is 4,131,536 bytes. The pre-integrat
 Measured on September 11, 2026, on an Apple M5 Max with 128 GiB RAM, macOS ARM64, Rust 1.98.0, and Node v24.13.1 via `oxnode`. Both addons use release optimization, LTO, and one codegen unit. This was an active desktop, not an isolated benchmark host. All medians retain seven samples; execution order rotates each round. Builds and tests did not overlap timed runs, and the benchmark suites ran sequentially.
 
 `benches/utf8.rs` measures only validation with reusable input buffers, 100 ms rounds, a function pointer with black-boxed input/output, and batches of 64 calls. Before timing it compares validity, error offsets, lengths, and display text against Rust's standard library over unaligned slices, truncated sequences, every byte replacement at selected boundaries, and deterministic random bytes. Fixture numbers are target byte sizes, truncated to a valid character boundary where necessary; raw records retain actual lengths. An early invalid sequence still has a few nanoseconds of SIMD setup overhead.
-
-<!-- validation:start -->
 
 | Input             |  std, µs | SIMD compat, µs | Speedup | Basic + std error fallback, µs |
 | ----------------- | -------: | --------------: | ------: | -----------------------------: |
@@ -610,13 +575,9 @@ Measured on September 11, 2026, on an Apple M5 Max with 128 GiB RAM, macOS ARM64
 | invalid-end-3m    |  964.179 |         213.061 |   4.53× |                       1172.333 |
 | truncated-end-3m  |  968.954 |         210.877 |   4.59× |                       1180.391 |
 
-<!-- validation:end -->
-
 #### Rust conversion in the same executable
 
-The separate Node addon builds also differ in paths that bypass validation. To better isolate the validator's contribution, `PINYIN_BENCH_CONVERSION=1 cargo bench --bench utf8` uses one shared, non-inlined conversion function with a black-boxed validator function pointer. Only that pointer changes between samples; allocation, dictionary lookup, optional Jieba segmentation, and owned tone-string output use identical compiled code. Outputs are asserted equal. Each candidate warms up before seven rotating 150 ms rounds. This uses the Rust executable's default allocator and excludes Node/UTF-16 output costs.
-
-<!-- core:start -->
+The separate Node addon builds also differ in paths that bypass validation. To better isolate the validator's contribution, the archived [Rust conversion benchmark](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benches/utf8.rs) uses one shared, non-inlined conversion function with a black-boxed validator function pointer. Only that pointer changes between samples; allocation, dictionary lookup, optional Jieba segmentation, and owned tone-string output use identical compiled code. Outputs are asserted equal. Each candidate warms up before seven rotating 150 ms rounds. This uses the Rust executable's default allocator and excludes Node/UTF-16 output costs.
 
 | Input           | Resolver  | std + conversion, µs | SIMD + conversion, µs | Change in time |
 | --------------- | --------- | -------------------: | --------------------: | -------------: |
@@ -625,15 +586,11 @@ The separate Node addon builds also differ in paths that bypass validation. To b
 | mixed-100k      | character |               323.60 |                264.65 |         -18.2% |
 | mixed-100k      | jieba     |              1316.78 |               1255.53 |          -4.7% |
 
-<!-- core:end -->
-
-`benchmark/utf8.ts` measures complete calls against the saved pre-SIMD addon, including conversion and JS output creation. Each implementation warms up before seven rotating 150 ms rounds. Buffers are pre-encoded outside timing. Options use tone marks, with either default character readings or `segment: true, segmenter: 'jieba'`; both Jieba dictionaries are initialized before timing. Every valid output is compared exactly to the baseline. Invalid inputs compare error code and message. Async timings include buffer copying, worker scheduling, and result creation with one awaited request at a time.
+The archived [byte-input harness](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/utf8.ts) measured complete calls against the saved pre-SIMD addon, including conversion and JS output creation. Each implementation warms up before seven rotating 150 ms rounds. Buffers are pre-encoded outside timing. Options use tone marks, with either default character readings or `segment: true, segmenter: 'jieba'`; both Jieba dictionaries are initialized before timing. Every valid output is compared exactly to the baseline. Invalid inputs compare error code and message. Async timings include buffer copying, worker scheduling, and result creation with one awaited request at a time.
 
 Negative percentages mean less time. These are observed median differences, not confidence intervals. The string controls below bypass the changed validator and show noise or incidental binary-layout effects; their changes must not be attributed to SIMD validation. Single-digit changes need that context.
 
 #### Byte inputs
-
-<!-- buffer:start -->
 
 | Input           | Resolver  | API          | Before, µs | SIMD, µs | Change in time |
 | --------------- | --------- | ------------ | ---------: | -------: | -------------: |
@@ -662,11 +619,7 @@ Negative percentages mean less time. These are observed median differences, not 
 | literature-100k | character | asyncPinyin  |    2647.61 |  2413.50 |          -8.8% |
 | literature-100k | jieba     | asyncPinyin  |    4699.16 |  4437.34 |          -5.6% |
 
-<!-- buffer:end -->
-
 #### JavaScript string controls
-
-<!-- string:start -->
 
 | Input           | Resolver  | API          | Before, µs | SIMD, µs | Change in time |
 | --------------- | --------- | ------------ | ---------: | -------: | -------------: |
@@ -691,9 +644,7 @@ Negative percentages mean less time. These are observed median differences, not 
 | literature-100k | character | asyncPinyin  |    2878.60 |  2740.90 |          -4.8% |
 | literature-100k | jieba     | asyncPinyin  |    4790.18 |  4576.50 |          -4.5% |
 
-<!-- string:end -->
-
-Raw samples, input hashes, source hashes, machine details, and the before/after native artifact hashes are retained in [`benchmark/results/simdutf8`](../benchmark/results/simdutf8). `build.json` also identifies the WASM artifact. The baseline binary was saved after the Jieba stage and before this dependency/helper change. Temporary binary paths in the reports are provenance, not checked-in files.
+Raw samples, input hashes, source hashes, machine details, and the before/after native artifact hashes are retained in [`benchmark/results/simdutf8`](https://github.com/Brooooooklyn/pinyin/tree/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/simdutf8). `build.json` also identifies the WASM artifact. The baseline binary was saved after the Jieba stage and before this dependency/helper change. Temporary binary paths in the reports are provenance, not checked-in files.
 
 </details>
 
@@ -722,8 +673,6 @@ The experiment uses **Rust `simdutf` 0.7.0**, whose bundled C++ implementation i
 
 The following measurements isolate output encoding. They do not include dictionary lookup or JavaScript allocation. The `std reserved` control tests whether simply changing capacity accounts for the improvement.
 
-<!-- transcode:start -->
-
 | Input / output           | std collect, µs | std reserved, µs | encoding_rs stable, µs | simdutf, µs |
 | ------------------------ | --------------: | ---------------: | ---------------------: | ----------: |
 | short / joined           |            0.09 |             0.03 |                   0.04 |        0.03 |
@@ -735,8 +684,6 @@ The following measurements isolate output encoding. They do not include dictiona
 | ascii-run / joined       |          189.60 |           184.85 |                  26.15 |        9.00 |
 | ascii-run / json         |          189.72 |           185.00 |                  26.13 |        9.13 |
 
-<!-- transcode:end -->
-
 For natural-text joined output, SIMD reduces the encoding step from about **281 to 185 µs**, a **1.52×** speedup. The complete call improves less because encoding is only part of conversion. Reserving scalar output capacity saves little on this fixture. Stable `encoding_rs` is not consistently better: it is slower than the scalar collector on natural joined output, but faster than this simdutf adapter on mixed JSON output.[^simd-1]
 
 The large ASCII encoding result is deliberately retained as a control, not a production claim: the binding already avoids UTF-16 conversion for ASCII output. It would be misleading to present that approximately 21× isolated encoding gain as a pinyin speedup.
@@ -744,8 +691,6 @@ The large ASCII encoding result is deliberately retained as a control, not a pro
 #### Complete Node calls and pinyin-pro
 
 All rows below use JavaScript string input and tone-marked output. The table compares the scalar and SIMD modes of the same experimental addon. `pinyin` returns an array; `pinyinString` returns one string.
-
-<!-- node:start -->
 
 | Input / resolver / API                     | Scalar output, µs | SIMD output, µs | Time change | pinyin-pro, µs |
 | ------------------------------------------ | ----------------: | --------------: | ----------: | -------------: |
@@ -762,8 +707,6 @@ All rows below use JavaScript string input and tone-marked output. The table com
 | matched-100k / jieba / pinyin              |           7704.37 |         7157.34 |       -7.1% |       12590.06 |
 | matched-100k / jieba / pinyinString        |           5637.06 |         5240.79 |       -7.0% |       14936.88 |
 
-<!-- node:end -->
-
 The matched corpus asserts identical outputs against **pinyin-pro 3.29.3**, with tone sandhi disabled and consecutive non-Chinese runs grouped. On that corpus, SIMD-output Jieba conversion is **1.76×** as fast as pinyin-pro for arrays and **2.85×** for strings. The natural-text pinyin-pro outputs differ in readings; those rows describe workloads, not equivalent accuracy. No general accuracy conclusion follows from the matched synthetic corpus.[^simd-1][^simd-6]
 
 **Implementation recommendation:** add an internal output-transcoding adapter in the Node binding, retaining the existing ASCII path and short-array cutoff. Keep the standalone core's default dependencies unchanged. Benchmark the crossover on each supported architecture instead of assuming a fixed width or threshold from this M5 Max. Retain a portable fallback and test UTF-16 surrogate pairs, NULs, allocation bounds, and worker ownership before adoption.
@@ -778,8 +721,6 @@ The dictionary already precomputes five output styles. Precomputing correspondin
 
 The prototype builds its cache outside timing and reuses it, representing a future generated static table. It writes directly from the existing token stream and uses scalar UTF-16 encoding for unchanged runs. It does not modify pronunciation selection.
 
-<!-- direct:start -->
-
 | Input / resolver            | Current string preparation, µs | SIMD transcode, µs | Direct cached UTF-16, µs |
 | --------------------------- | -----------------------------: | -----------------: | -----------------------: |
 | literature-100k / character |                         605.51 |             516.23 |                   447.88 |
@@ -789,8 +730,6 @@ The prototype builds its cache outside timing and reuses it, representing a futu
 | mixed-100k / phrase         |                         578.23 |             566.75 |                   467.47 |
 | mixed-100k / jieba          |                        1351.89 |            1335.90 |                  1234.09 |
 
-<!-- direct:end -->
-
 For 100,000 natural-text characters, direct UTF-16 output reduces character-mode Rust preparation from **605.51 to 447.88 µs**, versus **516.23 µs** with SIMD transcoding. The direct approach also wins for phrase and Jieba output. These measurements exclude the Node boundary and use the Rust executable's default allocator; they must not be substituted into the Node table as measured total-call times.[^simd-1]
 
 A production implementation should generate tightly sized tables at build time, support all five styles, and retain a dedicated ASCII writer. It should avoid the research prototype's oversized runtime cache and initialization scan. Flat JSON and heteronym JSON need their own UTF-16 writers, with correct escaping and fresh nested arrays. Rust callers expecting UTF-8 `String` should continue to use the existing writer.
@@ -799,8 +738,6 @@ A production implementation should generate tightly sized tables at build time, 
 
 N-API supports copying JavaScript strings as UTF-16. Its UTF-16 extraction API reports code-unit length and copies into a caller-provided buffer; it does not expose a general zero-copy borrowed view. The currently used UTF-8 extraction instead measures an encoded byte length and writes UTF-8 into a separate allocation. The local `napi` implementation makes both API calls.[^simd-3][^simd-9]
 
-<!-- input:start -->
-
 | Input           | N-API UTF-8 input extraction, µs | N-API UTF-16 input extraction, µs |
 | --------------- | -------------------------------: | --------------------------------: |
 | short           |                             0.06 |                              0.04 |
@@ -808,8 +745,6 @@ N-API supports copying JavaScript strings as UTF-16. Its UTF-16 extraction API r
 | literature-100k |                           257.02 |                              3.46 |
 | mixed-100k      |                           172.21 |                              3.31 |
 | matched-100k    |                           228.19 |                              3.24 |
-
-<!-- input:end -->
 
 For natural text, the measured difference is about **254 µs**. If that cost could be removed without changing any other work, the current 1,048.56 µs character-mode Node string call would fall by roughly **24%**. This is an optimistic component-based estimate, not a measured new API path: a real implementation must consume UTF-16, maintain output ranges, and perform any required conversion for downstream components.[^simd-1]
 
@@ -821,8 +756,6 @@ A UTF-16-native path could also exploit SIMD to identify blocks containing surro
 
 The default streaming character path avoids a scalar-vector allocation. Phrase and Jieba adapters already allocate `Vec<char>`, making them more plausible consumers of SIMD UTF-8 → UTF-32 decoding. The measured SIMD path first counts scalar values, allocates the exact number of output entries, and then transcodes. Both passes are included.
 
-<!-- decode:start -->
-
 | Input           | Scalar decode, µs | SIMD count + decode, µs | SIMD time change |
 | --------------- | ----------------: | ----------------------: | ---------------: |
 | short           |              0.05 |                    0.03 |           -41.8% |
@@ -830,8 +763,6 @@ The default streaming character path avoids a scalar-vector allocation. Phrase a
 | literature-100k |             78.31 |                   31.38 |           -59.9% |
 | mixed-100k      |             45.42 |                   67.70 |           +49.1% |
 | ascii-run       |            142.36 |                   26.12 |           -81.7% |
-
-<!-- decode:end -->
 
 The Chinese result improves **78.31 → 31.38 µs**, saving about **47 µs** per 100,000 characters for one decoded vector. That is useful but much smaller than the whole Jieba call. The mixed fixture regresses **45.42 → 67.70 µs**. These results rule out an unconditional replacement of every `.chars()` iterator with bulk SIMD decoding.[^simd-1]
 
@@ -847,16 +778,12 @@ This is a proven SIMD pattern: V8's published stringifier work uses hardware SIM
 
 The local prototype scans 16 bytes with NEON, uses comparisons for the two special bytes and control-byte range, and falls back to scalar handling at the next escape or tail. It never loads outside the slice. The table measures its additional effect after SIMD transcoding has already been enabled.
 
-<!-- escape:start -->
-
 | Input / resolver            | SIMD transcode only, µs | SIMD transcode + escape scan, µs | Additional time change |
 | --------------------------- | ----------------------: | -------------------------------: | ---------------------: |
 | literature-100k / character |                  786.68 |                           795.98 |                  +1.2% |
 | literature-100k / jieba     |                 2546.40 |                          2544.64 |                  -0.1% |
 | mixed-100k / character      |                  527.70 |                           485.00 |                  -8.1% |
 | mixed-100k / jieba          |                 1510.05 |                          1440.46 |                  -4.6% |
-
-<!-- escape:end -->
 
 On the mixed fixture, the extra scanner saves **8.1%** of character-mode Rust JSON preparation and **4.6%** with Jieba. On natural text, its effect is approximately neutral; the character-mode row is slightly slower. An isolated long unchanged ASCII run improves **521.96 → 16.37 µs**, but a wholly ASCII call never reaches the production bulk-JSON path. That synthetic result indicates where the scanner works, not a 32× complete-call gain.[^simd-1]
 
@@ -1046,11 +973,11 @@ The pinyinString API does not construct JSON, so this crate does not address its
 
 Five modes share one compiled addon: existing behavior, crate for UTF-8, crate for both encodings, our scanner for UTF-8, and crate only for long UTF-8 runs. The mode switch occurs outside timing. The prototype passes 60,800 output comparisons against the production addon across all styles and resolvers, strings and buffers, heteronyms, custom separators, async calls, controls, lone surrogates and multibyte tails. Benchmark fixtures are also compared in every mode. These are functional comparisons on ARM64, not an audit of the dependency's unsafe code or validation on other architectures.
 
-Build with `python3 benchmark/json-escape/build-probe.py`, then run `oxnode benchmark/json-escape/node.ts`. The builder copies sources to a temporary directory and adds the dependency there. It records source and artifact hashes. It never changes the production manifest or replaces the production addon.
+The [archived prototype builder](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/json-escape/build-probe.py) and [Node harness](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/json-escape/node.ts) reproduce this experiment from the research snapshot. They are no longer included in the current source tree.
 
-- [Initial 22-case measurements](../benchmark/results/json-escape/node.json), with the exact [initial harness snapshot](../benchmark/results/json-escape/harness-initial.txt).
-- [Four additional clean-mixed measurements](../benchmark/results/json-escape/clean.json), run with `BENCH_FILTER='mixed-clean/' BENCH_OUTPUT=benchmark/results/json-escape/clean.json oxnode benchmark/json-escape/node.ts`.
-- [All cases in CSV](../benchmark/results/json-escape/summary.csv) and [build provenance](../benchmark/results/json-escape/build.json).
+- [Initial 22-case measurements](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/json-escape/node.json), with the exact [initial harness snapshot](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/json-escape/harness-initial.txt).
+- [Four additional clean-mixed measurements](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/json-escape/clean.json), collected with the archived harness.
+- [All cases in CSV](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/json-escape/summary.csv) and [build provenance](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/json-escape/build.json).
 
 The benchmarked crate is published version 3.1.1, revision a860920ee22a75d3b4983c987ce5c2e0fe1837ae. The supplied DeepWiki page was unavailable to the browser tool; the assessment uses the repository and published crate source directly.
 
@@ -1080,13 +1007,13 @@ The benchmarked crate is published version 3.1.1, revision a860920ee22a75d3b4983
 
 [^node-api]: Node.js, [Node-API environment and value lifetime documentation](https://nodejs.org/api/n-api.html#environment-life-cycle-apis).
 
-Dictionary originals, source hashes, and license notices are in [the provenance manifest](../crates/pinyin-core/data/sources.json). Measurements are in [benchmark/results](../benchmark/results); build identities are in [build.json](../benchmark/results/build.json). The implementation is in [the standalone core](../crates/pinyin-core/src/lib.rs) and [the Node binding](../src/lib.rs).
+Dictionary originals, source hashes, and license notices are in [the provenance manifest](../crates/pinyin-core/data/sources.json). Measurements are in [benchmark/results](https://github.com/Brooooooklyn/pinyin/tree/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results); build identities are in [build.json](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/build.json). The implementation is in [the standalone core](../crates/pinyin-core/src/lib.rs) and [the Node binding](../src/lib.rs).
 
-[^simd-1]: Local measurements and static analysis, September 11, 2026. [Raw samples and metadata](../benchmark/results/simd-research), [Rust kernels](../benchmark/simd-research/src/main.rs), [Node benchmark](../benchmark/simd-research/node.ts), and [analysis script](../benchmark/simd-research/analyze.py). Source/artifact hashes and validation scope are retained in the metadata.
+[^simd-1]: Local measurements and static analysis, September 11, 2026. [Raw samples and metadata](https://github.com/Brooooooklyn/pinyin/tree/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/simd-research), [Rust kernels](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/simd-research/src/main.rs), [Node benchmark](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/simd-research/node.ts), and [analysis script](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/simd-research/analyze.py). Source/artifact hashes and validation scope are retained in the metadata.
 
 [^simd-2]: Repository source pointers (the measured historical source hashes are retained in metadata): [Node binding](../src/lib.rs), [core and phrase solver](../crates/pinyin-core/src/lib.rs), [Jieba adapter](../crates/pinyin-core/src/jieba.rs), and [dictionary generator](../crates/pinyin-core/build.rs). The earlier [algorithm report](performance-research.md), [Jieba report](performance-research.md#jieba-integration), and [UTF-8 validation report](performance-research.md#utf-8-validation) document prior stages; their samples are not pooled with this experiment.
 
-[^simd-3]: Cargo-resolved primary sources: `napi` 3.12.3, `src/bindgen_runtime/js_values/string.rs`; `jieba-rs` 0.10.3, `src/lib.rs`. Inspected from the local Cargo registry. Exact identities and source hashes are recorded under `dependency_sources` in [metadata.json](../benchmark/results/simd-research/metadata.json); versions are pinned in the [root lockfile](../Cargo.lock).
+[^simd-3]: Cargo-resolved primary sources: `napi` 3.12.3, `src/bindgen_runtime/js_values/string.rs`; `jieba-rs` 0.10.3, `src/lib.rs`. Inspected from the local Cargo registry. Exact identities and source hashes are recorded under `dependency_sources` in [metadata.json](https://github.com/Brooooooklyn/pinyin/blob/5267ab2d51e422fe1ec2ec94e89d69e8192d50a4/benchmark/results/simd-research/metadata.json); versions are pinned in the [root lockfile](../Cargo.lock).
 
 [^simd-4]: Daniel Lemire. [Unicode at Gigabytes per Second](https://arxiv.org/html/2111.08692v3), revised May 20, 2023, especially §4. The paper's hardware comparisons motivate the algorithm; only this repository's local measurements supply the performance numbers above.
 

@@ -130,6 +130,3 @@ bench.txt
 !.yarn/versions
 /npm
 *.wasm
-
-# Python benchmark helpers
-__pycache__/
