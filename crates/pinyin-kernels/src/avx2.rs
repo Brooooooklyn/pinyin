@@ -23,7 +23,8 @@ pub(super) unsafe fn utf8(input: &[u8], dst: *mut u16) -> (usize, usize) {
     let (q0, m0) = quad(input.as_ptr());
     let (q1, m1) = quad(input.as_ptr().add(12));
     if m0 == 15 && m1 == 15 {
-      _mm256_storeu_si256(dst.cast(), _mm256_set_m128i(q1, q0));
+      // Each quad holds 4 u16 in its low 64 bits; pack them contiguously.
+      _mm_storeu_si128(dst.cast(), _mm_unpacklo_epi64(q0, q1));
       return (24, 8);
     }
     if m0 == 15 {
