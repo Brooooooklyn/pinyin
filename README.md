@@ -28,16 +28,10 @@ yarn add @napi-rs/pinyin
 
 ## 系统/Node.js 版本
 
-<!-- Live napi.rs badge, following the lzma README. PNG works through npm's
-     image proxy; GitHub selects the dark source. Commas must be URL-encoded
-     so srcset does not split target lists. The image covers native targets:
-     the service's Browser card does not describe our Node-based WASI tests.
-     Update the query and text matrix together when package.json / CI change. -->
+<!-- Keep the image query and text matrix in sync with package.json / CI.
+     Use Markdown image syntax so previews do not need raw HTML support. -->
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://napi.rs/support-matrix.png?name=%40napi-rs%2Fpinyin&engines=%3E%3D+10.0&nodeTested=22%2C24&tested=x86_64-pc-windows-msvc%2Caarch64-pc-windows-msvc%2Cx86_64-apple-darwin%2Caarch64-apple-darwin%2Cx86_64-unknown-linux-gnu%2Cx86_64-unknown-linux-musl%2Caarch64-unknown-linux-gnu%2Caarch64-unknown-linux-musl%2Carmv7-unknown-linux-gnueabihf&untested=i686-pc-windows-msvc%2Caarch64-linux-android%2Cx86_64-unknown-freebsd%2Carmv7-linux-androideabi%2Cpowerpc64le-unknown-linux-gnu%2Cs390x-unknown-linux-gnu%2Criscv64gc-unknown-linux-gnu%2Caarch64-unknown-linux-ohos&theme=dark">
-  <img alt="@napi-rs/pinyin 兼容性：engines.node 声明 >= 10.0，当前 CI 测试 Node 22、24。17 个原生目标：9 个通过运行时测试，8 个仅构建。WASI 的独立测试范围见下方文字表格。" src="https://napi.rs/support-matrix.png?name=%40napi-rs%2Fpinyin&engines=%3E%3D+10.0&nodeTested=22%2C24&tested=x86_64-pc-windows-msvc%2Caarch64-pc-windows-msvc%2Cx86_64-apple-darwin%2Caarch64-apple-darwin%2Cx86_64-unknown-linux-gnu%2Cx86_64-unknown-linux-musl%2Caarch64-unknown-linux-gnu%2Caarch64-unknown-linux-musl%2Carmv7-unknown-linux-gnueabihf&untested=i686-pc-windows-msvc%2Caarch64-linux-android%2Cx86_64-unknown-freebsd%2Carmv7-linux-androideabi%2Cpowerpc64le-unknown-linux-gnu%2Cs390x-unknown-linux-gnu%2Criscv64gc-unknown-linux-gnu%2Caarch64-unknown-linux-ohos">
-</picture>
+![@napi-rs/pinyin 兼容性：engines.node 声明 >= 10.0，当前 CI 测试 Node 22、24。17 个原生目标：9 个通过运行时测试，8 个仅构建。WASI 的独立测试范围见下方文字表格。](https://napi.rs/support-matrix.png?name=%40napi-rs%2Fpinyin&engines=%3E%3D+10.0&nodeTested=22%2C24&tested=x86_64-pc-windows-msvc%2Caarch64-pc-windows-msvc%2Cx86_64-apple-darwin%2Caarch64-apple-darwin%2Cx86_64-unknown-linux-gnu%2Cx86_64-unknown-linux-musl%2Caarch64-unknown-linux-gnu%2Caarch64-unknown-linux-musl%2Carmv7-unknown-linux-gnueabihf&untested=i686-pc-windows-msvc%2Caarch64-linux-android%2Cx86_64-unknown-freebsd%2Carmv7-linux-androideabi%2Cpowerpc64le-unknown-linux-gnu%2Cs390x-unknown-linux-gnu%2Criscv64gc-unknown-linux-gnu%2Caarch64-unknown-linux-ohos)
 
 图中 Node.js 范围来自 `package.json` 的 `engines.node: ">= 10.0"`；当前原生 CI 测试 Node **22、24**，Linux armv7 仅测试 Node **22**。声明范围不表示其他 Node.js 版本均已通过当前测试。
 
