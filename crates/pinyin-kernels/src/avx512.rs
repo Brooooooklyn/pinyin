@@ -65,9 +65,8 @@ pub(super) unsafe fn utf8(input: &[u8], dst: *mut u16) -> (usize, usize) {
     let b2 = _mm512_permutexvar_epi8(_mm512_loadu_si512(GATHER[2].as_ptr().cast()), z);
     let splat = |x: u8| _mm512_set1_epi8(x as i8);
     let cont = |v: __m512i| _mm512_cmpeq_epi8_mask(_mm512_and_si512(v, splat(0xc0)), splat(0x80));
-    let valid = _mm512_cmpeq_epi8_mask(_mm512_and_si512(b0, splat(0xf0)), splat(0xe0))
-      & cont(b1)
-      & cont(b2);
+    let valid =
+      _mm512_cmpeq_epi8_mask(_mm512_and_si512(b0, splat(0xf0)), splat(0xe0)) & cont(b1) & cont(b2);
     if valid & TRIPLET_MASK == TRIPLET_MASK {
       let w0 = _mm512_cvtepu8_epi16(_mm512_castsi512_si256(b0));
       let w1 = _mm512_cvtepu8_epi16(_mm512_castsi512_si256(b1));
@@ -97,7 +96,10 @@ pub(super) unsafe fn utf16(input: &[u16], dst: *mut u8) -> (usize, usize) {
     if _mm512_test_epi16_mask(_mm512_or_si512(a, b), _mm512_set1_epi16(-128)) == 0 {
       let pa = _mm512_cvtepi16_epi8(a);
       let pb = _mm512_cvtepi16_epi8(b);
-      _mm512_storeu_si512(dst.cast(), _mm512_inserti64x4(_mm512_castsi256_si512(pa), pb, 1));
+      _mm512_storeu_si512(
+        dst.cast(),
+        _mm512_inserti64x4(_mm512_castsi256_si512(pa), pb, 1),
+      );
       return (64, 64);
     }
   }
@@ -124,16 +126,8 @@ pub(super) unsafe fn utf16(input: &[u16], dst: *mut u8) -> (usize, usize) {
       let c8 = _mm512_cvtepi16_epi8(c);
       let zab = _mm512_inserti64x4(_mm512_castsi256_si512(a8), b8, 1);
       let zc = _mm512_castsi256_si512(c8);
-      let lo = _mm512_permutex2var_epi8(
-        zab,
-        _mm512_loadu_si512(INTERLEAVE_LO.as_ptr().cast()),
-        zc,
-      );
-      let hi = _mm512_permutex2var_epi8(
-        zab,
-        _mm512_loadu_si512(INTERLEAVE_HI.as_ptr().cast()),
-        zc,
-      );
+      let lo = _mm512_permutex2var_epi8(zab, _mm512_loadu_si512(INTERLEAVE_LO.as_ptr().cast()), zc);
+      let hi = _mm512_permutex2var_epi8(zab, _mm512_loadu_si512(INTERLEAVE_HI.as_ptr().cast()), zc);
       _mm512_storeu_si512(dst.cast(), lo);
       _mm256_storeu_si256(dst.add(64).cast(), _mm512_castsi512_si256(hi));
       return (32, 96);

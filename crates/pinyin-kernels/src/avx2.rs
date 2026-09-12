@@ -64,7 +64,10 @@ unsafe fn quad(ptr: *const u8) -> (__m128i, i32) {
   let a = _mm_slli_epi16::<12>(_mm_unpacklo_epi8(_mm_and_si128(a, _mm_set1_epi8(15)), zero));
   let b = _mm_slli_epi16::<6>(_mm_unpacklo_epi8(_mm_and_si128(b, _mm_set1_epi8(63)), zero));
   let c = _mm_unpacklo_epi8(_mm_and_si128(c, _mm_set1_epi8(63)), zero);
-  (_mm_or_si128(a, _mm_or_si128(b, c)), _mm_movemask_epi8(valid) & 15)
+  (
+    _mm_or_si128(a, _mm_or_si128(b, c)),
+    _mm_movemask_epi8(valid) & 15,
+  )
 }
 
 // Caller checks AVX2 and SSSE3 support and reserves three bytes per unit.
@@ -75,11 +78,7 @@ pub(super) unsafe fn utf16(input: &[u16], dst: *mut u8) -> (usize, usize) {
   if input.len() >= 32 {
     let a = _mm256_loadu_si256(input.as_ptr().cast());
     let b = _mm256_loadu_si256(input.as_ptr().add(16).cast());
-    if _mm256_testz_si256(
-      _mm256_or_si256(a, b),
-      _mm256_set1_epi16(-128),
-    ) != 0
-    {
+    if _mm256_testz_si256(_mm256_or_si256(a, b), _mm256_set1_epi16(-128)) != 0 {
       let packed = _mm256_packus_epi16(a, b);
       _mm256_storeu_si256(dst.cast(), _mm256_permute4x64_epi64::<0b11011000>(packed));
       return (32, 32);

@@ -5,18 +5,18 @@ use crate::{
   error::{next_utf8, reserve, utf8_capacity},
   Error, Result,
 };
-#[cfg(target_arch = "aarch64")]
-#[path = "neon.rs"]
-mod blocks;
-#[cfg(target_arch = "x86_64")]
-#[path = "ssse3.rs"]
-mod blocks;
 #[cfg(target_arch = "x86_64")]
 #[path = "avx2.rs"]
 mod avx2;
 #[cfg(target_arch = "x86_64")]
 #[path = "avx512.rs"]
 mod avx512;
+#[cfg(target_arch = "aarch64")]
+#[path = "neon.rs"]
+mod blocks;
+#[cfg(target_arch = "x86_64")]
+#[path = "ssse3.rs"]
+mod blocks;
 
 fn available() -> bool {
   #[cfg(target_arch = "aarch64")]
@@ -287,8 +287,8 @@ mod tier_tests {
     let scalars: String = (0..=0x10ffff).filter_map(char::from_u32).collect();
     let mut corpus = vec![
       String::new(),
-      "é".repeat(40),       // two-byte only: exercises the scalar lane
-      "aé中🙂".repeat(40),   // mixed widths, forces tier cascades
+      "é".repeat(40),      // two-byte only: exercises the scalar lane
+      "aé中🙂".repeat(40), // mixed widths, forces tier cascades
       "中\0a🙂é国".repeat(30),
       scalars.clone(),
       format!("中中中中{scalars}国国国国"),
@@ -326,7 +326,12 @@ mod tier_tests {
         let expected: Vec<u16> = text.encode_utf16().collect();
         assert_eq!(out, expected, "{name} utf8: len {}", text.len());
         let chars = decode_impl(&text, |input, dst| unsafe { f(input, dst) }).unwrap();
-        assert_eq!(chars, text.chars().collect::<Vec<_>>(), "{name} decode: len {}", text.len());
+        assert_eq!(
+          chars,
+          text.chars().collect::<Vec<_>>(),
+          "{name} decode: len {}",
+          text.len()
+        );
       }
     }
   }
@@ -358,7 +363,11 @@ mod tier_tests {
           for lone in [0xd800u16, 0xdc00] {
             units.insert(position, lone);
             let out = from_utf16_lossy_impl(&units, |input, dst| unsafe { f(input, dst) }).unwrap();
-            assert_eq!(out, String::from_utf16_lossy(&units), "{name} utf16 lone {lone:#x} at {position}");
+            assert_eq!(
+              out,
+              String::from_utf16_lossy(&units),
+              "{name} utf16 lone {lone:#x} at {position}"
+            );
             units.remove(position);
           }
         }
