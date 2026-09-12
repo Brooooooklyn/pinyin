@@ -39,11 +39,8 @@ jobs:
         with:
           components: clippy, rustfmt
 
-      - name: Test dependency install retries
-        run: node --test .github/scripts/yarn-install.test.mjs
-
       - name: Install dependencies
-        run: node .github/scripts/yarn-install.mjs
+        run: yarn install
 
       - name: Oxlint
         run: yarn lint
@@ -178,7 +175,7 @@ jobs:
         if: ${{ matrix.settings.setup }}
         shell: bash
       - name: Install dependencies
-        run: node .github/scripts/yarn-install.mjs --mode=skip-build
+        run: yarn install --mode=skip-build
       - name: Build
         run: ${{ matrix.settings.build }}
         shell: bash
@@ -225,7 +222,7 @@ jobs:
             whoami
             env
             freebsd-version
-            node .github/scripts/yarn-install.mjs --mode=skip-build
+            yarn install --mode=skip-build
             yarn build
             rm -rf node_modules
             rm -rf target
@@ -269,7 +266,7 @@ jobs:
           cache: yarn
           architecture: ${{ matrix.settings.architecture }}
       - name: Install dependencies
-        run: node .github/scripts/yarn-install.mjs
+        run: yarn install
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
@@ -334,7 +331,7 @@ jobs:
         run: |
           yarn config set --json supportedArchitectures.cpu '["current", "arm64", "x64", "arm"]'
           yarn config set --json supportedArchitectures.libc '["current", "musl", "gnu"]'
-          node .github/scripts/yarn-install.mjs
+          yarn install
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
@@ -378,7 +375,7 @@ jobs:
       - name: Install dependencies
         run: |
           yarn config set --json supportedArchitectures.cpu '["current", "wasm32"]'
-          node .github/scripts/yarn-install.mjs
+          yarn install
       - name: Test WASM
         run: yarn test
         env:
@@ -417,7 +414,7 @@ jobs:
           node-version: 24
           cache: yarn
       - name: Install dependencies
-        run: node .github/scripts/yarn-install.mjs
+        run: yarn install
       - name: create npm dirs
         run: yarn napi create-npm-dirs
       - name: Download all artifacts
