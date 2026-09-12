@@ -16,9 +16,16 @@ dependency are omitted. This project builds WebAssembly through NAPI-RS for
 wasm32-wasip1-threads and tests it through the generated NAPI-RS WASI loader.
 
 The default cut classifier skips ASCII and common-CJK prefixes with bounded
-NEON loads on ARM64 when the pinyin-simd feature is enabled. Other characters use the original Unicode predicate.
-Other architectures retain the original loop. The sparse graph, probability
-solver, HMM, word frequencies, token positions and public API are unchanged.
+SIMD loads when the pinyin-simd feature is enabled: baseline NEON on ARM64,
+and on x86_64 a runtime-detected AVX-512BW/VBMI, AVX2 or SSSE3 tier above an
+SSE2 ASCII baseline. Other characters use the original Unicode predicate, and
+CPUs below SSSE3 retain the original scalar loop. The sparse graph,
+probability solver, HMM, word frequencies, token positions and public API are
+unchanged.
+
+Upstream tests that read files from the unvendored `examples/` and
+`jieba-macros/` directories skip when those assets are absent, keeping the
+vendored test suite runnable.
 
 The root workspace applies this copy through Cargo patch configuration.
 Standalone users of napi-pinyin-core can continue using published jieba-rs;
