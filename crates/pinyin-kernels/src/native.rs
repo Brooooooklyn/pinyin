@@ -283,6 +283,9 @@ fn from_utf16_lossy_impl(
 mod tier_tests {
   use super::*;
 
+  type Utf8Block = unsafe fn(&[u8], *mut u16) -> (usize, usize);
+  type Utf16Block = unsafe fn(&[u16], *mut u8) -> (usize, usize);
+
   fn corpus() -> Vec<String> {
     let scalars: String = (0..=0x10ffff).filter_map(char::from_u32).collect();
     let mut corpus = vec![
@@ -307,8 +310,7 @@ mod tier_tests {
     if !std::is_x86_feature_detected!("ssse3") {
       return;
     }
-    let mut tiers: Vec<(&str, unsafe fn(&[u8], *mut u16) -> (usize, usize))> =
-      vec![("ssse3", blocks::utf8)];
+    let mut tiers: Vec<(&str, Utf8Block)> = vec![("ssse3", blocks::utf8)];
     if std::is_x86_feature_detected!("avx2") {
       tiers.push(("avx2", avx2::utf8));
     }
@@ -341,8 +343,7 @@ mod tier_tests {
     if !std::is_x86_feature_detected!("ssse3") {
       return;
     }
-    let mut tiers: Vec<(&str, unsafe fn(&[u16], *mut u8) -> (usize, usize))> =
-      vec![("ssse3", blocks::utf16)];
+    let mut tiers: Vec<(&str, Utf16Block)> = vec![("ssse3", blocks::utf16)];
     if std::is_x86_feature_detected!("avx2") {
       tiers.push(("avx2", avx2::utf16));
     }
