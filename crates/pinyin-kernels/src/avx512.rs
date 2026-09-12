@@ -44,8 +44,8 @@ const INTERLEAVE_HI: [u8; 64] = interleave_idx(64);
 
 // Caller checks AVX-512F/BW/VL/VBMI support, supplies valid UTF-8 and room
 // for at least min(input.len(), 64) units.
-// SAFETY: loads are guarded by the 64- or 63-byte length checks; the masked
-// store writes exactly the 21 returned units.
+// SAFETY: every load is guarded by a 64-byte length check; the masked store
+// writes exactly the 21 returned units.
 #[target_feature(enable = "avx512f,avx512bw,avx512vl,avx512vbmi,avx2,ssse3")]
 pub(super) unsafe fn utf8(input: &[u8], dst: *mut u16) -> (usize, usize) {
   if input.len() >= 64 {
@@ -58,7 +58,7 @@ pub(super) unsafe fn utf8(input: &[u8], dst: *mut u16) -> (usize, usize) {
       return (64, 64);
     }
   }
-  if input.len() >= 63 {
+  if input.len() >= 64 {
     let z = _mm512_loadu_si512(input.as_ptr().cast());
     let b0 = _mm512_permutexvar_epi8(_mm512_loadu_si512(GATHER[0].as_ptr().cast()), z);
     let b1 = _mm512_permutexvar_epi8(_mm512_loadu_si512(GATHER[1].as_ptr().cast()), z);

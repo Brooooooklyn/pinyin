@@ -5,8 +5,8 @@ use std::arch::x86_64::*;
 
 // Caller checks AVX2 and SSSE3 support, supplies valid UTF-8 and room for at
 // least min(input.len(), 32) units.
-// SAFETY: ASCII loads 32 bytes, triplets load 16 bytes at 0 and 12; both are
-// guarded by the length checks. Stores write only the returned units.
+// SAFETY: ASCII loads 32 bytes, triplets load 16 bytes at 0 and 12; the 28-byte
+// gate bounds both. Stores write only the returned units.
 #[target_feature(enable = "avx2,ssse3")]
 pub(super) unsafe fn utf8(input: &[u8], dst: *mut u16) -> (usize, usize) {
   if input.len() >= 32 {
@@ -19,7 +19,7 @@ pub(super) unsafe fn utf8(input: &[u8], dst: *mut u16) -> (usize, usize) {
       return (32, 32);
     }
   }
-  if input.len() >= 24 {
+  if input.len() >= 28 {
     let (q0, m0) = quad(input.as_ptr());
     let (q1, m1) = quad(input.as_ptr().add(12));
     if m0 == 15 && m1 == 15 {
