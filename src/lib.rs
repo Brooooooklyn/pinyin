@@ -327,7 +327,7 @@ fn prepare_tokens(
 ) -> Result<PinyinOutput> {
   // Keep only a bounded prefix while choosing the measured array crossover.
   // Large inputs stream into the encoded result without a full token vector.
-  let threshold = if multi { 4 } else { 32 };
+  let threshold = if multi { 4 } else { 2 };
   let mut prefix = Vec::with_capacity(threshold);
   for _ in 0..threshold {
     match tokens.next() {
