@@ -24,3 +24,10 @@ bench.add('node-pinyin 8 Han', () => nodePinyin(eight))
 
 await bench.run()
 console.table(bench.table())
+
+const bench2 = new Bench({ time: 1500 })
+const buf = Buffer.from('你好拼音')
+bench2.add("ours pinyin(string) 4 Han", () => pinyin('你好拼音'))
+bench2.add('ours pinyin(Buffer) 4 Han', () => pinyin(buf))
+await bench2.run()
+console.table(bench2.table())
