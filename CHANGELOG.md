@@ -1,3 +1,19 @@
+# [1.8.0](https://github.com/Brooooooklyn/pinyin/compare/v1.7.7...v1.8.0) (2026-09-13)
+
+
+### Bug Fixes
+
+* duplicate issue ([#364](https://github.com/Brooooooklyn/pinyin/issues/364)) ([36264ae](https://github.com/Brooooooklyn/pinyin/commit/36264ae418fac1e7ab9298091103eb161b94f262))
+* **pinyin:** preserve non-Han tokens in async segmented pinyin ([#393](https://github.com/Brooooooklyn/pinyin/issues/393)) ([28155a3](https://github.com/Brooooooklyn/pinyin/commit/28155a3fa2d1cfed830bfcfede6180573943ff1a))
+* **pinyin:** validate UTF-8 input buffers instead of from_utf8_unchecked ([#395](https://github.com/Brooooooklyn/pinyin/issues/395)) ([f15990b](https://github.com/Brooooooklyn/pinyin/commit/f15990bcba938ceefe270aff0969b39783868f41))
+
+
+### Features
+
+* add standalone Rust pinyin core with Jieba and SIMD ([#402](https://github.com/Brooooooklyn/pinyin/issues/402)) ([f5281c8](https://github.com/Brooooooklyn/pinyin/commit/f5281c87cb98124be44af2d1758198b8ace23c92))
+
+
+
 ## [1.7.7](https://github.com/Brooooooklyn/pinyin/compare/v1.7.6...v1.7.7) (2025-09-11)
 
 
