@@ -55,15 +55,15 @@ yarn add @napi-rs/pinyin
 
 | Rust target                     | 平台               | 当前运行时 CI                 |
 | ------------------------------- | ------------------ | ----------------------------- |
-| `x86_64-pc-windows-msvc`        | Windows x64        | Node 24                   |
-| `aarch64-pc-windows-msvc`       | Windows arm64      | Node 24                   |
+| `x86_64-pc-windows-msvc`        | Windows x64        | Node 24                       |
+| `aarch64-pc-windows-msvc`       | Windows arm64      | Node 24                       |
 | `i686-pc-windows-msvc`          | Windows x32        | 仅构建                        |
-| `x86_64-apple-darwin`           | macOS x64          | Node 24                   |
-| `aarch64-apple-darwin`          | macOS arm64        | Node 24                   |
-| `x86_64-unknown-linux-gnu`      | Linux x64 GNU      | Node 24                   |
-| `x86_64-unknown-linux-musl`     | Linux x64 musl     | Node 24                   |
-| `aarch64-unknown-linux-gnu`     | Linux arm64 GNU    | Node 24                   |
-| `aarch64-unknown-linux-musl`    | Linux arm64 musl   | Node 24                   |
+| `x86_64-apple-darwin`           | macOS x64          | Node 24                       |
+| `aarch64-apple-darwin`          | macOS arm64        | Node 24                       |
+| `x86_64-unknown-linux-gnu`      | Linux x64 GNU      | Node 24                       |
+| `x86_64-unknown-linux-musl`     | Linux x64 musl     | Node 24                       |
+| `aarch64-unknown-linux-gnu`     | Linux arm64 GNU    | Node 24                       |
+| `aarch64-unknown-linux-musl`    | Linux arm64 musl   | Node 24                       |
 | `armv7-unknown-linux-gnueabihf` | Linux armv7 GNU    | 仅构建                        |
 | `powerpc64le-unknown-linux-gnu` | Linux ppc64le GNU  | 仅构建                        |
 | `s390x-unknown-linux-gnu`       | Linux s390x GNU    | 仅构建                        |
@@ -97,6 +97,83 @@ yarn build
 ```
 
 研究报告保留测量结果，并链接到历史提交中的基准源码与原始样本。这些是特定硬件和运行时上的测量结果，不代表所有输入上的绝对性能上限。
+
+## 与 [pinyin](https://github.com/hotoo/pinyin) 性能对比
+
+Benchmark over [`pinyin`](https://github.com/hotoo/pinyin) and [`pinyin-pro`](https://github.com/zh-lx/pinyin-pro) package:
+
+> **Note**
+>
+> [`pinyin-pro`](https://github.com/zh-lx/pinyin-pro) doesn't support segment feature.
+
+System info
+
+```
+OS: macOS 26.6.2 25G83 arm64
+Host: Mac17,6
+Kernel: 25.6.0
+Shell: zsh 5.9
+CPU: Apple M5 Max
+GPU: Apple M5 Max
+Memory: 63801MiB / 131072MiB
+```
+
+```bash
+Running "Short input without segment" suite...
+Progress: 100%
+
+  node-pinyin:
+    5 729 437 ops/s, ±0.01%   | fastest
+
+  @napi-rs/pinyin:
+    3 518 025 ops/s, ±0.01%   | 38.60% slower
+
+  pinyin-pro:
+    2 232 475 ops/s, ±0.01%   | slowest, 61.04% slower
+
+Finished 3 cases!
+  Fastest: node-pinyin
+  Slowest: pinyin-pro
+Running "Long input without segment" suite...
+Progress: 100%
+
+  @napi-rs/pinyin:
+    2 068 ops/s, ±0.37%   | fastest
+
+  node-pinyin:
+    909 ops/s, ±0.78%     | 56.04% slower
+
+  pinyin-pro:
+    401 ops/s, ±0.98%     | slowest, 80.61% slower
+
+Finished 3 cases!
+  Fastest: @napi-rs/pinyin
+  Slowest: pinyin-pro
+Running "Short input with segment" suite...
+Progress: 100%
+
+  @napi-rs/pinyin:
+    1 752 564 ops/s, ±0.01%   | fastest
+
+  node-pinyin:
+    804 676 ops/s, ±0.03%     | slowest, 54.09% slower
+
+Finished 2 cases!
+  Fastest: @napi-rs/pinyin
+  Slowest: node-pinyin
+Running "Long input with segment" suite...
+Progress: 100%
+
+  @napi-rs/pinyin:
+    1 203 ops/s, ±0.61%   | fastest
+
+  node-pinyin:
+    11 ops/s, ±1.09%      | slowest, 99.09% slower
+
+Finished 2 cases!
+  Fastest: @napi-rs/pinyin
+  Slowest: node-pinyin
+```
 
 ## 用法
 

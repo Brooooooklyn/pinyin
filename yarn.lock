@@ -820,6 +820,7 @@ __metadata:
     "@napi-rs/wasm-runtime": "npm:^1.2.4"
     "@oxc-node/core": "npm:^0.1.0"
     "@types/node": "npm:^26.5.0"
+    "@types/pinyin": "npm:^2.10.2"
     ava: "npm:^8.0.1"
     conventional-changelog-cli: "npm:^5.0.0"
     emnapi: "npm:^2.0.0-alpha.5"
@@ -829,7 +830,10 @@ __metadata:
     npm-run-all2: "npm:^9.0.3"
     oxlint: "npm:^1.82.0"
     pinst: "npm:^3.0.0"
+    pinyin: "npm:^4.0.0"
+    pinyin-pro: "npm:^3.29.4"
     prettier: "npm:^3.9.6"
+    tinybench: "npm:^6.2.0"
     typescript: "npm:^7.0.2"
   languageName: unknown
   linkType: soft
@@ -1714,6 +1718,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pinyin@npm:^2.10.2":
+  version: 2.10.2
+  resolution: "@types/pinyin@npm:2.10.2"
+  checksum: 10c0/cf0332896563fdb3d4b64cfcc4f1888ec5f434a2e433d176010851e638491a344caacce3188978890526b666b7788e3593f21f0c8d10b54058c9ff16d3ef8359
+  languageName: node
+  linkType: hard
+
 "@types/semver@npm:^7.5.5":
   version: 7.7.1
   resolution: "@types/semver@npm:7.7.1"
@@ -2250,6 +2261,15 @@ __metadata:
   version: 2.0.20
   resolution: "colorette@npm:2.0.20"
   checksum: 10c0/e94116ff33b0ff56f3b83b9ace895e5bf87c2a7a47b3401b8c3f3226e050d5ef76cf4072fb3325f9dc24d1698f9b730baf4e05eeaf861d74a1883073f4c98a40
+  languageName: node
+  linkType: hard
+
+"commander@npm:~1.1.1":
+  version: 1.1.1
+  resolution: "commander@npm:1.1.1"
+  dependencies:
+    keypress: "npm:0.1.x"
+  checksum: 10c0/754f732da088674f41e30a162ef77b11da0ca92afd51c01ae262a6fee8632a60f3319f2cee38b378163716961fc82322eff216cd4594f1d7d105984ed071277f
   languageName: node
   linkType: hard
 
@@ -3234,6 +3254,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"keypress@npm:0.1.x":
+  version: 0.1.0
+  resolution: "keypress@npm:0.1.0"
+  checksum: 10c0/0d6c1921fc92a8b0c1f8dd4845f7b764579a9ac69aa489b9eba60c4fb83f2f7983749534b37f1052b5244a3956d027d8b170aea5c4f24c8dda67b74fa9049a11
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^5.6.0":
   version: 5.6.0
   resolution: "keyv@npm:5.6.0"
@@ -3720,6 +3747,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pinyin-pro@npm:^3.29.4":
+  version: 3.29.4
+  resolution: "pinyin-pro@npm:3.29.4"
+  checksum: 10c0/3fa57631b7a213186513122a88c266b7f8ee6684f2c763f4c281c2e4be156ea9a5c194bc28ae3b5c5dba72f6826390d5418fcc654501d725536cab94410423db
+  languageName: node
+  linkType: hard
+
+"pinyin@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "pinyin@npm:4.0.0"
+  dependencies:
+    commander: "npm:~1.1.1"
+  peerDependencies:
+    "@node-rs/jieba": ^1.6.0
+    nodejieba: ^3.4.4
+    segmentit: ^2.0.3
+  peerDependenciesMeta:
+    "@node-rs/jieba":
+      optional: true
+    nodejieba:
+      optional: true
+    segmentit:
+      optional: true
+  bin:
+    pinyin: bin/pinyin
+  checksum: 10c0/19219150b53d841f1c15983f43f843a20c306c68b73ef8fd27a0ebb645a78a7c8ba5d8176ab562fb725ceec2a101d7dc65c3bfb74df9504e66787902d10d6f4c
+  languageName: node
+  linkType: hard
+
 "pirates@npm:^4.0.7":
   version: 4.0.7
   resolution: "pirates@npm:4.0.7"
@@ -4061,6 +4117,13 @@ __metadata:
   version: 1.0.0
   resolution: "time-zone@npm:1.0.0"
   checksum: 10c0/d00ebd885039109011b6e2423ebbf225160927333c2ade6d833e9cc4676db20759f1f3855fafde00d1bd668c243a6aa68938ce71fe58aab0d514e820d59c1d81
+  languageName: node
+  linkType: hard
+
+"tinybench@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "tinybench@npm:6.2.0"
+  checksum: 10c0/ae821428f0412324611d449290f8497c886c94f04bad8e19aa9b3a5060b4802e738c49f9eb493e4fd17e4d5e792290565e5079be647df1995aea731c82363815
   languageName: node
   linkType: hard
 
