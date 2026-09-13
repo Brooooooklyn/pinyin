@@ -25,6 +25,7 @@ shortBench
     nodePinyin(short)
   })
 
+console.log('Running "Short input without segment" suite...')
 await shortBench.run()
 
 console.table(shortBench.table())
@@ -43,6 +44,7 @@ longBench
     nodePinyin(longText)
   })
 
+console.log('Running "Long input without segment" suite...')
 await longBench.run()
 console.table(longBench.table())
 
@@ -57,6 +59,7 @@ shortSegmentBench
     nodePinyin(short, { segment: true })
   })
 
+console.log('Running "Short input with segment" suite...')
 await shortSegmentBench.run()
 console.table(shortSegmentBench.table())
 
@@ -71,5 +74,6 @@ longSegmentBench
     nodePinyin(longText, { segment: true })
   })
 
+console.log('Running "Long input with segment" suite...')
 await longSegmentBench.run()
 console.table(longSegmentBench.table())
