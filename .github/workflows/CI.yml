@@ -254,7 +254,6 @@ jobs:
             target: x86_64-apple-darwin
             architecture: x64
         node:
-          - '22'
           - '24'
     runs-on: ${{ matrix.settings.host }}
     steps:
@@ -291,9 +290,9 @@ jobs:
           - aarch64-unknown-linux-musl
           - armv7-unknown-linux-gnueabihf
         node:
-          - '22'
           - '24'
         exclude:
+          # Node 24 no longer ships prebuilt armv7 binaries.
           - target: armv7-unknown-linux-gnueabihf
             node: '24'
     runs-on: ${{ contains(matrix.target, 'aarch64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}

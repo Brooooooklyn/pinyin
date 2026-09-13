@@ -31,9 +31,9 @@ yarn add @napi-rs/pinyin
 <!-- Keep the image query and text matrix in sync with package.json / CI.
      Use Markdown image syntax so previews do not need raw HTML support. -->
 
-![@napi-rs/pinyin 兼容性：engines.node 声明 >= 10.0，当前 CI 测试 Node 22、24。17 个原生目标：9 个通过运行时测试，8 个仅构建。WASI 的独立测试范围见下方文字表格。](https://napi.rs/support-matrix.png?name=%40napi-rs%2Fpinyin&engines=%3E%3D+10.0&nodeTested=22%2C24&tested=x86_64-pc-windows-msvc%2Caarch64-pc-windows-msvc%2Cx86_64-apple-darwin%2Caarch64-apple-darwin%2Cx86_64-unknown-linux-gnu%2Cx86_64-unknown-linux-musl%2Caarch64-unknown-linux-gnu%2Caarch64-unknown-linux-musl%2Carmv7-unknown-linux-gnueabihf&untested=i686-pc-windows-msvc%2Caarch64-linux-android%2Cx86_64-unknown-freebsd%2Carmv7-linux-androideabi%2Cpowerpc64le-unknown-linux-gnu%2Cs390x-unknown-linux-gnu%2Criscv64gc-unknown-linux-gnu%2Caarch64-unknown-linux-ohos)
+![@napi-rs/pinyin 兼容性：engines.node 声明 >= 10.0，当前 CI 测试 Node 24。17 个原生目标：8 个通过运行时测试，9 个仅构建。WASI 的独立测试范围见下方文字表格。](https://napi.rs/support-matrix.png?name=%40napi-rs%2Fpinyin&engines=%3E%3D+10.0&nodeTested=24&tested=x86_64-pc-windows-msvc%2Caarch64-pc-windows-msvc%2Cx86_64-apple-darwin%2Caarch64-apple-darwin%2Cx86_64-unknown-linux-gnu%2Cx86_64-unknown-linux-musl%2Caarch64-unknown-linux-gnu%2Caarch64-unknown-linux-musl&untested=armv7-unknown-linux-gnueabihf%2Ci686-pc-windows-msvc%2Caarch64-linux-android%2Cx86_64-unknown-freebsd%2Carmv7-linux-androideabi%2Cpowerpc64le-unknown-linux-gnu%2Cs390x-unknown-linux-gnu%2Criscv64gc-unknown-linux-gnu%2Caarch64-unknown-linux-ohos)
 
-图中 Node.js 范围来自 `package.json` 的 `engines.node: ">= 10.0"`；当前原生 CI 测试 Node **22、24**，Linux armv7 仅测试 Node **22**。声明范围不表示其他 Node.js 版本均已通过当前测试。
+图中 Node.js 范围来自 `package.json` 的 `engines.node: ">= 10.0"`；当前原生 CI 测试 Node **24**；Node 24 不再提供 armv7 预编译包，Linux armv7 仅构建。声明范围不表示其他 Node.js 版本均已通过当前测试。
 
 <details>
 <summary>完整兼容性表格（文字版）</summary>
@@ -44,7 +44,7 @@ yarn add @napi-rs/pinyin
 | ----- | --------------------- | -------------- |
 | < 10  | 否                    | 无             |
 | 10–21 | 是                    | 无             |
-| 22    | 是                    | 有，目标见下表 |
+| 22    | 是                    | 无             |
 | 23    | 是                    | 无             |
 | 24    | 是                    | 有，目标见下表 |
 | ≥ 25  | 是                    | 无             |
@@ -55,16 +55,16 @@ yarn add @napi-rs/pinyin
 
 | Rust target                     | 平台               | 当前运行时 CI                 |
 | ------------------------------- | ------------------ | ----------------------------- |
-| `x86_64-pc-windows-msvc`        | Windows x64        | Node 22、24                   |
-| `aarch64-pc-windows-msvc`       | Windows arm64      | Node 22、24                   |
+| `x86_64-pc-windows-msvc`        | Windows x64        | Node 24                   |
+| `aarch64-pc-windows-msvc`       | Windows arm64      | Node 24                   |
 | `i686-pc-windows-msvc`          | Windows x32        | 仅构建                        |
-| `x86_64-apple-darwin`           | macOS x64          | Node 22、24                   |
-| `aarch64-apple-darwin`          | macOS arm64        | Node 22、24                   |
-| `x86_64-unknown-linux-gnu`      | Linux x64 GNU      | Node 22、24                   |
-| `x86_64-unknown-linux-musl`     | Linux x64 musl     | Node 22、24                   |
-| `aarch64-unknown-linux-gnu`     | Linux arm64 GNU    | Node 22、24                   |
-| `aarch64-unknown-linux-musl`    | Linux arm64 musl   | Node 22、24                   |
-| `armv7-unknown-linux-gnueabihf` | Linux armv7 GNU    | Node 22（QEMU）               |
+| `x86_64-apple-darwin`           | macOS x64          | Node 24                   |
+| `aarch64-apple-darwin`          | macOS arm64        | Node 24                   |
+| `x86_64-unknown-linux-gnu`      | Linux x64 GNU      | Node 24                   |
+| `x86_64-unknown-linux-musl`     | Linux x64 musl     | Node 24                   |
+| `aarch64-unknown-linux-gnu`     | Linux arm64 GNU    | Node 24                   |
+| `aarch64-unknown-linux-musl`    | Linux arm64 musl   | Node 24                   |
+| `armv7-unknown-linux-gnueabihf` | Linux armv7 GNU    | 仅构建                        |
 | `powerpc64le-unknown-linux-gnu` | Linux ppc64le GNU  | 仅构建                        |
 | `s390x-unknown-linux-gnu`       | Linux s390x GNU    | 仅构建                        |
 | `riscv64gc-unknown-linux-gnu`   | Linux riscv64 GNU  | 仅构建                        |
@@ -74,7 +74,7 @@ yarn add @napi-rs/pinyin
 | `aarch64-unknown-linux-ohos`    | OpenHarmony arm64  | 仅构建                        |
 | `wasm32-wasip1-threads`         | WebAssembly / WASI | Node 24；标准和额外 SIMD 构建 |
 
-共 **18 个构建目标**：17 个原生目标（9 个有运行时测试、8 个仅构建），以及 1 个 WASI 目标。当前矩阵没有非阻塞运行时测试目标。
+共 **18 个构建目标**：17 个原生目标（8 个有运行时测试、9 个仅构建），以及 1 个 WASI 目标。当前矩阵没有非阻塞运行时测试目标。
 
 ### WebAssembly 与浏览器
 
