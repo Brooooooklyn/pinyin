@@ -7,13 +7,26 @@ version = "0.1.0"
 [lib]
 crate-type = ["cdylib"]
 
+[workspace]
+members = ["crates/pinyin-core", "crates/pinyin-kernels"]
+resolver = "2"
+exclude = ["vendor/jieba-rs"]
+
+[patch.crates-io]
+jieba-rs = { path = "vendor/jieba-rs" }
+
+[features]
+default = ["simd"]
+simd = ["napi-pinyin-core/simd", "napi-pinyin-kernels/simd", "dep:json-escape-simd", "dep:jieba-rs"]
+
 [dependencies]
-jieba-rs = "0.10.3"
 napi = "3.12.3"
 napi-derive = "3.6.4"
-once_cell = "1.21"
-pinyin = "0.11"
-rayon = "1.12"
+napi-pinyin-core = { path = "crates/pinyin-core", version = "0.1.0", features = ["jieba", "utf16"] }
+simdutf8 = "0.1.5"
+json-escape-simd = { version = "=3.1.1", optional = true }
+jieba-rs = { version = "=0.10.3", features = ["pinyin-simd"], optional = true }
+napi-pinyin-kernels = { path = "crates/pinyin-kernels", version = "0.1.0" }
 
 [target.'cfg(all(not(target_os = "linux"), not(target_family = "wasm")))'.dependencies]
 mimalloc-safe = { version = "0.1.66" }

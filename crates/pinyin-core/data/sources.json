@@ -1,0 +1,31 @@
+{
+  "pinyin_pro_revision": "14b898d6aff00c9df75be351667bcc4155da395b",
+  "sources": [
+    {
+      "file": "pinyin-data/pinyin.txt",
+      "url": "https://github.com/mozillazg/pinyin-data/blob/fa9761fff402f8560196b1ba085c437c52b56d7c/pinyin.txt",
+      "sha256": "6170ab4ff7c9740fe765b1d35e6d3ad43554dd02874199388db513c44dcddf9d"
+    },
+    {
+      "file": "packages/pinyin-pro/lib/data/dict2.ts",
+      "url": "https://github.com/zh-lx/pinyin-pro/blob/14b898d6aff00c9df75be351667bcc4155da395b/packages/pinyin-pro/lib/data/dict2.ts",
+      "sha256": "7b6d05893002fa3b9ef6381624f6ec51433dc1cb59c96f182a0c2fc92e333381"
+    },
+    {
+      "file": "packages/pinyin-pro/lib/data/dict3.ts",
+      "url": "https://github.com/zh-lx/pinyin-pro/blob/14b898d6aff00c9df75be351667bcc4155da395b/packages/pinyin-pro/lib/data/dict3.ts",
+      "sha256": "22c7db3345dde5a861817e84fff3926a072dc4b9b251488b02c0c3af0cc7766d"
+    },
+    {
+      "file": "packages/pinyin-pro/lib/data/dict4.ts",
+      "url": "https://github.com/zh-lx/pinyin-pro/blob/14b898d6aff00c9df75be351667bcc4155da395b/packages/pinyin-pro/lib/data/dict4.ts",
+      "sha256": "260d34cb7e7fd9311c614ad873d339b8e56814f8d8af760a7f1c6ebbbc1c35b5"
+    },
+    {
+      "file": "packages/pinyin-pro/lib/data/dict5.ts",
+      "url": "https://github.com/zh-lx/pinyin-pro/blob/14b898d6aff00c9df75be351667bcc4155da395b/packages/pinyin-pro/lib/data/dict5.ts",
+      "sha256": "0143daf04a4ad2252d33f4163d2f5f4d6046ab621d20d938c9255f0380d5e424"
+    }
+  ],
+  "pinyin_data_revision": "fa9761fff402f8560196b1ba085c437c52b56d7c"
+}

@@ -606,3 +606,4 @@ export const compare = __napiModule.exports.compare
 export const pinyin = __napiModule.exports.pinyin
 export const PINYIN_STYLE = __napiModule.exports.PINYIN_STYLE
 export const PinyinStyle = __napiModule.exports.PinyinStyle
+export const pinyinString = __napiModule.exports.pinyinString

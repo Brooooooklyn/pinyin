@@ -1,0 +1,6 @@
+# Keep imported dictionaries available without expanding them by default
+# in GitHub's implementation review.
+vendor/** -text -whitespace linguist-vendored
+crates/pinyin-core/data/** -text -whitespace
+crates/pinyin-core/data/characters.txt linguist-generated
+crates/pinyin-core/data/phrases.tsv linguist-generated
