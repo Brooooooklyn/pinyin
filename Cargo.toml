@@ -25,7 +25,7 @@ napi-derive = "3.6.4"
 napi-pinyin-core = { path = "crates/pinyin-core", version = "0.1.0", features = ["jieba", "utf16"] }
 simdutf8 = "0.1.5"
 json-escape-simd = { version = "=3.1.2", optional = true }
-jieba-rs = { version = "=0.10.3", features = ["pinyin-simd"], optional = true }
+jieba-rs = { version = "=0.10.4", features = ["pinyin-simd"], optional = true }
 napi-pinyin-kernels = { path = "crates/pinyin-kernels", version = "0.1.0" }
 
 [target.'cfg(all(not(target_os = "linux"), not(target_family = "wasm")))'.dependencies]
