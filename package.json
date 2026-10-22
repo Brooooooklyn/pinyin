@@ -88,7 +88,7 @@
     "@emnapi/runtime": "^2.0.0-alpha.5",
     "@napi-rs/cli": "^3.9.1",
     "@napi-rs/wasm-runtime": "^1.2.4",
-    "@oxc-node/core": "^0.1.0",
+    "@oxc-node/core": "^1.0.0",
     "@types/node": "^26.5.0",
     "@types/pinyin": "^2.10.2",
     "ava": "^8.0.1",
