@@ -2,6 +2,8 @@
 
 This is the consolidated research and implementation report for the standalone Rust core, optional Jieba integration, UTF-8/UTF-16 work, JSON escaping, and remaining SIMD paths. The implementation replaces per-character allocations and repeated JavaScript boundary work with static data and specialized output writers. It adds explicitly selected contextual pronunciation while preserving every existing Node option. The old character lookup itself was already inexpensive.
 
+The workspace now uses published `jieba-rs` 0.10.3 from crates.io. The local `pinyin-simd` classifier and fallible `try_new` constructor described below have been removed; initialization uses upstream `Jieba::new()`, which can panic on an invalid embedded dictionary. Measurements involving the local Jieba patch are historical and do not establish performance of the registry build. The pinyin core, transcoding, and JSON SIMD paths remain enabled by the binding's `simd` feature.
+
 The archived research build at `5267ab2` was **1.93–7.75× faster than pinyin-pro 3.29.3** on the measured 100,000-character synthetic corpus with identical outputs, depending on output style and shape. Natural prose differs in dictionary coverage and reading policy; those timings are not an equivalent-accuracy comparison. That archived optimization pass reduced long-ASCII string conversion time by **6.5–11.4×** relative to the preceding UTF-16 implementation. Smaller changes vary with desktop noise; neither result establishes an absolute performance limit. These numbers predate the compatibility and Rust transcoder changes below and are not measurements of the current branch.
 
 - [Algorithms and compatibility](#algorithm-comparison)

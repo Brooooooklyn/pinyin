@@ -49,10 +49,11 @@ appended a prefix when an error occurs; discard that call's output before retryi
 This change affects the new, unpublished Rust APIs. JavaScript signatures, return
 values, and validation messages remain unchanged.
 
-The Node workspace uses the vendored `Jieba::try_new` constructor and caches its
-`Result`. Standalone consumers use upstream Jieba, whose initialization and HMM
-error behavior are outside this crate's error contract. Standard collection growth
-and third-party allocators are not guaranteed to recover from out-of-memory errors.
+The Node workspace and standalone consumers use published Jieba. The Node binding
+caches `Jieba::new()`, whose embedded-dictionary initialization can panic. Jieba's
+initialization and HMM error behavior are outside this crate's error contract.
+Standard collection growth and third-party allocators are not guaranteed to recover
+from out-of-memory errors.
 
 ## Implementation
 
@@ -112,7 +113,7 @@ The `simd` feature enables `napi-pinyin-kernels` for ASCII span scanning, packed
 
 Native transcoding uses Rust NEON on ARM64 and runtime-detected SSSE3 on x64, with portable fallbacks. The kernels have no C++ dependency. WebAssembly enables vector kernels only with `-C target-feature=+simd128`; ordinary WASM builds retain their existing host requirements.
 
-The Node workspace additionally applies a pinned Jieba 0.10.3 patch for its private ARM64 character classifier. That Cargo patch does not propagate to standalone consumers of this crate, which can use the published Jieba dependency unchanged. See the [remaining SIMD optimization report](../../docs/performance-research.md#implemented-simd-and-output-paths) for benchmarks, the patch's scope, and validation.
+The Node workspace and standalone consumers use `jieba-rs` 0.10.3 from crates.io. The `simd` feature does not alter Jieba's classifier. The former local classifier patch and its measurements are documented in the [historical optimization report](../../docs/performance-research.md#jieba-patch-and-compatibility).
 
 ## Validation
 

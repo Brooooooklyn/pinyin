@@ -5,7 +5,6 @@ use std::fmt;
 pub enum PinyinError {
   Encoding(napi_pinyin_kernels::Error),
   Conversion(pinyin_core::Error),
-  Dictionary(&'static pinyin_core::jieba::Error),
   InvalidUtf8(simdutf8::compat::Utf8Error),
   UnknownSegmenter(String),
   UninitializedEnvironment,
@@ -17,9 +16,6 @@ impl fmt::Display for PinyinError {
     match self {
       Self::Encoding(source) => write!(f, "Pinyin text encoding failed: {source}"),
       Self::Conversion(source) => source.fmt(f),
-      Self::Dictionary(source) => {
-        write!(f, "Cannot initialize Jieba's embedded dictionary: {source}")
-      }
       Self::InvalidUtf8(source) => write!(f, "Input buffer must contain valid UTF-8: {source}"),
       Self::UnknownSegmenter(name) => {
         write!(f, "Unknown segmenter: {name}; expected phrase or jieba")
@@ -35,7 +31,6 @@ impl std::error::Error for PinyinError {
     match self {
       Self::Encoding(source) => Some(source),
       Self::Conversion(source) => Some(source),
-      Self::Dictionary(source) => Some(*source),
       Self::InvalidUtf8(source) => Some(source),
       _ => None,
     }
@@ -90,17 +85,7 @@ mod tests {
   }
 
   #[test]
-  fn initialization_and_encoding_errors_reach_the_js_boundary() {
-    static DICTIONARY_ERROR: std::sync::LazyLock<pinyin_core::jieba::Error> =
-      std::sync::LazyLock::new(|| {
-        pinyin_core::jieba::Error::InvalidDictEntry("bad frequency on line 7".into())
-      });
-    let error = PinyinError::Dictionary(&DICTIONARY_ERROR);
-    assert!(std::error::Error::source(&error).is_some());
-    let js: napi::Error = error.into();
-    assert_eq!(js.status, napi::Status::GenericFailure);
-    assert!(js.reason.contains("Jieba's embedded dictionary"));
-    assert!(js.reason.contains("bad frequency on line 7"));
+  fn encoding_errors_reach_the_js_boundary() {
     let js: napi::Error = PinyinError::Encoding(napi_pinyin_kernels::Error::CapacityOverflow {
       input_len: usize::MAX,
     })

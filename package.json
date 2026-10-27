@@ -30,8 +30,7 @@
     "scripts/build-wasm-simd.mjs",
     "postinstall.mjs",
     "crates/pinyin-core/**",
-    "crates/pinyin-kernels/**",
-    "vendor/jieba-rs/**"
+    "crates/pinyin-kernels/**"
   ],
   "napi": {
     "binaryName": "pinyin",

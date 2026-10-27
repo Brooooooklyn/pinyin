@@ -11,13 +11,10 @@ use napi_derive::napi;
 use pinyin_core::{Style, Token};
 use std::{borrow::Cow, cell::RefCell, collections::HashMap, sync::LazyLock};
 
-static JIEBA: LazyLock<std::result::Result<pinyin_core::jieba::Jieba, pinyin_core::jieba::Error>> =
-  LazyLock::new(pinyin_core::jieba::Jieba::try_new);
+static JIEBA: LazyLock<pinyin_core::jieba::Jieba> = LazyLock::new(pinyin_core::jieba::Jieba::new);
 
-fn jieba() -> Result<&'static pinyin_core::jieba::Jieba> {
-  JIEBA
-    .as_ref()
-    .map_err(|source| PinyinError::Dictionary(source).into())
+fn jieba() -> &'static pinyin_core::jieba::Jieba {
+  &JIEBA
 }
 
 #[derive(Clone, Copy)]
@@ -49,7 +46,7 @@ impl Resolution {
     if matches!(self, Self::Legacy) && !input.is_ascii() {
       return Ok(ResolutionTokens::Legacy(pinyin_core::jieba::legacy_tokens(
         input,
-        jieba()?,
+        jieba(),
       )));
     }
     Ok(ResolutionTokens::Core(
@@ -58,7 +55,7 @@ impl Resolution {
         Self::Character => pinyin_core::tokens(input, false),
         Self::Phrase => pinyin_core::tokens(input, true),
         Self::Jieba if input.is_ascii() => pinyin_core::tokens(input, false),
-        Self::Jieba => pinyin_core::jieba::tokens(input, jieba()?, false),
+        Self::Jieba => pinyin_core::jieba::tokens(input, jieba(), false),
       }
       .map_err(PinyinError::from)?,
     ))
@@ -83,7 +80,7 @@ impl Resolution {
         pinyin_core::pinyin(input, style, true, separator).map_err(PinyinError::from)?
       }
       Self::Jieba if input.is_ascii() => input.to_owned(),
-      Self::Jieba => pinyin_core::jieba::pinyin(input, style, jieba()?, false, separator)
+      Self::Jieba => pinyin_core::jieba::pinyin(input, style, jieba(), false, separator)
         .map_err(PinyinError::from)?,
     })
   }
@@ -112,7 +109,7 @@ impl Resolution {
       Self::Phrase => {
         pinyin_core::utf16::pinyin(input, style, true, separator).map_err(PinyinError::from)?
       }
-      Self::Jieba => pinyin_core::jieba::pinyin_utf16(input, style, jieba()?, false, separator)
+      Self::Jieba => pinyin_core::jieba::pinyin_utf16(input, style, jieba(), false, separator)
         .map_err(PinyinError::from)?,
     })
   }

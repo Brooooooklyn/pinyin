@@ -286,6 +286,8 @@ dependencies = [
 [[package]]
 name = "jieba-rs"
 version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb5bdea4dc241d589e179f39d2a778f31490f3370aa2f626223dbd930ebc5c9d"
 dependencies = [
  "bytecount",
  "cedarwood",
@@ -434,7 +436,6 @@ dependencies = [
 name = "napi-pinyin"
 version = "0.1.0"
 dependencies = [
- "jieba-rs",
  "json-escape-simd",
  "mimalloc-safe",
  "napi",
